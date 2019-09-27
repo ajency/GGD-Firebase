@@ -20,8 +20,21 @@ let Cart = {
 					if(product && product.active){
 						let locations = await Locations.getLocations(variant_id, quantity);
 						if(locations && locations.length){
-							if(Cart.isDeliverable(locations, lat_long))
-								return res.status(200).send({ success: true, message: 'Successfully added to cart'});
+							if(Cart.isDeliverable(locations, lat_long)){
+								let item = {
+									attributes : {
+										title : product.title,
+										images : product.image_url,
+										size : variant.size,
+										mrp : variant.mrp,
+										sale_price : variant.sale_price,
+										discount_per : 0
+									},
+									quantity : quantity,
+									variant_id : variant_id
+								}
+								return res.status(200).send({ success: true, message: 'Successfully added to cart', item : item});
+							}
 							else
 								return res.status(200).send({ success: false, message: 'Not deliverable at your location'});
 						}
