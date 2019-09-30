@@ -13,6 +13,9 @@ let Address = {
 					return res.status(400).send({ message: 'Missing fields' })
 				}
 
+				if(phone && phone.length != 10)
+					return res.status(400).send({ message: 'Invalid phone number' });
+
 				//TODO : get UID from id token
 
 				let addressObj = {
