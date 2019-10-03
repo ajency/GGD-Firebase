@@ -18,11 +18,11 @@ let Address = {
 
 				//TODO : get UID from id token
 
-				let addressObj = {
+				let address_obj = {
 					user_id : "edfdferererer",
 					address : {}
 				}
-				let userAddress = {
+				let user_address = {
 					name		: name,
 					phone		: phone,
 					address 	: address,
@@ -34,11 +34,11 @@ let Address = {
 					lat_long	: lat_long,
 					id			: ''
 				}
-				addressObj.address = userAddress;
-				let addressRef = firestore.collection('addresses').doc();
-				await addressRef.set(addressObj);
-				userAddress.id = addressRef.id;
-				return res.status(200).send({ success: true, message: 'Address added successfully', address : userAddress});
+				address_obj.address = user_address;
+				let address_ref = firestore.collection('addresses').doc();
+				await address_ref.set(address_obj);
+				user_address.id = address_ref.id;
+				return res.status(200).send({ success: true, message: 'Address added successfully', address : user_address});
 
 		} catch (err) {
 				return Address.handleError(res, err)
@@ -50,11 +50,11 @@ let Address = {
 		 		let firestore = admin.firestore();
 				
 				// TODO : get UID from id token
-				let addressesRef = await firestore.collection('addresses')
+				let addresses_ref = await firestore.collection('addresses')
 					.where("user_id", "==", "edfdferererer")
 					.get();
 
-					let addresses = addressesRef.docs.map(doc => {
+					let addresses = addresses_ref.docs.map(doc => {
 						let obj = doc.data();
 						obj.id = doc.id
 						return obj;
