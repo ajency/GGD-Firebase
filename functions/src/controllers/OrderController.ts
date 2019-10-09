@@ -8,11 +8,27 @@ let Order = {
 
 	checkAvailability : async (req: Request, res: Response) => {
 		try {
-				const { variant_id, quantity, lat_long, cart_id } = req.body;
+				let { variant_id, quantity, lat_long, cart_id } = req.body;
 
-				if (!variant_id || !quantity || !lat_long) {
+				if (!variant_id || !quantity || (!lat_long && !cart_id) ) {
 						return res.status(400).send({ message: 'Missing fields' })
 				}
+
+				let cart_data = null;
+				if(cart_id){
+					console.log("inside if");
+					cart_data = await Order.getOrderByID(cart_id);
+				}
+				else{
+					console.log("inside else");
+					cart_data = Order.getNewCartData(lat_long);
+				}
+				console.log("check cart_data =>", cart_data);
+				if(!cart_data)
+					return res.status(400).send({ success: false, message: 'cart not found'});
+
+				lat_long = cart_data.lat_long;
+
 
 				let variant = await Products.getVariantById(variant_id);
 				if(!variant)
@@ -30,11 +46,9 @@ let Order = {
 				let deliverable_locations = Order.isDeliverable(locations, lat_long);
 				if(deliverable_locations && !deliverable_locations.length)
 					return res.status(200).send({ success: false, message: 'Not deliverable at your location'});
-				
-				// if(deliverable_locations.legth > 1){
-				// 	let closest = Cart.findCloset(deliverable_locations , lat_long)
-				// }
 
+				console.log("check deliverable location : ", deliverable_locations[0]);
+				let delivery_id = deliverable_locations[0].id;
 				let item = {
 					attributes : {
 						title : product.title,
@@ -50,40 +64,17 @@ let Order = {
 					variant_id : variant_id
 				}
 
-				// for logged in user
-				if(req.headers.authorization){
-					// TODO : Verify cart with user
-					return res.status(200).send({ success: true, message: 'Successfully added to cart', item : item});
+				let order_data = await Order.updateOrder(item, cart_id, cart_data, delivery_id);
+				let response : any = {
+					success: true, 
+					message: 'Successfully added to cart',
+					item : item,
+					summary : order_data.summary,
+					cart_count : order_data.cart_count,
+					cart_id : order_data.id,
 				}
-				else{
-					if(cart_id){
-						let cart = await Order.getOrderByID(cart_id);
-						if(!cart)
-							return res.status(400).send({ success: false, message: 'cart not found'});
-
-						let order_data = await Order.updateOrder(item, cart_id);		
-						let response : any = {
-							success: true, 
-							message: 'Successfully added to cart',
-							item : item,
-							summary : order_data.summary,
-							cart_count : order_data.item_count
-						}
-						return res.status(200).send(response);
-					}
-					else{
-						let order_data = await Order.createOrder(item);
-						let response : any = {
-							success: true, 
-							message: 'Successfully added to cart',
-							item : item,
-							summary : order_data.summary,
-							cart_id : order_data.id,
-							cart_count : order_data.item_count
-						}
-						return res.status(200).send(response);
-					}
-				}
+				return res.status(200).send(response);
+				
 
 		} catch (err) {
 				return Order.handleError(res, err)
@@ -95,7 +86,7 @@ let Order = {
 	},
 
 	isDeliverable : (locations : Array<any>, lat_long : any) => {
-		console.log("finding deliverableLocations");
+		console.log("finding deliverableLocation");
 		let deliverble : any = [] ;
 		locations.forEach((loc)=>{
 			if(loc.type === 'mobile'){
@@ -133,109 +124,67 @@ let Order = {
 		return locations[closest_index];
 	},
 
-	getOrderByID : async (cart_id : string) => {
+	getOrderByID : async (id : string) => {
 		let firestore = admin.firestore();
-		let cart = await firestore.collection('orders').doc(cart_id).get();
-		if(cart.exists){
-			return cart.data();
+		let order = await firestore.collection('orders').doc(id).get();
+		if(order.exists){
+			return order.data();
 		}
 		return null;
 	},
 
-	createOrder : async(item) => {
+	updateOrder : async (item, cart_id, cart_data, delivery_id) => {
 		let firestore = admin.firestore();
-		let order_ref = firestore.collection('orders').doc();
-		let order_data : any = {
-			user_id : '',
-			created_at : admin.firestore.FieldValue.serverTimestamp(),
-			summary : {
-				mrp_total : item.attributes.mrp * item.quantity,
-				sale_price_total : item.attributes.sale_price * item.quantity,
-				cart_discount : 0,
-				you_pay : item.attributes.sale_price * item.quantity,
-				shipping_fee : 0,
-			},
-			order_type : 'cart',
-			item_count : item.quantity
-		}
-		let order_success = await order_ref.set(order_data);
-
-		let order_line_ref = firestore.collection('order_line_items').doc();
-		let order_line_data = {
-			order_id : order_ref.id,
-			variant_id : item.variant_id,
-			quantity : item.quantity,
-			product_name : item.attributes.title,
-			description : item.attributes.description,
-			mrp : item.attributes.mrp,
-			sale_price : item.attributes.sale_price,
-			veg : item.attributes.veg,
-			size : item.attributes.size
-		}
-
-		let order_line_success = await order_line_ref.set(order_line_data);
-		order_data.id = order_ref.id;
-		return order_data;
-	},
-
-	updateOrder : async (item, cart_id) => {
-		let firestore = admin.firestore();
-		let cart = await firestore.collection('orders').doc(cart_id).get();
-		if(cart.exists){
-			let cart_data = cart.data();
+		let order_line_items = [];
+		if(cart_id){
 			let order_lines = await firestore.collection('order_line_items')
 					.where("order_id", "==", cart_id)
 					.where("variant_id", "==", item.variant_id)
 					.get();
 
-			let result = [];
+			
 			order_lines.forEach(doc => {
 				let obj = doc.data();
 				obj.id = doc.id;
-				result.push(obj);
+				order_line_items.push(obj);
 			})
-			if(result.length){
-				await firestore.collection('order_line_items').doc(result[0].id).update({quantity : result[0].quantity + item.quantity})
-			}
-			else{
-				let order_line_ref = firestore.collection('order_line_items').doc();
-				let order_line_data = {
-					order_id : cart_id,
-					variant_id : item.variant_id,
-					quantity : item.quantity,
-					product_name : item.attributes.title,
-					description : item.attributes.description,
-					mrp : item.attributes.mrp,
-					sale_price : item.attributes.sale_price,
-					veg : item.attributes.veg,
-					size : item.attributes.size
-				}
-				let order_line_success = await order_line_ref.set(order_line_data);
-			}
-
-			let mrp_total = cart_data.summary.mrp_total + item.attributes.mrp * item.quantity;
-			let sale_price_total = cart_data.summary.sale_price_total + item.attributes.sale_price * item.quantity;
-			let you_pay = cart_data.summary.you_pay + item.attributes.sale_price * item.quantity;
-			let item_count = cart_data.item_count + item.quantity;
-			await firestore.collection('orders').doc(cart_id).update({
-				item_count : item_count,
-				'summary.mrp_total' : mrp_total,
-				'summary.sale_price_total' : sale_price_total,
-				'summary.you_pay' : you_pay,
-			})
-
-			let order_data : any = {
-				summary : {
-					mrp_total : mrp_total,
-					sale_price_total : sale_price_total,
-					cart_discount : 0,
-					you_pay : you_pay,
-					shipping_fee : 0,
-				},
-				item_count : item_count
-			}
-			return order_data;
 		}
+
+		cart_data.summary.mrp_total 		+= item.attributes.mrp * item.quantity;
+		cart_data.summary.sale_price_total 	+= item.attributes.sale_price * item.quantity;
+		cart_data.summary.you_pay 			+= item.attributes.sale_price * item.quantity;
+		cart_data.cart_count 				+= item.quantity;
+		cart_data.delivery_id 				=  delivery_id;
+
+		if(cart_id)
+			await firestore.collection('orders').doc(cart_id).set({cart_data})
+		else{
+			let cart_ref = firestore.collection('orders').doc();
+			cart_data.created_at = admin.firestore.FieldValue.serverTimestamp()
+			await cart_ref.set(cart_data);
+			cart_data.id = cart_ref.id;
+			cart_id = cart_ref.id
+		}
+
+		if(order_line_items.length){
+			await firestore.collection('order_line_items').doc(order_line_items[0].id).update({quantity : order_line_items[0].quantity + item.quantity})
+		}
+		else{
+			let order_line_ref = firestore.collection('order_line_items').doc();
+			let order_line_data = {
+				order_id : cart_id,
+				variant_id : item.variant_id,
+				quantity : item.quantity,
+				product_name : item.attributes.title,
+				description : item.attributes.description,
+				mrp : item.attributes.mrp,
+				sale_price : item.attributes.sale_price,
+				veg : item.attributes.veg,
+				size : item.attributes.size
+			}
+			let order_line_success = await order_line_ref.set(order_line_data);
+		}
+		return cart_data;
 	},
 
 	fetchCart : async (req: Request, res: Response) =>{
@@ -248,6 +197,23 @@ let Order = {
 			return res.status(200).send({ success: true, cart : cart.data()});
 		}
 		return res.status(400).send({ success: false, message: 'cart not found'});		
+	},
+
+	getNewCartData : (lat_long) => {
+		let cart_data : any = {
+			user_id : '',
+			summary : {
+				mrp_total : 0,
+				sale_price_total : 0,
+				cart_discount : 0,
+				you_pay : 0,
+				shipping_fee : 0,
+			},
+			order_type : 'cart',
+			cart_count : 0,
+			lat_long : lat_long
+		}
+		return cart_data;
 	}
 }
 
