@@ -1,20 +1,32 @@
 import { Application } from "express";
-import Cart from "./controllers/CartController";
+import Order from "./controllers/OrderController";
 import Address from "./controllers/AddressController";
 import { isAuthenticated } from "./auth/authenticated";
 
 export function routesConfig(app: Application) {
-	app.post('/add-to-cart',
-		isAuthenticated,
-		Cart.checkAvailability
+	app.post('/rest/v1/anonymous/cart/insert',
+		Order.checkAvailability
 	);
 
-	app.post('/add-address',
+	app.get('/rest/v1/anonymous/cart/fetch',
+		Order.fetchCart
+	);
+	
+	app.post('/rest/v1/user/cart/insert',
+		isAuthenticated,
+		Order.checkAvailability
+	);
+
+	app.get('/rest/v1/user/cart/fetch',
+		Order.fetchCart
+	);
+
+	app.post('/rest/v1/user/add-address',
 		isAuthenticated,
 		Address.addAddress
 	);
 
-	app.get('/get-addresses',
+	app.get('/rest/v1/user/get-addresses',
 		isAuthenticated,
 		Address.getAddresses
 	);
