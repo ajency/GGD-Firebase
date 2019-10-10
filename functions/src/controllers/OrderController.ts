@@ -61,7 +61,8 @@ let Order = {
 						veg : product.veg
 					},
 					quantity : quantity,
-					variant_id : variant_id
+					variant_id : variant_id,
+					product_id : variant.product_id
 				}
 
 				let order_data = await Order.updateOrder(item, cart_id, cart_data, delivery_id);
@@ -157,7 +158,7 @@ let Order = {
 		cart_data.delivery_id 				=  delivery_id;
 
 		if(cart_id)
-			await firestore.collection('orders').doc(cart_id).set({cart_data})
+			await firestore.collection('orders').doc(cart_id).set(cart_data);
 		else{
 			let cart_ref = firestore.collection('orders').doc();
 			cart_data.created_at = admin.firestore.FieldValue.serverTimestamp()
@@ -167,7 +168,12 @@ let Order = {
 		}
 
 		if(order_line_items.length){
-			await firestore.collection('order_line_items').doc(order_line_items[0].id).update({quantity : order_line_items[0].quantity + item.quantity})
+			await firestore.collection('order_line_items').doc(order_line_items[0].id)
+				.update(
+					{
+						quantity : order_line_items[0].quantity + item.quantity,
+						timestamp : admin.firestore.FieldValue.serverTimestamp()
+					})
 		}
 		else{
 			let order_line_ref = firestore.collection('order_line_items').doc();
@@ -180,7 +186,9 @@ let Order = {
 				mrp : item.attributes.mrp,
 				sale_price : item.attributes.sale_price,
 				veg : item.attributes.veg,
-				size : item.attributes.size
+				size : item.attributes.size,
+				product_id : item.product_id,
+				timestamp : admin.firestore.FieldValue.serverTimestamp()
 			}
 			let order_line_success = await order_line_ref.set(order_line_data);
 		}
@@ -190,11 +198,54 @@ let Order = {
 	fetchCart : async (req: Request, res: Response) =>{
 		let firestore = admin.firestore();
 
-		let cart_id = req.query.cart_id
+		let cart_id = req.query.cart_id, order_line_items = [], items = [];
 		console.log("cart_id");
 		let cart = await firestore.collection('orders').doc(cart_id).get();
+		let order_lines = await firestore.collection('order_line_items')
+					.where("order_id", "==", cart_id)
+					.get();
+
+		order_lines.forEach(doc => {
+			let obj = doc.data();
+			order_line_items.push(obj);
+		})
+
+		for (const order_line of order_line_items) {
+			let product = await firestore.collection('products').doc(order_line.product_id).get();
+			let item = {
+				variant_id : order_line.variant_id,
+				attributes: {
+			        title: order_line.product_name,
+			        images: {
+			          "1x": product.data().image_url['1x'],
+			          "2x": product.data().image_url['2x'],
+			          "3x": product.data().image_url['3x']
+			        },
+			        size : order_line.size,
+			        price_mrp : order_line.mrp,
+			        price_final : order_line.sale_price,
+			        discount_per : 0
+			    },
+		      	availability : true,
+		      	quantity : order_line.quantity,
+		      	timestamp : order_line.timestamp
+			}
+			items.push(item);
+		}
+
 		if(cart.exists){
-			return res.status(200).send({ success: true, cart : cart.data()});
+			let response = {
+				success: true, 
+				cart : cart.data(),
+				delivery_address : {
+				    address : "Panjim Convetion Center, Panjim Goa"
+				},
+				coupon_applied: null,
+				coupons: [],
+				approx_delivery_time : "40 mins"
+			}
+			response.cart.items = items;
+			return res.status(200).send(response);
 		}
 		return res.status(400).send({ success: false, message: 'cart not found'});		
 	},
