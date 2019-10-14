@@ -137,6 +137,7 @@ let Order = {
 	updateOrder : async (item, cart_id, cart_data, delivery_id) => {
 		let firestore = admin.firestore();
 		let order_line_items = [];
+		let cart_id_for_order_line = cart_id;
 		if(cart_id){
 			let order_lines = await firestore.collection('order_line_items')
 					.where("order_id", "==", cart_id)
@@ -164,7 +165,7 @@ let Order = {
 			cart_data.created_at = admin.firestore.FieldValue.serverTimestamp()
 			await cart_ref.set(cart_data);
 			cart_data.id = cart_ref.id;
-			cart_id = cart_ref.id
+			cart_id_for_order_line = cart_ref.id
 		}
 
 		if(order_line_items.length){
@@ -178,7 +179,7 @@ let Order = {
 		else{
 			let order_line_ref = firestore.collection('order_line_items').doc();
 			let order_line_data = {
-				order_id : cart_id,
+				order_id : cart_id_for_order_line,
 				variant_id : item.variant_id,
 				quantity : item.quantity,
 				product_name : item.attributes.title,
