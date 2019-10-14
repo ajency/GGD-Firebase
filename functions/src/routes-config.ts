@@ -1,6 +1,7 @@
 import { Application } from "express";
 import Order from "./controllers/OrderController";
 import Address from "./controllers/AddressController";
+import misc from "./controllers/MiscController";
 import { isAuthenticated } from "./auth/authenticated";
 
 export function routesConfig(app: Application) {
@@ -29,5 +30,13 @@ export function routesConfig(app: Application) {
 	app.get('/rest/v1/user/get-addresses',
 		isAuthenticated,
 		Address.getAddresses
+	);
+
+	app.get('/rest/v1/places-autocomplete',
+		misc.placesAutoComplete
+	);
+
+	app.get('/rest/v1/reverse-geocode',
+		misc.reverseGeoCode
 	);
 }
