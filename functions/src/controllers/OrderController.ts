@@ -4,6 +4,7 @@ import Products from './ProductController';
 import Locations from './LocationsController';
 import { insidePolygon, headingDistanceTo } from 'geolocation-utils';
 
+const config = require('../../config.json');
 let Order = {
 
 	checkAvailability : async (req: Request, res: Response) => {
@@ -146,7 +147,7 @@ let Order = {
 
 		cart_data.summary.mrp_total 		+= item.attributes.mrp * item.quantity;
 		cart_data.summary.sale_price_total 	+= item.attributes.sale_price * item.quantity;
-		cart_data.summary.you_pay 			+= item.attributes.sale_price * item.quantity;
+		cart_data.summary.you_pay 			= cart_data.summary.sale_price_total + cart_data.summary.shipping_fee;
 		cart_data.cart_count 				+= item.quantity;
 		cart_data.delivery_id 				=  delivery_id;
 
@@ -266,8 +267,8 @@ let Order = {
 				mrp_total : 0,
 				sale_price_total : 0,
 				cart_discount : 0,
-				you_pay : 0,
-				shipping_fee : 0,
+				shipping_fee : config.shipping_fee,
+				you_pay : 0 + config.shipping_fee,
 			},
 			order_type : 'cart',
 			cart_count : 0,
