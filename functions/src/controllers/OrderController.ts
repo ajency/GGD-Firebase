@@ -8,9 +8,9 @@ let Order = {
 
 	checkAvailability : async (req: Request, res: Response) => {
 		try {
-				let { variant_id, quantity, lat_long, cart_id } = req.body;
+				let { variant_id, quantity, lat_long, cart_id, formatted_address } = req.body;
 
-				if (!variant_id || !quantity || (!lat_long && !cart_id) ) {
+				if (!variant_id || !quantity || (!(lat_long && formatted_address) && !cart_id) ) {
 						return res.status(400).send({ message: 'Missing fields' })
 				}
 
@@ -21,7 +21,7 @@ let Order = {
 				}
 				else{
 					console.log("inside else");
-					cart_data = Order.getNewCartData(lat_long);
+					cart_data = Order.getNewCartData(lat_long, formatted_address);
 				}
 				console.log("check cart_data =>", cart_data);
 				if(!cart_data)
@@ -90,22 +90,14 @@ let Order = {
 		console.log("finding deliverableLocation");
 		let deliverble : any = [] ;
 		locations.forEach((loc)=>{
-			if(loc.type === 'mobile'){
-				let polygon = loc.lat_long.map(Object.values)
-				if(insidePolygon(lat_long, polygon)){
-					deliverble.push(loc);
-					return;
-				}
-			}
-			else{
-				let location_1 = {lat: loc.lat_long[0].lat, lon: loc.lat_long[0].long}
-				let location_2 = {lat: lat_long[0], lon: lat_long[1]};
-				let diff = headingDistanceTo(location_1, location_2);
-				console.log("radius diff==>", diff);
-				if(diff.distance < loc.radius){
-					deliverble.push(loc);
-					return;
-				}
+			console.log(loc)
+			let location_1 = {lat: loc.lat_long[0].lat, lon: loc.lat_long[0].long}
+			let location_2 = {lat: lat_long[0], lon: lat_long[1]};
+			let diff = headingDistanceTo(location_1, location_2);
+			console.log("radius diff==>", diff);
+			if(diff.distance < loc.radius){
+				deliverble.push(loc);
+				return;
 			}
 		})
 		return deliverble;
@@ -238,9 +230,6 @@ let Order = {
 			let response = {
 				success: true, 
 				cart : cart.data(),
-				delivery_address : {
-				    address : "Panjim Convetion Center, Panjim Goa"
-				},
 				coupon_applied: null,
 				coupons: [],
 				approx_delivery_time : "40 mins"
@@ -251,7 +240,7 @@ let Order = {
 		return res.status(400).send({ success: false, message: 'cart not found'});		
 	},
 
-	getNewCartData : (lat_long) => {
+	getNewCartData : (lat_long, formatted_address) => {
 		let cart_data : any = {
 			user_id : '',
 			summary : {
@@ -263,7 +252,8 @@ let Order = {
 			},
 			order_type : 'cart',
 			cart_count : 0,
-			lat_long : lat_long
+			lat_long : lat_long,
+			formatted_address : formatted_address
 		}
 		return cart_data;
 	}

@@ -30,7 +30,7 @@ let misc = {
 			let url = "https://www.swiggy.com/dapi/misc/reverse-geocode?latlng=" + req.query.latlng;
 			axios.get(url)
 			  .then(function (response) {
-			  		console.log("response from swiggy api=>", response.data);
+			  		// console.log("response from swiggy api=>", response.data);
 			    	return res.status(200).send(response.data);
 			  })
 			  .catch(function (error) {
