@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 const axios = require('axios');
-const api_key = "AIzaSyAj9KpgYtINImiBr7lN4lHe8s1_wBFPzmo"
+const credentials = require('../../credentials.json')
+
 let misc = {
 	placesAutoComplete : async (req : Request, res : Response) => {
-		let url = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input="+ req.query.input +"&components=country:in&key=" + api_key;
+		let url = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input="+ req.query.input +"&components=country:in&key=" + credentials.maps_api_key;
 		axios.get(url)
 		  .then(function (response) {
 		    	return res.status(200).send(response.data);
@@ -16,7 +17,7 @@ let misc = {
 
 	reverseGeoCode : async (req : Request, res : Response) => {
 		if(req.query.place_id){
-			let url = "https://maps.googleapis.com/maps/api/place/details/json?place_id="+ req.query.place_id +"&fields=address_component,formatted_address,geometry,types&key=" + api_key;
+			let url = "https://maps.googleapis.com/maps/api/place/details/json?place_id="+ req.query.place_id +"&fields=address_component,formatted_address,geometry,types&key=" + credentials.maps_api_key;
 			axios.get(url)
 			  .then(function (response) {
 			    	return res.status(200).send(response.data);
@@ -28,7 +29,7 @@ let misc = {
 		}
 		else if(req.query.latlng){
 			// let url = "https://www.swiggy.com/dapi/misc/reverse-geocode?latlng=" + req.query.latlng;
-			let url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + req.query.latlng +"&key=" + api_key;;
+			let url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + req.query.latlng +"&key=" + credentials.maps_api_key;;
 			axios.get(url)
 			  .then(function (response) {
 			    	return res.status(200).send(response.data);
