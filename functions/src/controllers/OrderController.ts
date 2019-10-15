@@ -203,8 +203,26 @@ let Order = {
 			order_line_items.push(obj);
 		})
 
+		let location = await firestore.collection('locations').doc(cart.data().delivery_id).get();
+		let deliverable = false;
+		if(Order.isDeliverable([location.data()], cart.data().lat_long).length){
+			deliverable = true;
+		}
+
+		console.log("deliverable ==>", deliverable);
 		for (const order_line of order_line_items) {
 			let product = await firestore.collection('products').doc(order_line.product_id).get();
+			let stocks_ref = await firestore.collection('stocks')
+				.where("loc_id", "==", cart.data().delivery_id)
+				.where("variant_id", "==", order_line.variant_id)
+				.where("quantity", ">=", order_line.quantity)
+				.get();
+			let stocks = stocks_ref.docs.map(doc => {
+				return doc.data()
+			})
+
+			console.log("stocks ==>", stocks);
+
 			let item = {
 				variant_id : order_line.variant_id,
 				attributes: {
@@ -219,9 +237,10 @@ let Order = {
 			        price_final : order_line.sale_price,
 			        discount_per : 0
 			    },
-		      	availability : true,
+		      	availability : stocks.length ? true : false,
 		      	quantity : order_line.quantity,
-		      	timestamp : order_line.timestamp
+		      	timestamp : order_line.timestamp,
+		      	deliverable : deliverable
 			}
 			items.push(item);
 		}
@@ -256,6 +275,27 @@ let Order = {
 			formatted_address : formatted_address
 		}
 		return cart_data;
+	},
+
+
+	updateDeliveryLocation : async (req: Request, res: Response) => {
+		let firestore = admin.firestore();
+		let { lat_long, cart_id, formatted_address } = req.body;
+		if (!lat_long || !cart_id || !formatted_address ) {
+			return res.status(400).send({ message: 'Missing fields' })
+		}
+
+		let cart_data = await Order.getOrderByID(cart_id);
+		if(!cart_data)
+			return res.status(400).send({ success: false, message: 'cart not found'});
+
+		await firestore.collection('orders').doc(cart_id)
+				.update(
+					{
+						formatted_address : formatted_address,
+						lat_long : lat_long
+					})
+		return res.status(200).send({ success : true , message: 'Address updated successfully' });
 	}
 }
 

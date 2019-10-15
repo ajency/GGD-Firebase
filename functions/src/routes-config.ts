@@ -39,4 +39,8 @@ export function routesConfig(app: Application) {
 	app.get('/rest/v1/reverse-geocode',
 		misc.reverseGeoCode
 	);
+
+	app.post('/rest/v1/anonymous/cart/change-location',
+		Order.updateDeliveryLocation
+	);
 }
