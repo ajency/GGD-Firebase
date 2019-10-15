@@ -41,6 +41,19 @@ let Locations = {
 			return loc.id == id
 		})
 		return location;
+	},
+
+	getStock : async (loc_id : string, variant_id : string, quantity : number) =>{
+		let firestore = admin.firestore();
+		let stocks_ref = await firestore.collection('stocks')
+			.where("loc_id", "==", loc_id)
+			.where("variant_id", "==", variant_id)
+			.where("quantity", ">=", quantity)
+			.get();
+		let stock = stocks_ref.docs.map(doc => {
+			return doc.data()
+		})
+		return stock;
 	}
 }
 

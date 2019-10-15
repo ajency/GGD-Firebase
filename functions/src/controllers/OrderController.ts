@@ -17,14 +17,11 @@ let Order = {
 
 				let cart_data = null;
 				if(cart_id){
-					console.log("inside if");
 					cart_data = await Order.getOrderByID(cart_id);
 				}
 				else{
-					console.log("inside else");
 					cart_data = Order.getNewCartData(lat_long, formatted_address);
 				}
-				console.log("check cart_data =>", cart_data);
 				if(!cart_data)
 					return res.status(400).send({ success: false, message: 'cart not found'});
 
@@ -38,18 +35,29 @@ let Order = {
 				let product = await Products.getProductById(variant.product_id);
 				if(!product || !product.active)
 					return res.status(200).send({ success: false, message: 'Product is not available'});
-					
-				let locations = await Locations.getLocations(variant_id, quantity);
-				if(locations && !locations.length)
-					return res.status(200).send({ success: false, message: 'Quantity not availble'});
+				
+				let delivery_id;
+				if(!cart_id){
+					let locations = await Locations.getLocations(variant_id, quantity);
+					if(locations && !locations.length)
+						return res.status(200).send({ success: false, message: 'Quantity not availble'});
 
 
-				let deliverable_locations = Order.isDeliverable(locations, lat_long);
-				if(deliverable_locations && !deliverable_locations.length)
-					return res.status(200).send({ success: false, message: 'Not deliverable at your location'});
+					let deliverable_locations = Order.isDeliverable(locations, lat_long);
+					if(deliverable_locations && !deliverable_locations.length)
+						return res.status(200).send({ success: false, message: 'Not deliverable at your location'});
 
-				console.log("check deliverable location : ", deliverable_locations[0]);
-				let delivery_id = deliverable_locations[0].id;
+					console.log("check deliverable location : ", deliverable_locations[0]);
+					delivery_id = deliverable_locations[0].id;
+				}
+				else{
+					let stock = await Locations.getStock(cart_data.delivery_id, variant_id, quantity);
+					console.log("checking stock at existing delivery location", stock);
+					if(!stock.length)
+						return res.status(200).send({ success: false, message: 'Quantity not availble'});
+
+					delivery_id = cart_data.delivery_id;
+				}
 				let item = {
 					attributes : {
 						title : product.title,
@@ -91,7 +99,6 @@ let Order = {
 		console.log("finding deliverableLocation");
 		let deliverble : any = [] ;
 		locations.forEach((loc)=>{
-			console.log(loc)
 			let location_1 = {lat: loc.lat_long[0].lat, lon: loc.lat_long[0].long}
 			let location_2 = {lat: lat_long[0], lon: lat_long[1]};
 			let diff = headingDistanceTo(location_1, location_2);
