@@ -123,8 +123,10 @@ let Order = {
 				cart_data.summary.mrp_total -= item_data.mrp * item_data.quantity;
 				cart_data.summary.sale_price_total -= item_data.sale_price * item_data.quantity;
 				cart_data.cart_count -= item_data.quantity;
-
-				firestore.collection("order_line_items").doc(item_data.id).delete();
+				if(cart_data.cart_count == 0){
+					cart_data.shipping_fee = 0;
+				}
+				firestore.collection("order_line_items").doc(item_data_id).delete();
 			} else {
 			
 				cart_data.summary.mrp_total -= item_data.mrp * quantity;
@@ -139,7 +141,8 @@ let Order = {
 			let response = {
 			  "message": "Successfully updated the cart",
 			  "cart_count": cart_data.cart_count,
-			  "summary": cart_data.summary
+			  "summary": cart_data.summary,
+			  success : true
 			}
 
 			return res.status(200).send(response);
