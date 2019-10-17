@@ -9,6 +9,10 @@ export function routesConfig(app: Application) {
 		Order.addToCart
 	);
 
+	app.post('/rest/v1/anonymous/cart/delete',
+		Order.removeFromCart
+	);
+
 	app.get('/rest/v1/anonymous/cart/fetch',
 		Order.fetchCart
 	);
@@ -16,6 +20,11 @@ export function routesConfig(app: Application) {
 	app.post('/rest/v1/user/cart/insert',
 		isAuthenticated,
 		Order.addToCart
+	);
+
+	app.post('/rest/v1/user/cart/delete',
+		isAuthenticated,
+		Order.removeFromCart
 	);
 
 	app.get('/rest/v1/user/cart/fetch',

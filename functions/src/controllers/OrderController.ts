@@ -54,7 +54,7 @@ let Order = {
 					let stock = await Locations.getStock(cart_data.delivery_id, variant_id, quantity);
 					console.log("checking stock at existing delivery location", stock);
 					if(!stock.length)
-						return res.status(200).send({ success: false, message: 'Quantity not availble'});
+					 	return res.status(200).send({ success: false, message: 'Quantity not availble'});
 
 					delivery_id = cart_data.delivery_id;
 				}
@@ -88,6 +88,64 @@ let Order = {
 
 		} catch (err) {
 				return Order.handleError(res, err)
+		}
+	},
+
+	removeFromCart : async (req: Request, res: Response) => {
+		try {
+			let { cart_id, variant_id, quantity } = req.body;
+			if (!variant_id || !quantity || !cart_id) {
+				return res.status(400).send({ message: 'Missing fields' })
+			}
+			let cart_data = null;
+			cart_data = await Order.getOrderByID(cart_id);
+
+			if(!cart_data) {
+				return res.status(400).send({ success: false, message: 'cart not found'});
+			}
+			
+			let firestore = admin.firestore();
+			let items = await firestore.collection("order_line_items").where('order_id', "==", cart_id).where("variant_id", "==", variant_id).get();
+
+			if(items.empty){
+				return res.status(200).send({ success: false, message: 'Variant not available in cart'});
+			}
+			
+			let item_data = items.docs[0].data()
+			let item_data_id = items.docs[0].id;
+			if(item_data.quantity < quantity){
+				return res.status(200).send({ success: false, message: 'Invalid quantity'});
+			}
+
+			let new_quantity = Number(item_data.quantity) - quantity;
+			
+			if(new_quantity<=0) {
+				cart_data.summary.mrp_total -= item_data.mrp * item_data.quantity;
+				cart_data.summary.sale_price_total -= item_data.sale_price * item_data.quantity;
+				cart_data.cart_count -= item_data.quantity;
+
+				firestore.collection("order_line_items").doc(item_data.id).delete();
+			} else {
+			
+				cart_data.summary.mrp_total -= item_data.mrp * quantity;
+				cart_data.summary.sale_price_total 	-= item_data.sale_price * quantity;
+				cart_data.cart_count = Number(cart_data.cart_count)-quantity;
+				item_data.quantity = new_quantity;
+				firestore.collection("order_line_items").doc(item_data_id).update({quantity: new_quantity});
+			}
+			cart_data.summary.you_pay = cart_data.summary.sale_price_total + cart_data.summary.shipping_fee;
+			firestore.collection("orders").doc(cart_id).set(cart_data);
+			
+			let response = {
+			  "message": "Successfully updated the cart",
+			  "cart_count": cart_data.cart_count,
+			  "summary": cart_data.summary
+			}
+
+			return res.status(200).send(response);
+
+		} catch (err) {
+			return Order.handleError(res, err);
 		}
 	},
 
