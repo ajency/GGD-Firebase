@@ -6,7 +6,7 @@ import { isAuthenticated } from "./auth/authenticated";
 
 export function routesConfig(app: Application) {
 	app.post('/rest/v1/anonymous/cart/insert',
-		Order.checkAvailability
+		Order.addToCart
 	);
 
 	app.get('/rest/v1/anonymous/cart/fetch',
@@ -15,7 +15,7 @@ export function routesConfig(app: Application) {
 	
 	app.post('/rest/v1/user/cart/insert',
 		isAuthenticated,
-		Order.checkAvailability
+		Order.addToCart
 	);
 
 	app.get('/rest/v1/user/cart/fetch',

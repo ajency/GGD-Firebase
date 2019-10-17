@@ -7,7 +7,7 @@ import { insidePolygon, headingDistanceTo } from 'geolocation-utils';
 const config = require('../../config.json');
 let Order = {
 
-	checkAvailability : async (req: Request, res: Response) => {
+	addToCart : async (req: Request, res: Response) => {
 		try {
 				let { variant_id, quantity, lat_long, cart_id, formatted_address } = req.body;
 
