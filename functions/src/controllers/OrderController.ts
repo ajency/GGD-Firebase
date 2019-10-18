@@ -313,7 +313,8 @@ let Order = {
 		      	availability : stocks.length ? true : false,
 		      	quantity : order_line.quantity,
 		      	timestamp : order_line.timestamp,
-		      	deliverable : deliverable
+		      	deliverable : deliverable,
+		      	product_id : product.id
 			}
 			items.push(item);
 		}
