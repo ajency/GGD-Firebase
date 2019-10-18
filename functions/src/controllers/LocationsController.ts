@@ -54,6 +54,15 @@ let Locations = {
 			return doc.data()
 		})
 		return stock;
+	},
+
+	getLocation : async (loc_id : string) => {
+		let firestore = admin.firestore();
+		let location = await firestore.collection('locations').doc(loc_id).get();
+		if(location.exists){
+			return location.data();
+		}
+		return null;
 	}
 }
 

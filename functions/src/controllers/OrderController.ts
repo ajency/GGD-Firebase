@@ -51,12 +51,16 @@ let Order = {
 					delivery_id = deliverable_locations[0].id;
 				}
 				else{
+					delivery_id = cart_data.delivery_id;
+					let location = await Locations.getLocation(delivery_id);
+					let deliverable_locations = Order.isDeliverable([location], lat_long);
+					if(deliverable_locations && !deliverable_locations.length)
+						return res.status(200).send({ success: false, message: 'Not deliverable at your location'});
+
 					let stock = await Locations.getStock(cart_data.delivery_id, variant_id, quantity);
 					console.log("checking stock at existing delivery location", stock);
 					if(!stock.length)
 					 	return res.status(200).send({ success: false, message: 'Quantity not availble'});
-
-					delivery_id = cart_data.delivery_id;
 				}
 				let item = {
 					attributes : {
@@ -126,17 +130,17 @@ let Order = {
 				if(cart_data.cart_count == 0){
 					cart_data.shipping_fee = 0;
 				}
-				firestore.collection("order_line_items").doc(item_data_id).delete();
+				await firestore.collection("order_line_items").doc(item_data_id).delete();
 			} else {
 			
 				cart_data.summary.mrp_total -= item_data.mrp * quantity;
 				cart_data.summary.sale_price_total 	-= item_data.sale_price * quantity;
 				cart_data.cart_count = Number(cart_data.cart_count)-quantity;
 				item_data.quantity = new_quantity;
-				firestore.collection("order_line_items").doc(item_data_id).update({quantity: new_quantity});
+				await firestore.collection("order_line_items").doc(item_data_id).update({quantity: new_quantity});
 			}
 			cart_data.summary.you_pay = cart_data.summary.sale_price_total + cart_data.summary.shipping_fee;
-			firestore.collection("orders").doc(cart_id).set(cart_data);
+			await firestore.collection("orders").doc(cart_id).set(cart_data);
 			
 			let response = {
 			  "message": "Successfully updated the cart",
