@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 const axios = require('axios');
 const credentials = require('../../credentials.json')
+const config = require('../../config.json');
 
 let misc = {
 	placesAutoComplete : async (req : Request, res : Response) => {
-		let url = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input="+ req.query.input +"&components=country:in&key=" + credentials.maps_api_key;
+		let url = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input="+ req.query.input +"&components=country:in&location="+ config.location +"&radius="+ config.radius +"&strictbounds&&key=" + credentials.maps_api_key;
 		axios.get(url)
 		  .then(function (response) {
 		    	return res.status(200).send(response.data);
