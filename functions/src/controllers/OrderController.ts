@@ -38,7 +38,7 @@ let Order = {
 				
 				let delivery_id;
 				if(!cart_id){
-					let locations = await Locations.getLocations(variant_id, quantity);
+					let locations = await Locations.getLocationWithStock(variant_id, quantity);
 					if(locations && !locations.length)
 						return res.status(200).send({ success: false, message: 'Quantity not availble'});
 
@@ -52,8 +52,10 @@ let Order = {
 				}
 				else{
 					delivery_id = cart_data.delivery_id;
-					let location = await Locations.getLocation(delivery_id);
-					let deliverable_locations = Order.isDeliverable([location], lat_long);
+					let location = [];
+					if(delivery_id)
+						location = await Locations.getLocation(delivery_id);
+					let deliverable_locations = Order.isDeliverable(location, lat_long);
 					if(deliverable_locations && !deliverable_locations.length)
 						return res.status(200).send({ success: false, message: 'Not deliverable at your location'});
 
@@ -276,9 +278,11 @@ let Order = {
 			order_line_items.push(obj);
 		})
 
-		let location = await firestore.collection('locations').doc(cart.data().delivery_id).get();
+		let location;
+		if(cart.data().delivery_id)
+			location = await firestore.collection('locations').doc(cart.data().delivery_id).get();
 		let deliverable = false;
-		if(Order.isDeliverable([location.data()], cart.data().lat_long).length){
+		if(location && location.exists && Order.isDeliverable([location.data()], cart.data().lat_long).length){
 			deliverable = true;
 		}
 
@@ -346,7 +350,8 @@ let Order = {
 			order_type : 'cart',
 			cart_count : 0,
 			lat_long : lat_long,
-			formatted_address : formatted_address
+			formatted_address : formatted_address,
+			delivery_id : ''
 		}
 		return cart_data;
 	},
@@ -363,11 +368,26 @@ let Order = {
 		if(!cart_data)
 			return res.status(400).send({ success: false, message: 'cart not found'});
 
+		let locationsRef = await firestore.collection('locations').get();
+		let allLocations = 	locationsRef.docs.map(doc => {
+  			let obj = doc.data();
+  			obj.id = doc.id;
+  			return obj;
+		});
+		console.log("update delivery address all locations", allLocations);
+		let delivery_id = '';
+		let deliverable_locations = Order.isDeliverable(allLocations, lat_long);
+		console.log("update delivery address deliverable locations", deliverable_locations);
+		if(deliverable_locations && deliverable_locations.length)
+			delivery_id = deliverable_locations[0].id;
+
+		console.log("update delivery address delivery id ==>", delivery_id);
 		await firestore.collection('orders').doc(cart_id)
 				.update(
 					{
 						formatted_address : formatted_address,
-						lat_long : lat_long
+						lat_long : lat_long,
+						delivery_id : delivery_id
 					})
 		return res.status(200).send({ success : true , message: 'Address updated successfully' });
 	}

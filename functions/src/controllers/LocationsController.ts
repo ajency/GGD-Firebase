@@ -3,7 +3,7 @@ import * as admin from 'firebase-admin';
 
 let Locations = {
 
-	getLocations: async (id: string, quantity : number) => {
+	getLocationWithStock: async (id: string, quantity : number) => {
 		let firestore = admin.firestore();
 		// get the locations ids from the stocks collection where the quantity is available
 		let stocksRef = await firestore.collection('stocks')
@@ -60,9 +60,9 @@ let Locations = {
 		let firestore = admin.firestore();
 		let location = await firestore.collection('locations').doc(loc_id).get();
 		if(location.exists){
-			return location.data();
+			return [location.data()];
 		}
-		return null;
+		return [];
 	}
 }
 
