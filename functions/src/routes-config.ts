@@ -1,6 +1,7 @@
 import { Application } from "express";
 import Order from "./controllers/OrderController";
 import Address from "./controllers/AddressController";
+import User from "./controllers/UserController";
 import misc from "./controllers/MiscController";
 import { isAuthenticated } from "./auth/authenticated";
 
@@ -51,5 +52,14 @@ export function routesConfig(app: Application) {
 
 	app.post('/rest/v1/anonymous/cart/change-location',
 		Order.updateDeliveryLocation
+	);
+
+	app.get('/rest/v1/check-user-exist',
+		User.userExists
+	);
+
+	app.post('/rest/v1/user/update-user-details',
+		isAuthenticated,
+		User.updateUserDetails
 	);
 }
