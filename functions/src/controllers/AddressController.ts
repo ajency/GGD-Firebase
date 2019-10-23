@@ -48,10 +48,10 @@ let Address = {
 	getAddresses:  async (req: Request, res: Response) => {
 		 try {
 		 		let firestore = admin.firestore();
-				
-				// TODO : get UID from id token
+				let user_id = req.query.uid;
+				console.log("fetch addreess =>", user_id);
 				let addresses_ref = await firestore.collection('addresses')
-					.where("user_id", "==", "edfdferererer")
+					.where("user_id", "==", user_id)
 					.get();
 
 					let addresses = addresses_ref.docs.map(doc => {
