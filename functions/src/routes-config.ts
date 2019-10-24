@@ -62,4 +62,10 @@ export function routesConfig(app: Application) {
 		isAuthenticated,
 		User.updateUserDetails
 	);
+
+	app.post('/rest/v1/user/map-orders-addresses',
+		isAuthenticated,
+		User.mapOrdersAddresses
+	);
+
 }

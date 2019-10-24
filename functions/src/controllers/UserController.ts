@@ -74,6 +74,76 @@ let User = {
 		}
 	},
 
+	mapOrdersAddresses : async (req : Request, res : Response) => {
+		try {
+			let { phone_from_admin, uid, is_verified } = req.body;
+
+			let firestore = admin.firestore();
+			let orders_ref1 = await firestore.collection('orders')
+					.where("user_id", ">", uid)
+					.where("mobile_number", "==", phone_from_admin)
+					.get();
+
+			let orders_ref2 = await firestore.collection('orders')
+					.where("user_id", ">", uid)
+					.where("mobile_number", "==", phone_from_admin)
+					.get();
+
+			let orders = [];
+			orders_ref1.forEach(doc => {
+				let obj = doc.data();
+				obj.id = doc.id;
+				orders.push(obj);
+			})
+
+			orders_ref2.forEach(doc => {
+				let obj = doc.data();
+				obj.id = doc.id;
+				orders.push(obj);
+			})
+
+
+			let addresses_ref1 = await firestore.collection('addresses')
+					.where("user_id", ">", uid)
+					.where("mobile_number", "==", phone_from_admin)
+					.get();
+
+			let addresses_ref2 = await firestore.collection('addresses')
+					.where("user_id", ">", uid)
+					.where("mobile_number", "==", phone_from_admin)
+					.get();
+
+			let addresses = [];
+			addresses_ref1.forEach(doc => {
+				let obj = doc.data();
+				obj.id = doc.id;
+				addresses.push(obj);
+			})
+			
+			addresses_ref2.forEach(doc => {
+				let obj = doc.data();
+				obj.id = doc.id;
+				addresses.push(obj);
+			})
+
+			for (const order of orders) {
+				await firestore.collection('orders').doc(order.id)
+					.update({ user_id : uid })
+			}
+
+			for (const address of addresses) {
+				await firestore.collection('orders').doc(address.id)
+					.update({ user_id : uid })
+			}
+			
+			return res.status(200).send({ success: true, message: 'Successfully mapped orders and addresses'});
+
+		}
+		catch (err) {
+			return User.handleError(res, err)
+		}
+	},
+
 	handleError : (res: Response, err: any) => {
 		return res.status(500).send({ message: `${err.code} - ${err.message}` });
 	},

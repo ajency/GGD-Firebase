@@ -16,10 +16,12 @@ export async function isAuthenticated(req: Request, res: Response, next: Functio
 			if(req.method == 'POST'){
 				req.body.uid = decodedToken.uid;
 				req.body.is_verified = decodedToken.provider_id === 'anonymous' ? false : true;
+				req.body.phone_from_admin = decodedToken.phone_number;
 			}
 			else{
 				req.query.uid = decodedToken.uid;
 				req.query.is_verified = decodedToken.provider_id === 'anonymous' ? false : true;
+				req.query.phone_from_admin = decodedToken.phone_number;
 			}
 				 
 			return next();
