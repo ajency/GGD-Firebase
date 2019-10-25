@@ -59,7 +59,16 @@ let Order = {
 					if(deliverable_locations && !deliverable_locations.length)
 						return res.status(200).send({ success: false, message: 'Not deliverable at your location'});
 
-					let stock = await Locations.getStock(cart_data.delivery_id, variant_id, quantity);
+					let firestore = admin.firestore();
+					let items = await firestore.collection("order_line_items").where('order_id', "==", cart_id).where("variant_id", "==", variant_id).get();
+
+					let new_quantity = quantity;
+					if(!items.empty){
+						let item_data = items.docs[0].data();
+						new_quantity = Number(item_data.quantity) + quantity;
+					}
+
+					let stock = await Locations.getStock(cart_data.delivery_id, variant_id, new_quantity);
 					console.log("checking stock at existing delivery location", stock);
 					if(!stock.length)
 					 	return res.status(200).send({ success: false, message: 'Quantity not availble'});
