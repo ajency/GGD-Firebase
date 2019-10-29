@@ -360,7 +360,9 @@ let Order = {
 			cart_count : 0,
 			lat_long : lat_long,
 			formatted_address : formatted_address,
-			delivery_id : ''
+			delivery_id : '',
+			verified : false,
+			business_id : config.business_id
 		}
 		return cart_data;
 	},
