@@ -401,6 +401,62 @@ let Order = {
 						delivery_id : delivery_id
 					})
 		return res.status(200).send({ success : true , message: 'Address updated successfully' });
+	},
+
+	createOrder: async (req: Request, res:Response) => {
+		res.status(200).send(
+			{
+				success:true,
+				order_data: {
+					"items": [
+						{
+						"variant_id": "bupD3ekj2qEketZ0Kpf9",
+						"attributes": {
+						"title": "Orange Barley Bowl",
+						"images": {
+							"1x": "",
+							"2x": "",
+							"3x": ""
+						},
+						"size": "regular",
+						"price_mrp": 300,
+						"price_final": 250,
+						"discount_per": 0
+						},
+						"availability": true,
+						"quantity": 1,
+						"timestamp": {
+						"_seconds": 1570689946,
+						"_nanoseconds": 765000000
+						}
+					}
+					],
+					"summary": {
+						"delivery_charges": 50,                             
+							"mrp_total": 398,                           
+							"sale_price_total": 200,
+							"you_pay": 240,
+							"cart_discount": 50,
+				
+					},
+					"order_id": 13,
+					"address": {
+						"id":12,
+						"address": "Calangute",
+						"pincode":403513,
+						"locality": "Calangute",
+						"city": "Calangute",
+						"state": "Goa"
+					},
+					"user_details": {
+						"name": "lk",
+						"mobile": "8788894956",
+						"email": "lk@a",
+
+					}
+				}
+			}
+		)
 	}
 }
 

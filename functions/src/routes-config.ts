@@ -6,6 +6,7 @@ import misc from "./controllers/MiscController";
 import Products from "./controllers/ProductController";
 
 import { isAuthenticated } from "./auth/authenticated";
+import Payment from './controllers/PaymentController';
 
 export function routesConfig(app: Application) {
 	app.post('/rest/v1/anonymous/cart/insert',
@@ -77,4 +78,16 @@ export function routesConfig(app: Application) {
 	app.get('/rest/v1/store-fcm-token',
 		misc.storeFcmToken
 	);
+	app.post('/rest/v1/anonymous/cart/create-order', 
+		Order.createOrder
+	);
+
+	app.post('/rest/v1/anonymous/payment/create-order', 
+		Payment.createOrder
+	);
+	app.post('/rest/v1/anonymous/payment/confirm-payment', 
+		Payment.confirmPayment
+	);
+
+
 }
