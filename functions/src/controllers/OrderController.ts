@@ -451,7 +451,7 @@ let Order = {
 					"user_details": {
 						"name": "lk",
 						"mobile": "8788894956",
-						"email": "lk@a",
+						"email": "lk@ajency.in",
 
 					}
 				}

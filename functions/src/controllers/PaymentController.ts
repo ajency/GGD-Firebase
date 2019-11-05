@@ -62,7 +62,6 @@ let PaymentGateway = {
             amount = amount /100;
             let firestore, data, payment_ref, payment_doc ; 
             let razorpay_order = await PaymentGateway.getRazorpayOrder(order_id)
-            console.log(JSON.stringify(razorpay_order))
             firestore = admin.firestore();
 
             data = {
@@ -74,7 +73,6 @@ let PaymentGateway = {
                 pg_status:status,
                 status:status
             }
-            console.log(data)
             payment_ref = firestore.collection('payments').doc();
             payment_doc =await payment_ref.set(data);
             return res.status(200);
@@ -90,6 +88,21 @@ let PaymentGateway = {
             console.log(res)
             return res
         })
+    },
+
+    paymentOrderDetails: async (req:Request, res:Response) => {
+        try {
+            let firestore = admin.firestore();
+            let paymentDoc = await firestore.collection('payments').where("pg_payment_id","==", req.body.payment_id).get()
+            if(paymentDoc.docs.length == 0) {
+                return res.status(200).send({success:true, pending:1});
+            }
+            let data = paymentDoc.docs[0].data();
+            
+            return res.status(200).send({success:true, details: data, pending:0});
+        } catch (error) {
+            return res.status(500).send({success:false})
+        }
     },
 
     handleError : (res: Response, err: any) => {

@@ -89,5 +89,9 @@ export function routesConfig(app: Application) {
 		Payment.confirmPayment
 	);
 
+	app.post('/rest/v1/anonymous/payment/get-order-details',
+		Payment.paymentOrderDetails
+	);
+
 
 }
