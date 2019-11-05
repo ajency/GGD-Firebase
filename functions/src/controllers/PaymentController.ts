@@ -63,7 +63,11 @@ let PaymentGateway = {
             let firestore, data, payment_ref, payment_doc ; 
             let razorpay_order = await PaymentGateway.getRazorpayOrder(order_id)
             firestore = admin.firestore();
-
+            if(status != "failed") {
+                firestore.collection('orders').doc(razorpay_order.receipt).update({
+                    order_type:"order"
+                })
+            }
             data = {
                 order_id:razorpay_order.receipt,
                 payment_gateway:'Razorpay',
@@ -90,20 +94,7 @@ let PaymentGateway = {
         })
     },
 
-    paymentOrderDetails: async (req:Request, res:Response) => {
-        try {
-            let firestore = admin.firestore();
-            let paymentDoc = await firestore.collection('payments').where("pg_payment_id","==", req.body.payment_id).get()
-            if(paymentDoc.docs.length == 0) {
-                return res.status(200).send({success:true, pending:1});
-            }
-            let data = paymentDoc.docs[0].data();
-            
-            return res.status(200).send({success:true, details: data, pending:0});
-        } catch (error) {
-            return res.status(500).send({success:false})
-        }
-    },
+    
 
     handleError : (res: Response, err: any) => {
 		return res.status(500).send({ message: `${err.code} - ${err.message}` });
