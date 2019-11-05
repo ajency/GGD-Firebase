@@ -43,15 +43,15 @@ let PaymentGateway = {
             let generated_signature = crypto.createHmac('sha256',razorpay_secret).update(text).digest('hex');
             if (generated_signature == razorpay_signature) {
                 console.log(generated_signature +"=="+ razorpay_signature)
-                return res.status(200).send({success:true, message: "Transaction Verified"})
-            //   return await PaymentGateway.capturePayment({payment_id:razorpay_payment_id, amount:1000}, res)
+                return res.redirect("http://localhost:3000/#/order-details/"+razorpay_payment_id)
             } else {
                 console.log("verification failed")
-                return res.status(500).send({error:"Payment Failed"})
+                return res.redirect("http://localhost:3000/#/order-details/"+razorpay_payment_id)
             }
         } catch(e) {
             console.log(e);
-            return res.status(500).send({error:"Payment Failed"})            
+            return res.redirect("http://localhost:3000/#/cart")
+                    
         }
     },
     

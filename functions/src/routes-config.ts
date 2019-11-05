@@ -93,5 +93,8 @@ export function routesConfig(app: Application) {
 		Payment.paymentOrderDetails
 	);
 
+	app.post('/rest/v1/anonymous/payment/verify-payment',
+		Payment.verifySignature
+	);
 
 }
