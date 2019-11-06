@@ -1,5 +1,5 @@
 import * as admin from 'firebase-admin';
-
+import { Request, Response } from "express";
 
 let Products = {
 
@@ -23,7 +23,25 @@ let Products = {
 		else{
 			return null;
 		}
-	}
+	},
+
+	getVariants: async (req: Request, res: Response) => {
+		const product_id = req.query.product_id
+		let firestore = admin.firestore();
+
+		let variants_ref = await firestore.collection('variants')
+			.where("product_id", "==", product_id)
+			.where("active", "==", true)
+			.get();
+		let variants = variants_ref.docs.map(doc => {
+			let obj = doc.data();
+			obj.id = doc.id
+			return obj;
+		});
+
+		return res.status(200).send({ success: true, variants : variants });
+	},
+
 }
 
 export default Products;

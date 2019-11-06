@@ -3,6 +3,8 @@ import Order from "./controllers/OrderController";
 import Address from "./controllers/AddressController";
 import User from "./controllers/UserController";
 import misc from "./controllers/MiscController";
+import Products from "./controllers/ProductController";
+
 import { isAuthenticated } from "./auth/authenticated";
 
 export function routesConfig(app: Application) {
@@ -66,6 +68,10 @@ export function routesConfig(app: Application) {
 	app.post('/rest/v1/user/map-orders-addresses',
 		isAuthenticated,
 		User.mapOrdersAddresses
+	);
+
+	app.get('/rest/v1/misc/fetch-variants',
+		Products.getVariants
 	);
 
 }
