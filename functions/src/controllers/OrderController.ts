@@ -502,7 +502,8 @@ let Order = {
                 pg_order_id:order_id,
                 other_details:JSON.stringify(req.body.payload.payment.entity),
                 pg_status:status,
-                status:status
+				status:status,
+				timestamp : admin.firestore.FieldValue.serverTimestamp()
             }
             payment_ref = firestore.collection('payments').doc();
             payment_doc =await payment_ref.set(data);
@@ -513,7 +514,81 @@ let Order = {
        
        
 	},
+	
+	orderSummary: async (req:Request, res:Response) => {
+        try {
+			let order
+			let firestore = admin.firestore();
+			let paymentDoc = await firestore.collection('payments').where("pg_payment_id","==", req.body.payment_id).get()
+            if(paymentDoc.docs.length == 0) {
+                return res.status(200).send({success:true, pending:1});
+            }
+			let data = paymentDoc.docs[0].data();
+			if(data.other_details) {
+				data.other_details = JSON.parse(data.other_details)
+			}
+            if(data.order_id) {
+				let order_id = data.order_id, order_line_items = [], items = [];
+				console.log("cart_id");
+				order = await firestore.collection('orders').doc(order_id).get();
+				let order_lines = await firestore.collection('order_line_items')
+							.where("order_id", "==", order_id)
+							.get();
 
+				order_lines.forEach(doc => {
+					let obj = doc.data();
+					order_line_items.push(obj);
+				})
+
+				for (const order_line of order_line_items) {
+					let product = await firestore.collection('products').doc(order_line.product_id).get();
+					let stocks_ref = await firestore.collection('stocks')
+						.where("loc_id", "==", order.data().delivery_id)
+						.where("variant_id", "==", order_line.variant_id)
+						.where("quantity", ">=", order_line.quantity)
+						.get();
+					let stocks = stocks_ref.docs.map(doc => {
+						return doc.data()
+					})
+
+					console.log("stocks ==>", stocks);
+
+					let item = {
+						variant_id : order_line.variant_id,
+						attributes: {
+							title: order_line.product_name,
+							images: {
+							"1x": product.data().image_url['1x'],
+							"2x": product.data().image_url['2x'],
+							"3x": product.data().image_url['3x']
+							},
+							size : order_line.size,
+							price_mrp : order_line.mrp,
+							price_final : order_line.sale_price,
+							discount_per : 0
+						},
+						availability : stocks.length ? true : false,
+						quantity : order_line.quantity,
+						timestamp : order_line.timestamp,
+						product_id : product.id
+					}
+					items.push(item);
+				}
+
+				order = order.data()
+				order.items = items;
+			} else {
+				return res.status(200).send({success:false,message:"Error order not found" , pending:1}); 
+			}
+			let details = {
+				order_data:order,
+				payment_summary:data
+			}
+            return res.status(200).send({success:true, pending:0, summary:details, approx_delivery_time : "30 mins"});
+        } catch (error) {
+            return res.status(500).send({success:false, error:error})
+        }
+    },
 }
 
 export default Order;
