@@ -23,4 +23,6 @@ app.use(cors({ origin: true }));
 
 routesConfig(app)
 
-export const api = functions.https.onRequest(app);
+// export const api = functions.https.onRequest(app);
+
+export const api = functions.region('asia-east2').https.onRequest(app);
