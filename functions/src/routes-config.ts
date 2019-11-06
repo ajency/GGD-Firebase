@@ -85,12 +85,12 @@ export function routesConfig(app: Application) {
 	app.post('/rest/v1/anonymous/payment/create-order', 
 		Payment.createOrder
 	);
-	app.post('/rest/v1/anonymous/payment/confirm-payment', 
-		Payment.confirmPayment
+	app.post('/rest/v1/anonymous/payment/confirm-order', 
+		Order.confirmOrder
 	);
 
 	app.post('/rest/v1/anonymous/payment/get-order-details',
-		Payment.paymentOrderDetails
+		Order.orderSummary
 	);
 
 	app.post('/rest/v1/anonymous/payment/verify-payment',
