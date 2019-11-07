@@ -39,14 +39,15 @@ let PaymentGateway = {
     verifySignature: (req: Request, res: Response) => {
         try {
             let {razorpay_order_id, razorpay_payment_id, razorpay_signature} = req.body
+            let r_order_id = req.query.r_order_id;
             let text = razorpay_order_id + "|" + razorpay_payment_id;
             let generated_signature = crypto.createHmac('sha256',razorpay_secret).update(text).digest('hex');
             if (generated_signature == razorpay_signature) {
                 console.log(generated_signature +"=="+ razorpay_signature)
-                return res.redirect("http://localhost:3000/#/order-summary/"+razorpay_payment_id)
+                return res.redirect("http://localhost:3000/#/order-summary/"+r_order_id)
             } else {
-                console.log("verification failed")
-                return res.redirect("http://localhost:3000/#/order-summary/"+razorpay_payment_id)
+                console.log("verification failed", r_order_id)
+                return res.redirect("http://localhost:3000/#/order-summary/"+r_order_id)
             }
         } catch(e) {
             console.log(e);
@@ -54,9 +55,6 @@ let PaymentGateway = {
                     
         }
     },
-    
-
- 
 
     async getRazorpayOrder(order_id) {
         return await instance.orders.fetch(order_id).then((res) => {

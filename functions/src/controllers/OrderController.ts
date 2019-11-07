@@ -557,7 +557,7 @@ let Order = {
         try {
 			let order
 			let firestore = admin.firestore();
-			let paymentDoc = await firestore.collection('payments').where("pg_payment_id","==", req.body.payment_id).get()
+			let paymentDoc = await firestore.collection('payments').where("pg_order_id","==", req.body.transaction_id).get()
             if(paymentDoc.docs.length == 0) {
                 return res.status(200).send({success:true, pending:1});
             }
