@@ -72,11 +72,11 @@ export function routesConfig(app: Application) {
 	);
 
 	app.get('/rest/v1/misc/fetch-variants',
-		Products.getVariants
+		// Products.getVariants
 	);
 
 	app.get('/rest/v1/store-fcm-token',
-		misc.storeFcmToken
+		// misc.storeFcmToken
 	);
 	app.post('/rest/v1/anonymous/cart/create-order', 
 		Order.createOrder
