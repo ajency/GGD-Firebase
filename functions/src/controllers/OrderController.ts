@@ -410,9 +410,10 @@ let Order = {
 		let address_id = req.body.address_id;
 		let fetchDraft = req.body.fetchDraft; 
 
-		console.log("cart_id");
 		let cart = await firestore.collection('orders').doc(cart_id).get();
-		console.log("cart_id");
+		if(cart.data().type == 'order') {
+		res.status(200).send({success:false, code:"PAYMENT_DONE", message: "Payment already done"})
+		}
 		
 		let location;
 		let order_lines = await firestore.collection('order_line_items')
@@ -530,7 +531,7 @@ let Order = {
             firestore = admin.firestore();
             if(status != "failed") {
                 firestore.collection('orders').doc(razorpay_order.receipt).update({
-                    order_type:"order"
+                    type:"order"
                 })
             }
             data = {

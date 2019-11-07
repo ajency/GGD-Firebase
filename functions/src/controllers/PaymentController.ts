@@ -19,6 +19,11 @@ let PaymentGateway = {
     createOrder: async (req: Request, res: Response) => {
         try {
                 let amount = req.body.amount *100
+                let firestore = admin.firestore();
+                let cart =  await firestore.collection('orders').doc(req.body.order_id).get()
+                if(cart.data().type == 'order') {
+                    return res.status(500).send({message: "Payment already done"})
+                }
                return await instance.orders.create({amount:amount,currency:'INR',receipt: req.body.order_id,payment_capture:1,notes:{}})
                 .then((data) => {
                     console.log(JSON.stringify(data))
