@@ -404,83 +404,121 @@ let Order = {
 	},
 
 	createOrder: async (req: Request, res:Response) => {
-		res.status(200).send(
-			{
-				success:true,
-				order_data: {
-					"items": [
-						{
-						  "variant_id": "bupD3ekj2qEketZ0Kpf9",
-						  "attributes": {
-							"title": "Orange Barley Bowl",
-							"images": {
-							  "1x": "http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/orange_barley_bowl.jpg",
-							  "2x": "http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/orange_barley_bowl.jpg",
-							  "3x": "http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/orange_barley_bowl.jpg"
-							},
-							"size": "regular",
-							"price_mrp": 300,
-							"price_final": 250,
-							"discount_per": 0
-						  },
-						  "availability": true,
-						  "quantity": 2,
-						  "timestamp": {
-							"_seconds": 1571363647,
-							"_nanoseconds": 18000000
-						  },
-						  "deliverable": true
-						},
-						{
-						  "variant_id": "5awRHIDbXVNMEZhoYjtZ",
-						  "attributes": {
-							"title": "Cracked Wheat & Chickpea Bowl",
-							"images": {
-							  "1x": "http://greengrainbowl.com/wp-content//themes/ajency-portfolio/images/products/cracked-wheat-n-chickpea-bowl-chicken.jpg",
-							  "2x": "http://greengrainbowl.com/wp-content//themes/ajency-portfolio/images/products/cracked-wheat-n-chickpea-bowl-chicken.jpg",
-							  "3x": "http://greengrainbowl.com/wp-content//themes/ajency-portfolio/images/products/cracked-wheat-n-chickpea-bowl-chicken.jpg"
-							},
-							"size": "regular",
-							"price_mrp": 500,
-							"price_final": 400,
-							"discount_per": 0
-						  },
-						  "availability": true,
-						  "quantity": 2,
-						  "timestamp": {
-							"_seconds": 1571363907,
-							"_nanoseconds": 692000000
-						  },
-						  "deliverable": true
-						}
-					  ],
-					"summary": {
-						"delivery_charges": 50,                             
-							"mrp_total": 700,                           
-							"sale_price_total": 650,
-							"you_pay": 600,
-							"cart_discount": 50,
-				
-					},
-					"order_id": 13,
-					"address": {
-						"id":12,
-						"address": "Calangute",
-						"pincode":403513,
-						"locality": "Calangute",
-						"city": "Calangute",
-						"state": "Goa"
-					},
-					"formatted_address": "Panjim Community Centre, Electricity Colony, Altinho, Panaji, Goa 403001, India",
-					"user_details": {
-						"name": "lk",
-						"mobile": "8788894956",
-						"email": "lk@ajency.in",
+		let firestore = admin.firestore();
+		let  order_line_items = [], items = [];
+		let cart_id = req.body.cart_id;
+		let address_id = req.body.address_id;
+		let fetchDraft = req.body.fetchDraft; 
 
-					}
-				}
+		console.log("cart_id");
+		let cart = await firestore.collection('orders').doc(cart_id).get();
+		console.log("cart_id");
+		
+		let location;
+		let order_lines = await firestore.collection('order_line_items')
+					.where("order_id", "==", cart_id)
+					.get();
+
+		order_lines.forEach(doc => {
+			let obj = doc.data();                                                                                                                                                                                                                                                                   
+			order_line_items.push(obj);
+		})
+		
+
+		if(cart.data().delivery_id)
+			location = await firestore.collection('locations').doc(cart.data().delivery_id).get();
+		
+		let deliverable = false;
+		let lat_lng = [], shipping_address
+		if(fetchDraft) {
+			console.log("here")
+			lat_lng = cart.data().shipping_address.lat_long
+			shipping_address = cart.data().shipping_address.lat_long
+			console.log('here')
+		} else {
+			let address = await firestore.collection('addresses').doc(address_id).get();
+			lat_lng = address.data().address.lat_long
+			shipping_address = address.data().address
+
+		}
+		if(location && location.exists && Order.isDeliverable([location.data()], lat_lng).length){
+			deliverable = true;
+		}
+
+		if(!deliverable) {
+			 res.status(200).send({success:false, message:'Address is not deliverable'})
+		}
+
+		let user_details_ref = await firestore.collection("user-details").doc(cart.data().user_id).get();
+		let user_details = {}
+		if(user_details_ref.exists) {
+			 user_details = {
+				name:user_details_ref.data().name,
+				email:user_details_ref.data().email,
+				contact:user_details_ref.data().phone,
 			}
-		)
+		}		
+		
+		if(!fetchDraft) {
+			await firestore.collection('orders').doc(cart_id).update({
+				shipping_address: shipping_address,
+				type:"draft"
+			})
+		}
+		console.log("deliverable ==>", deliverable);
+		
+
+		for (const order_line of order_line_items) {
+			let product = await firestore.collection('products').doc(order_line.product_id).get();
+			let stocks_ref = await firestore.collection('stocks')
+				.where("loc_id", "==", cart.data().delivery_id)
+				.where("variant_id", "==", order_line.variant_id)
+				.where("quantity", ">=", order_line.quantity)
+				.get();
+			let stocks = stocks_ref.docs.map(doc => {
+				return doc.data()
+			})
+
+			
+			console.log("stocks ==>", stocks);
+
+			let item = {
+				variant_id : order_line.variant_id,
+				attributes: {
+			        title: order_line.product_name,
+			        images: {
+			          "1x": product.data().image_url['1x'],
+			          "2x": product.data().image_url['2x'],
+			          "3x": product.data().image_url['3x']
+			        },
+			        size : order_line.size,
+			        price_mrp : order_line.mrp,
+			        price_final : order_line.sale_price,
+			        discount_per : 0
+			    },
+		      	availability : stocks.length ? true : false,
+		      	quantity : order_line.quantity,
+		      	timestamp : order_line.timestamp,
+		      	deliverable : deliverable,
+		      	product_id : product.id
+			}
+			items.push(item);
+		}
+
+		let response = {
+			success: true, 
+			cart : cart.data(),
+			coupon_applied: null,
+			coupons: [],
+			approx_delivery_time : "40 mins"
+		}
+		response.cart.items = items;
+		response.cart.order_id = cart_id;
+		response.cart.address = shipping_address;
+		response.cart.type = "draft";
+		response.cart.user_details = user_details
+		res.status(200).send(response);
+
 	},
 
 	confirmOrder: async (req:Request, res:Response) => {
