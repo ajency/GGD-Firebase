@@ -74,4 +74,7 @@ export function routesConfig(app: Application) {
 		Products.getVariants
 	);
 
+	app.get('/rest/v1/store-fcm-token',
+		misc.storeFcmToken
+	);
 }
