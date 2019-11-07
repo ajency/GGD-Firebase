@@ -3,6 +3,8 @@ import * as admin from "firebase-admin";
 import { Request, Response } from "express";
 import * as crypto from 'crypto';
 import * as _ from 'underscore';
+
+const config = require('../../config.json');
 let razorpay_secret = "7j4YD1RIqIrEn0yfw7IugMSz";
 let instance = new Razorpay({
     key_id:'rzp_test_FSfmJofoQNnVG6',
@@ -44,14 +46,14 @@ let PaymentGateway = {
             let generated_signature = crypto.createHmac('sha256',razorpay_secret).update(text).digest('hex');
             if (generated_signature == razorpay_signature) {
                 console.log(generated_signature +"=="+ razorpay_signature)
-                return res.redirect("http://localhost/#/order-summary/"+r_order_id)
+                return res.redirect(config.frontendUrl+"#/order-summary/"+r_order_id)
             } else {
                 console.log("verification failed", r_order_id)
-                return res.redirect("http://localhost/#/order-summary/"+r_order_id)
+                return res.redirect(config.frontendUrl+"#/order-summary/"+r_order_id)
             }
         } catch(e) {
             console.log(e);
-            return res.redirect("http://localhost/#/cart")
+            return res.redirect(config.frontendUrl+"#/cart")
                     
         }
     },

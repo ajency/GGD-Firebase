@@ -2,5 +2,6 @@
 	"shipping_fee" : 50,
 	"location" : "15.2832187,73.98619099999999",
 	"radius" : 50000,
-	"business_id" : "zq6Rzdvcx0UrULwzeSEr"
+	"business_id" : "zq6Rzdvcx0UrULwzeSEr",
+	"frontendUrl" : "http://greengrainbowl-com.digitaldwarve.staging.wpengine.com/"
 }
