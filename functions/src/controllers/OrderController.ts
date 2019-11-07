@@ -448,17 +448,17 @@ let Order = {
 		if(!deliverable) {
 			 res.status(200).send({success:false, message:'Address is not deliverable'})
 		}
-
-		let user_details_ref = await firestore.collection("user-details").doc(cart.data().user_id).get();
 		let user_details = {}
-		if(user_details_ref.exists) {
-			 user_details = {
-				name:user_details_ref.data().name,
-				email:user_details_ref.data().email,
-				contact:user_details_ref.data().phone,
-			}
-		}		
-		
+		if(cart.data().user_id) {
+			let user_details_ref = await firestore.collection("user-details").doc(cart.data().user_id).get();
+			if(user_details_ref.exists) {
+				user_details = {
+					name:user_details_ref.data().name,
+					email:user_details_ref.data().email,
+					contact:user_details_ref.data().phone,
+				}
+			}		
+		}
 		if(!fetchDraft) {
 			await firestore.collection('orders').doc(cart_id).update({
 				shipping_address: shipping_address,
