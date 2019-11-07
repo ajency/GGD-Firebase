@@ -44,14 +44,14 @@ let PaymentGateway = {
             let generated_signature = crypto.createHmac('sha256',razorpay_secret).update(text).digest('hex');
             if (generated_signature == razorpay_signature) {
                 console.log(generated_signature +"=="+ razorpay_signature)
-                return res.redirect("http://localhost:3000/#/order-summary/"+r_order_id)
+                return res.redirect("http://localhost/#/order-summary/"+r_order_id)
             } else {
                 console.log("verification failed", r_order_id)
-                return res.redirect("http://localhost:3000/#/order-summary/"+r_order_id)
+                return res.redirect("http://localhost/#/order-summary/"+r_order_id)
             }
         } catch(e) {
             console.log(e);
-            return res.redirect("http://localhost:3000/#/cart")
+            return res.redirect("http://localhost/#/cart")
                     
         }
     },
