@@ -440,7 +440,7 @@ let Order = {
 		if(fetchDraft) {
 			console.log("here")
 			lat_lng = cart.data().shipping_address.lat_long
-			shipping_address = cart.data().shipping_address.lat_long
+			shipping_address = cart.data().shipping_address
 			console.log('here')
 		} else {
 			let address = await firestore.collection('addresses').doc(address_id).get();

@@ -5,7 +5,6 @@ import * as crypto from 'crypto';
 import * as _ from 'underscore';
 
 const config = require('../../config.json');
-let razorpay_secret = "";
 let instance = new Razorpay({
     key_id:config.razorpay_api_key,
     key_secret:config.razorpay_secret
@@ -44,7 +43,7 @@ let PaymentGateway = {
             let {razorpay_order_id, razorpay_payment_id, razorpay_signature} = req.body
             let r_order_id = req.query.r_order_id;
             let text = razorpay_order_id + "|" + razorpay_payment_id;
-            let generated_signature = crypto.createHmac('sha256',razorpay_secret).update(text).digest('hex');
+            let generated_signature = crypto.createHmac('sha256',config.razorpay_secret).update(text).digest('hex');
             if (generated_signature == razorpay_signature) {
                 res.redirect(config.frontendUrl+"#/order-summary/"+r_order_id)
             } else {
