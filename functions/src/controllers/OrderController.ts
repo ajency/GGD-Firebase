@@ -521,7 +521,7 @@ let Order = {
 		}
 		response.cart.items = items;
 		response.cart.order_id = cart_id;
-		response.cart.address = shipping_address;
+		response.cart.shipping_address = shipping_address;
 		response.cart.order_type = "draft";
 		response.cart.user_details = user_details
 		res.status(200).send(response);
