@@ -417,7 +417,7 @@ let Order = {
 		let fetchDraft = req.body.fetchDraft; 
 
 		let cart = await firestore.collection('orders').doc(cart_id).get();
-		if(cart.data().type == 'order') {
+		if(cart.data().order_type == 'order') {
 		res.status(200).send({success:false, code:"PAYMENT_DONE", message: "Payment already done"})
 		}
 		
@@ -469,7 +469,7 @@ let Order = {
 		if(!fetchDraft) {
 			await firestore.collection('orders').doc(cart_id).update({
 				shipping_address: shipping_address,
-				type:"draft"
+				order_type:"draft"
 			})
 		}
 		console.log("deliverable ==>", deliverable);
@@ -522,7 +522,7 @@ let Order = {
 		response.cart.items = items;
 		response.cart.order_id = cart_id;
 		response.cart.address = shipping_address;
-		response.cart.type = "draft";
+		response.cart.order_type = "draft";
 		response.cart.user_details = user_details
 		res.status(200).send(response);
 
@@ -565,7 +565,7 @@ let Order = {
 				}
 				
                 firestore.collection('orders').doc(razorpay_order.receipt).update({
-                    type:"order"
+                    order_type:"order"
 				})
 				await base('orders').create([
 					{
