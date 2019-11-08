@@ -418,7 +418,7 @@ let Order = {
 
 		let cart = await firestore.collection('orders').doc(cart_id).get();
 		if(cart.data().order_type == 'order') {
-		res.status(200).send({success:false, code:"PAYMENT_DONE", message: "Payment already done"})
+		 return res.status(200).send({success:false, code:"PAYMENT_DONE", message: "Payment already done"})
 		}
 		
 		let location;
@@ -446,14 +446,17 @@ let Order = {
 			let address = await firestore.collection('addresses').doc(address_id).get();
 			lat_lng = address.data().address.lat_long
 			shipping_address = address.data().address
+		}
 
+		if(!lat_lng) {
+			return res.status(200).send({success:false, message:'Address not found'})
 		}
 		if(location && location.exists && Order.isDeliverable([location.data()], lat_lng).length){
 			deliverable = true;
 		}
 
 		if(!deliverable) {
-			 res.status(200).send({success:false, message:'Address is not deliverable'})
+			return res.status(200).send({success:false, message:'Address is not deliverable'})
 		}
 		let user_details = {}
 		if(cart.data().user_id) {
@@ -524,7 +527,7 @@ let Order = {
 		response.cart.shipping_address = shipping_address;
 		response.cart.order_type = "draft";
 		response.cart.user_details = user_details
-		res.status(200).send(response);
+		return res.status(200).send(response);
 
 	},
 
@@ -667,7 +670,7 @@ let Order = {
         } catch (error) {
             return res.status(500).send({success:false, error:error})
         }
-    },
+	},
 }
 
 export default Order;
