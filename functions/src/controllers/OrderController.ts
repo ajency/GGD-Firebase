@@ -4,7 +4,13 @@ import Products from './ProductController';
 import Locations from './LocationsController';
 import { insidePolygon, headingDistanceTo } from 'geolocation-utils';
 import PaymentGateway from '../controllers/PaymentController';
+import * as Airtable from 'airtable';
 const config = require('../../config.json');
+Airtable.configure({
+	endpointUrl: 'https://api.airtable.com',
+	apiKey: config.airtableApiKey
+})
+const base = Airtable.base('apptpCcEN0UI8o1rm');
 let Order = {
 
 	addToCart : async (req: Request, res: Response) => {
@@ -530,9 +536,43 @@ let Order = {
             let razorpay_order = await PaymentGateway.getRazorpayOrder(order_id)
             firestore = admin.firestore();
             if(status != "failed") {
+				let airtableRec = {
+					contact:'',
+					name:'',
+					email:'',
+					items:0,
+					address:"",
+					amount:amount,
+					order_id:razorpay_order.receipt,
+					payment_id:id,
+					razorpay_order_id:order_id,
+					datetime: new Date().toISOString()
+				}
+				let order_ref = await firestore.collection('orders').doc(razorpay_order.receipt).get()
+				if(order_ref.exists) {
+					airtableRec.items = order_ref.data().cart_count;
+					if(order_ref.data().shipping_address.formatted_address)	{	
+						airtableRec.address = order_ref.data().shipping_address.formatted_address;
+					}
+					if(order_ref.data().user_id) {
+						let user_ref = await firestore.collection('user-details').doc(order_ref.data().user_id).get()
+						if(user_ref.exists) {
+							airtableRec.name = user_ref.data().name
+							airtableRec.email = user_ref.data().email
+							airtableRec.contact = user_ref.data().phone
+						}
+					}
+				}
+				
                 firestore.collection('orders').doc(razorpay_order.receipt).update({
                     type:"order"
-                })
+				})
+				await base('orders').create([
+					{
+						"fields": airtableRec
+					}
+				])
+				console.log(airtableRec)
             }
             data = {
                 order_id:razorpay_order.receipt,
@@ -545,7 +585,7 @@ let Order = {
 				timestamp : admin.firestore.FieldValue.serverTimestamp()
             }
             payment_ref = firestore.collection('payments').doc();
-            payment_doc =await payment_ref.set(data);
+			payment_doc =await payment_ref.set(data);
             return res.sendStatus(200);
         } catch (error) {
             return res.sendStatus(500);
