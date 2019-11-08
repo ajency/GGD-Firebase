@@ -5,10 +5,10 @@ import * as crypto from 'crypto';
 import * as _ from 'underscore';
 
 const config = require('../../config.json');
-let razorpay_secret = "7j4YD1RIqIrEn0yfw7IugMSz";
+let razorpay_secret = "";
 let instance = new Razorpay({
-    key_id:'rzp_test_FSfmJofoQNnVG6',
-    key_secret:razorpay_secret
+    key_id:config.razorpay_api_key,
+    key_secret:config.razorpay_secret
 });
 let PaymentGateway = {
     /* Todo

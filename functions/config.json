@@ -3,6 +3,8 @@
 	"location" : "15.2832187,73.98619099999999",
 	"radius" : 50000,
 	"business_id" : "zq6Rzdvcx0UrULwzeSEr",
-	"frontendUrl" : "http://greengrainbowl-com.digitaldwarve.staging.wpengine.com/",
-	"airtableApiKey" : "keyXTYeeWAM29coDd"
+	"frontendUrl" : "http://greengrainbowl.com/",
+	"airtableApiKey" : "keyXTYeeWAM29coDd",
+	"razorpay_api_key":"rzp_test_FSfmJofoQNnVG6",
+	"razorpay_secret":"7j4YD1RIqIrEn0yfw7IugMSz"
 }
