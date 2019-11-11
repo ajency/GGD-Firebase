@@ -658,6 +658,13 @@ let Order = {
 				}
 
 				order = order.data()
+				if(order.shipping_address) {
+					let latlng = {}
+					latlng["lat"] = order.shipping_address.lat_long[0]
+					latlng["lng"] = order.shipping_address.lat_long[1]
+					order.shipping_address.lat_long = latlng
+
+				}
 				order.items = items;
 			} else {
 				return res.status(200).send({success:false,message:"Error order not found" , pending:1}); 
