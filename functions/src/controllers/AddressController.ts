@@ -6,10 +6,10 @@ let Address = {
 	addAddress: async (req: Request, res: Response) => {
 		 try {
 		 		let firestore = admin.firestore();
-				const { name, phone, pincode, address, city, state, set_default, lat_long, landmark} = req.body;
+				const { name, phone, pincode, address, city, state, set_default, lat_long, landmark, formatted_address, type} = req.body;
 
 				 //if params are missing
-				if (!name || !phone || !pincode || !address || !city || !state || !set_default || !lat_long) {
+				if (!name || !phone || !pincode || !address || !city || !state || !lat_long || !formatted_address || !type) {
 					return res.status(400).send({ message: 'Missing fields' })
 				}
 
@@ -32,7 +32,10 @@ let Address = {
 					pincode 	: pincode,
 					default 	: set_default,
 					lat_long	: lat_long,
-					id			: ''
+					id			: '',
+					formatted_address : formatted_address,
+					type		: type
+
 				}
 				address_obj.address = user_address;
 				let address_ref = firestore.collection('addresses').doc();
