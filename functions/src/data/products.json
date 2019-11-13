@@ -1,0 +1,259 @@
+{
+	"products" : {
+		"yykiWcEv48MtR2oRiWla" : {
+			"active" : true,
+			"description" : "",
+			"image_urls" : ["http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/orange_barley_bowl.jpg"],
+			"title" : "Orange Barley Bowl",
+			"veg" : true,
+			"variants" : [
+				{
+					"active" : true,
+					"id" : "yykiWcEv48MtR2oRiWla-var1",
+					"mrp" : 150,
+					"sale_price" : 100,
+					"size" : "small",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.487563699999999,
+								"long" : 73.83244069999999
+							},
+							"quantity" : 10,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						},
+						{
+							"lat_long" : {
+								"lat" :  15.5937116,
+								"long" : 73.8142237
+							},
+							"quantity" : 0,
+							"radius" : 5000,
+							"id" : "mWfW9HDn0Z8fBpEuRg6Q"
+						}
+					]
+				},
+				{
+					"active" : true,
+					"id" : "yykiWcEv48MtR2oRiWla-var2",
+					"mrp" : 300,
+					"sale_price" : 250,
+					"size" : "regular",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.487563699999999,
+								"long" : 73.83244069999999
+							},
+							"quantity" : 10,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						},
+						{
+							"lat_long" : {
+								"lat" :  15.5937116,
+								"long" : 73.8142237
+							},
+							"quantity" : 10,
+							"radius" : 5000,
+							"id" : "mWfW9HDn0Z8fBpEuRg6Q"
+						}
+					]
+				},
+				{
+					"active" : true,
+					"id" : "yykiWcEv48MtR2oRiWla-var3",
+					"mrp" : 500,
+					"sale_price" : 450,
+					"size" : "large",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.487563699999999,
+								"long" : 73.83244069999999
+							},
+							"quantity" : 10,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						},
+						{
+							"lat_long" : {
+								"lat" :  15.5937116,
+								"long" : 73.8142237
+							},
+							"quantity" : 0,
+							"radius" : 5000,
+							"id" : "mWfW9HDn0Z8fBpEuRg6Q"
+						}
+					]
+				}
+			]
+		},
+
+		"ReAlsVnx73KSVrYGvbsn" : {
+			"active" : true,
+			"description" : "",
+			"image_urls" : ["http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/cracked-wheat-n-chickpea-bowl-chicken.jpg"],
+			"title" : "Cracked Wheat & Chickpea Bowl",
+			"veg" : true,
+			"variants" : [
+				{
+					"active" : true,
+					"id" : "ReAlsVnx73KSVrYGvbsn-var1",
+					"mrp" : 500,
+					"sale_price" : 400,
+					"size" : "regular",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.487563699999999,
+								"long" : 73.83244069999999
+							},
+							"quantity" : 5,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						},
+						{
+							"lat_long" : {
+								"lat" :  15.5937116,
+								"long" : 73.8142237
+							},
+							"quantity" : 10,
+							"radius" : 5000,
+							"id" : "mWfW9HDn0Z8fBpEuRg6Q"
+						}
+					]
+				}
+			]
+		},
+
+		"moVonufnFw46emRbKy7W" : {
+			"active" : true,
+			"description" : "",
+			"image_urls" : ["http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/thai-brown-rice-bowl-panner.jpg"],
+			"title" : "Thai Brown Rice Bowl",
+			"veg" : true,
+			"variants" : [
+				{
+					"active" : true,
+					"id" : "moVonufnFw46emRbKy7W-var1",
+					"mrp" : 450,
+					"sale_price" : 400,
+					"size" : "regular",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.487563699999999,
+								"long" : 73.83244069999999
+							},
+							"quantity" : 0,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						},
+						{
+							"lat_long" : {
+								"lat" :  15.5937116,
+								"long" : 73.8142237
+							},
+							"quantity" : 10,
+							"radius" : 5000,
+							"id" : "mWfW9HDn0Z8fBpEuRg6Q"
+						}
+					]
+				}
+			]
+		},
+
+		"JS42fGblvs7VJ8uxXuaD" : {
+			"active" : true,
+			"description" : "",
+			"image_urls" : ["http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/quinoa-n-nuts-bowl.jpg"],
+			"title" : "Quinoa & Nuts Bowl",
+			"veg" : true,
+			"variants" : [
+				{
+					"active" : true,
+					"id" : "JS42fGblvs7VJ8uxXuaD-var1",
+					"mrp" : 200,
+					"sale_price" : 200,
+					"size" : "small",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.487563699999999,
+								"long" : 73.83244069999999
+							},
+							"quantity" : 10,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						},
+						{
+							"lat_long" : {
+								"lat" :  15.5937116,
+								"long" : 73.8142237
+							},
+							"quantity" : 0,
+							"radius" : 5000,
+							"id" : "mWfW9HDn0Z8fBpEuRg6Q"
+						}
+					]
+				},
+				{
+					"active" : true,
+					"id" : "JS42fGblvs7VJ8uxXuaD-var2",
+					"mrp" : 300,
+					"sale_price" : 300,
+					"size" : "regular",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.487563699999999,
+								"long" : 73.83244069999999
+							},
+							"quantity" : 10,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						},
+						{
+							"lat_long" : {
+								"lat" :  15.5937116,
+								"long" : 73.8142237
+							},
+							"quantity" : 10,
+							"radius" : 5000,
+							"id" : "mWfW9HDn0Z8fBpEuRg6Q"
+						}
+					]
+				},
+				{
+					"active" : true,
+					"id" : "JS42fGblvs7VJ8uxXuaD-var3",
+					"mrp" : 400,
+					"sale_price" : 400,
+					"size" : "large",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.487563699999999,
+								"long" : 73.83244069999999
+							},
+							"quantity" : 10,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						},
+						{
+							"lat_long" : {
+								"lat" :  15.5937116,
+								"long" : 73.8142237
+							},
+							"quantity" : 0,
+							"radius" : 5000,
+							"id" : "mWfW9HDn0Z8fBpEuRg6Q"
+						}
+					]
+				}
+			]
+		}
+	}
+}

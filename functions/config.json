@@ -1,6 +1,6 @@
 {
 	"shipping_fee" : 50,
-	"location" : "15.2832187,73.98619099999999",
+	"location" : "15.2832187,73.98619099999999", // location of business
 	"radius" : 50000,
 	"business_id" : "zq6Rzdvcx0UrULwzeSEr"
 }

@@ -5,7 +5,7 @@ import * as cors from 'cors';
 import * as bodyParser from 'body-parser';
 import { routesConfig } from './routes-config';
 
-let serviceAccount = require('../project-ggb-dev-service-account.json');
+let serviceAccount = require('../serviceAccount.json');
 
 if (process.env.X_GOOGLE_FUNCTION_IDENTITY) {
 	admin.initializeApp(functions.config().firebase);
@@ -13,7 +13,7 @@ if (process.env.X_GOOGLE_FUNCTION_IDENTITY) {
 else {
 	admin.initializeApp({
 		credential: admin.credential.cert(serviceAccount),
-		databaseURL: "https://project-ggb-dev.firebaseio.com"
+		databaseURL: "https://project-ggb.firebaseio.com"
 	});
 }
 
