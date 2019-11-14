@@ -10,3 +10,5 @@ node_modules/
 project-ggb-dev-service-account.json
 
 credentials.json
+
+serviceAccount.json
