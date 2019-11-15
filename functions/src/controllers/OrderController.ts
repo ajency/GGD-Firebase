@@ -409,134 +409,16 @@ let Order = {
 		return res.status(200).send({ success : true , message: 'Address updated successfully' });
 	},
 
-	createOrder: async (req: Request, res:Response) => {
-		let firestore = admin.firestore();
-		let  order_line_items = [], items = [];
-		let cart_id = req.body.cart_id;
-		let address_id = req.body.address_id;
-		let fetchDraft = req.body.fetchDraft; 
-
-		let cart = await firestore.collection('orders').doc(cart_id).get();
-		if(cart.data().order_type == 'order') {
-		 return res.status(200).send({success:false, code:"PAYMENT_DONE", message: "Payment already done"})
-		}
-		
-		let location;
-		let order_lines = await firestore.collection('order_line_items')
-					.where("order_id", "==", cart_id)
-					.get();
-
-		order_lines.forEach(doc => {
-			let obj = doc.data();                                                                                                                                                                                                                                                                   
-			order_line_items.push(obj);
-		})
-		
-
-		if(cart.data().delivery_id)
-			location = await firestore.collection('locations').doc(cart.data().delivery_id).get();
-		
-		let deliverable = false;
-		let lat_lng = [], shipping_address
-		if(fetchDraft) {
-			console.log("here")
-			lat_lng = cart.data().shipping_address.lat_long
-			shipping_address = cart.data().shipping_address
-			console.log('here')
-		} else {
-			let address = await firestore.collection('addresses').doc(address_id).get();
-			lat_lng = address.data().address.lat_long
-			shipping_address = address.data().address
-		}
-
-		if(!lat_lng) {
-			return res.status(200).send({success:false, message:'Address not found'})
-		}
-		if(location && location.exists && Order.isDeliverable([location.data()], lat_lng).length){
-			deliverable = true;
-		}
-
-		if(!deliverable) {
-			return res.status(200).send({success:false, message:'Address is not deliverable'})
-		}
-		let user_details = {}
-		if(cart.data().user_id) {
-			let user_details_ref = await firestore.collection("user-details").doc(cart.data().user_id).get();
-			if(user_details_ref.exists) {
-				user_details = {
-					name:user_details_ref.data().name,
-					email:user_details_ref.data().email,
-					contact:user_details_ref.data().phone,
-				}
-			}		
-		}
-		if(!fetchDraft) {
-			await firestore.collection('orders').doc(cart_id).update({
-				shipping_address: shipping_address,
-				order_type:"draft"
-			})
-		}
-		console.log("deliverable ==>", deliverable);
-		
-
-		for (const order_line of order_line_items) {
-			let product = await firestore.collection('products').doc(order_line.product_id).get();
-			let stocks_ref = await firestore.collection('stocks')
-				.where("loc_id", "==", cart.data().delivery_id)
-				.where("variant_id", "==", order_line.variant_id)
-				.where("quantity", ">=", order_line.quantity)
-				.get();
-			let stocks = stocks_ref.docs.map(doc => {
-				return doc.data()
-			})
-
-			
-			console.log("stocks ==>", stocks);
-
-			let item = {
-				variant_id : order_line.variant_id,
-				attributes: {
-			        title: order_line.product_name,
-			        images: {
-			          "1x": product.data().image_url['1x'],
-			          "2x": product.data().image_url['2x'],
-			          "3x": product.data().image_url['3x']
-			        },
-			        size : order_line.size,
-			        price_mrp : order_line.mrp,
-			        price_final : order_line.sale_price,
-			        discount_per : 0
-			    },
-		      	availability : stocks.length ? true : false,
-		      	quantity : order_line.quantity,
-		      	timestamp : order_line.timestamp,
-		      	deliverable : deliverable,
-		      	product_id : product.id
-			}
-			items.push(item);
-		}
-
-		let response = {
-			success: true, 
-			cart : cart.data(),
-			coupon_applied: null,
-			coupons: [],
-			approx_delivery_time : "40 mins"
-		}
-		response.cart.items = items;
-		response.cart.order_id = cart_id;
-		response.cart.shipping_address = shipping_address;
-		response.cart.order_type = "draft";
-		response.cart.user_details = user_details
-		return res.status(200).send(response);
-
-	},
-
 	confirmOrder: async (req:Request, res:Response) => {
         try {
             let {id, order_id, amount, status} = req.body.payload.payment.entity
             amount = amount /100;
             let firestore, data, payment_ref, payment_doc ; 
-            let razorpay_order = await PaymentGateway.getRazorpayOrder(order_id)
+			let razorpay_order = await PaymentGateway.getRazorpayOrder(order_id)
+			let idArray = razorpay_order.receipt.split('_');
+			let ggb_order_id =idArray[1];
+			let user_id =idArray[0];
+			let cart_id =idArray[0];
             firestore = admin.firestore();
             if(status != "failed") {
 				let airtableRec = {
@@ -546,12 +428,26 @@ let Order = {
 					items:0,
 					address:"",
 					amount:amount,
-					order_id:razorpay_order.receipt,
+					order_id:ggb_order_id,
 					payment_id:id,
 					razorpay_order_id:order_id,
 					datetime: new Date().toISOString()
 				}
-				let order_ref = await firestore.collection('orders').doc(razorpay_order.receipt).get()
+				
+				let cart_ref = await firestore.collection('carts').doc(cart_id).get()
+				let order_ref = await firestore.collection('user-details').doc(user_id).collection('orders').doc(ggb_order_id)
+				let payment_ref= await firestore.collection('payments').where("pg_order_id", "==", order_id).get().data()[0].ref
+
+
+				await payment_ref.update({
+					order_id:razorpay_order.receipt,
+					payment_gateway:'Razorpay',
+					pg_payment_id:id,
+					other_details:JSON.stringify(req.body.payload.payment.entity),
+					status:status,
+					timestamp : admin.firestore.FieldValue.serverTimestamp()
+				})
+
 				if(order_ref.exists) {
 					airtableRec.items = order_ref.data().cart_count;
 					if(order_ref.data().shipping_address.formatted_address)	{	
@@ -568,8 +464,11 @@ let Order = {
 				}
 				
                 firestore.collection('orders').doc(razorpay_order.receipt).update({
-                    order_type:"order"
+					business_id:cart_ref.data().business_id,
+                    status:"order"
 				})
+
+
 				await base('orders').create([
 					{
 						"fields": airtableRec
@@ -577,18 +476,6 @@ let Order = {
 				])
 				console.log(airtableRec)
             }
-            data = {
-                order_id:razorpay_order.receipt,
-                payment_gateway:'Razorpay',
-                pg_payment_id:id,
-                pg_order_id:order_id,
-                other_details:JSON.stringify(req.body.payload.payment.entity),
-                pg_status:status,
-				status:status,
-				timestamp : admin.firestore.FieldValue.serverTimestamp()
-            }
-            payment_ref = firestore.collection('payments').doc();
-			payment_doc =await payment_ref.set(data);
             return res.sendStatus(200);
         } catch (error) {
             return res.sendStatus(500);
@@ -624,16 +511,16 @@ let Order = {
 
 				for (const order_line of order_line_items) {
 					let product = await firestore.collection('products').doc(order_line.product_id).get();
-					let stocks_ref = await firestore.collection('stocks')
-						.where("loc_id", "==", order.data().delivery_id)
-						.where("variant_id", "==", order_line.variant_id)
-						.where("quantity", ">=", order_line.quantity)
-						.get();
-					let stocks = stocks_ref.docs.map(doc => {
-						return doc.data()
-					})
+					// let stocks_ref = await firestore.collection('stocks')
+					// 	.where("loc_id", "==", order.data().delivery_id)
+					// 	.where("variant_id", "==", order_line.variant_id)
+					// 	.where("quantity", ">=", order_line.quantity)
+					// 	.get();
+					// let stocks = stocks_ref.docs.map(doc => {
+					// 	return doc.data()
+					// })
 
-					console.log("stocks ==>", stocks);
+					// console.log("stocks ==>", stocks);
 
 					let item = {
 						variant_id : order_line.variant_id,
@@ -649,7 +536,7 @@ let Order = {
 							price_final : order_line.sale_price,
 							discount_per : 0
 						},
-						availability : stocks.length ? true : false,
+						// availability : stocks.length ? true : false,
 						quantity : order_line.quantity,
 						timestamp : order_line.timestamp,
 						product_id : product.id

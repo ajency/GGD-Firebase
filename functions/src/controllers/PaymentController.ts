@@ -3,6 +3,7 @@ import * as admin from "firebase-admin";
 import { Request, Response } from "express";
 import * as crypto from 'crypto';
 import * as _ from 'underscore';
+import { user } from "firebase-functions/lib/providers/auth";
 
 const config = require('../../config.json');
 let instance = new Razorpay({
@@ -19,18 +20,45 @@ let PaymentGateway = {
         try {
                 let amount = req.body.amount *100
                 let firestore = admin.firestore();
-                let cart =  await firestore.collection('orders').doc(req.body.order_id).get()
-                if(cart.data().type == 'order') {
-                    return res.status(500).send({message: "Payment already done"})
-                }
-               return await instance.orders.create({amount:amount,currency:'INR',receipt: req.body.order_id,payment_capture:1,notes:{}})
-                .then((data) => {
-                    console.log(JSON.stringify(data))
+                let cart_ref =  await firestore.collection('orders').doc(req.body.order_id).get()
+                let user_ref = await firestore.collection('user-details').doc(req.body.order_id)
+                // if(cart_ref.data().status == 'draft') {
+                //     if(cart_ref.data().order_id) {
+                //         let orderExisting = await firestore.collection('user-details').doc(req.body.order_id).collection('orders').doc(cart_ref.data().order_id).get();
+                //         if(orderExisting.data().status == "order") {
+                //             return res.status(500).send({message: "Payment already done"})
+                //         } else {
+                //            let payment_ref =  await firestore.collection('payments').where("order_id", "==", orderExisting.id).get()
+                //            let razorpay_order_id = payment_ref.docs[0].data().pg_order_id;
+                //            return res.status(200).send({order_id:razorpay_order_id})
+                //         }
+                        
+                //     }
+                // }
+
+                let order_ref = await user_ref.collection('orders').add({
+                    status: "draft",
+                })
+                
+                let razorpay_receipt = req.body.order_id+'_'+order_ref.id;
+                
+                return await instance.orders.create({amount:amount,currency:'INR', receipt: razorpay_receipt, payment_capture:1,notes:{}})
+                .then(async (data) => {
+                   let payment_ref = await firestore.collection('payments').add({
+                        pg_order_id: data.id,
+                        order_id:order_ref.id,
+                        user_id:req.body.order_id
+                    })
+                    await firestore.collection('carts').doc(req.body.order_id).update({
+                        status:"draft",
+                        order_id:order_ref.id
+                    })
+
                     return res.status(200).send({order_id:data.id})
                 }).catch(err => {
                     console.log(JSON.stringify(err))
                     return res.status(500).send({message: err.error.description})
-                })  
+                })
         } catch(err) {
              return PaymentGateway.handleError(res,err)
         }
