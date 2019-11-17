@@ -17,7 +17,7 @@ let User = {
 			return res.status(200).send({ success: true, message: 'User exists'});
 		}
 		else{
-			return res.status(400).send({ success: false, message: 'User does not exist'});
+			return res.status(200).send({ success: false, message: 'User does not exist'});
 		}
 	},
 
