@@ -78,9 +78,6 @@ export function routesConfig(app: Application) {
 	app.get('/rest/v1/store-fcm-token',
 		misc.storeFcmToken
 	);
-	app.post('/rest/v1/anonymous/cart/create-order', 
-		Order.createOrder
-	);
 
 	app.post('/rest/v1/anonymous/payment/create-order', 
 		Payment.createOrder
