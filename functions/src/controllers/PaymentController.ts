@@ -2,8 +2,6 @@ import * as Razorpay from "razorpay";
 import * as admin from "firebase-admin";
 import { Request, Response } from "express";
 import * as crypto from 'crypto';
-import * as _ from 'underscore';
-import { user } from "firebase-functions/lib/providers/auth";
 
 const config = require('../../config.json');
 let instance = new Razorpay({
