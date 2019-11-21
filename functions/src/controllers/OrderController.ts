@@ -464,11 +464,10 @@ let Order = {
 				}
 				
                 firestore.collection('orders').doc(razorpay_order.receipt).update({
-					business_id:cart_ref.data().business_id,
                     status:"order"
-				})
+				},{ merge:true})
 
-
+				if(cart_ref.exists)
 				await base('orders').create([
 					{
 						"fields": airtableRec
