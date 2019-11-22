@@ -411,16 +411,23 @@ let Order = {
 
 	confirmOrder: async (req:Request, res:Response) => {
         try {
+			console.log("confirmation started")
             let {id, order_id, amount, status} = req.body.payload.payment.entity
             amount = amount /100;
-            let firestore, data, payment_ref, payment_doc ; 
+            let firestore, data, payment_doc ; 
+			console.log("before ftech")
 			let razorpay_order = await PaymentGateway.getRazorpayOrder(order_id)
-			let idArray = razorpay_order.receipt.split('_');
-			let ggb_order_id =idArray[1];
-			let user_id =idArray[0];
-			let cart_id =idArray[0];
+			console.log("razorpay_order")
             firestore = admin.firestore();
-            if(status != "failed") {
+
+			//fetch user id
+			let user_order_map_ref = await firestore.collection('user-orders-map').where("order_id","==",razorpay_order.receipt).get()
+			console.log("user_order_map_data")
+			let user_order_map_data = await user_order_map_ref.docs[0].data()
+			let ggb_order_id =user_order_map_data.order_id;
+			let user_id = user_order_map_data.user_id;
+			let cart_id =user_id;
+    
 				let airtableRec = {
 					contact:'',
 					name:'',
@@ -434,9 +441,12 @@ let Order = {
 					datetime: new Date().toISOString()
 				}
 				
+				
 				let cart_ref = await firestore.collection('carts').doc(cart_id).get()
-				let order_ref = await firestore.collection('user-details').doc(user_id).collection('orders').doc(ggb_order_id)
-				let payment_ref= await firestore.collection('payments').where("pg_order_id", "==", order_id).get().data()[0].ref
+				let order_ref = await firestore.collection('user-details').doc(user_id).collection('orders').doc(ggb_order_id).get()
+				let payment_ref= await firestore.collection('payments').where("pg_order_id", "==", order_id).get()
+				payment_ref = payment_ref.docs[0].ref
+
 
 
 				await payment_ref.update({
@@ -447,14 +457,14 @@ let Order = {
 					status:status,
 					timestamp : admin.firestore.FieldValue.serverTimestamp()
 				})
-
+				
 				if(order_ref.exists) {
 					airtableRec.items = order_ref.data().cart_count;
 					if(order_ref.data().shipping_address.formatted_address)	{	
 						airtableRec.address = order_ref.data().shipping_address.formatted_address;
 					}
-					if(order_ref.data().user_id) {
-						let user_ref = await firestore.collection('user-details').doc(order_ref.data().user_id).get()
+					if(user_id) {
+						let user_ref = await firestore.collection('user-details').doc(user_id).get()
 						if(user_ref.exists) {
 							airtableRec.name = user_ref.data().name
 							airtableRec.email = user_ref.data().email
@@ -463,18 +473,22 @@ let Order = {
 					}
 				}
 				
-                firestore.collection('orders').doc(razorpay_order.receipt).update({
+				firestore.collection('user-details').doc(user_id).collection('orders').doc(razorpay_order.receipt).update({
                     status:"order"
-				},{ merge:true})
+				})
 
-				if(cart_ref.exists)
-				await base('orders').create([
+				if(cart_ref.data().order_id == ggb_order_id && status !="failed") {
+					cart_ref.ref.update({
+						items:[],
+						cart_count:0
+					})
+				}
+				base('orders').create([
 					{
 						"fields": airtableRec
 					}
 				])
 				console.log(airtableRec)
-            }
             return res.sendStatus(200);
         } catch (error) {
             return res.sendStatus(500);
@@ -483,87 +497,7 @@ let Order = {
        
 	},
 	
-	orderSummary: async (req:Request, res:Response) => {
-        try {
-			let order
-			let firestore = admin.firestore();
-			let paymentDoc = await firestore.collection('payments').where("pg_order_id","==", req.body.transaction_id).get()
-            if(paymentDoc.docs.length == 0) {
-                return res.status(200).send({success:true, pending:1});
-            }
-			let data = paymentDoc.docs[0].data();
-			if(data.other_details) {
-				data.other_details = JSON.parse(data.other_details)
-			}
-            if(data.order_id) {
-				let order_id = data.order_id, order_line_items = [], items = [];
-				console.log("cart_id");
-				order = await firestore.collection('orders').doc(order_id).get();
-				let order_lines = await firestore.collection('order_line_items')
-							.where("order_id", "==", order_id)
-							.get();
 
-				order_lines.forEach(doc => {
-					let obj = doc.data();
-					order_line_items.push(obj);
-				})
-
-				for (const order_line of order_line_items) {
-					let product = await firestore.collection('products').doc(order_line.product_id).get();
-					// let stocks_ref = await firestore.collection('stocks')
-					// 	.where("loc_id", "==", order.data().delivery_id)
-					// 	.where("variant_id", "==", order_line.variant_id)
-					// 	.where("quantity", ">=", order_line.quantity)
-					// 	.get();
-					// let stocks = stocks_ref.docs.map(doc => {
-					// 	return doc.data()
-					// })
-
-					// console.log("stocks ==>", stocks);
-
-					let item = {
-						variant_id : order_line.variant_id,
-						attributes: {
-							title: order_line.product_name,
-							images: {
-							"1x": product.data().image_url['1x'],
-							"2x": product.data().image_url['2x'],
-							"3x": product.data().image_url['3x']
-							},
-							size : order_line.size,
-							price_mrp : order_line.mrp,
-							price_final : order_line.sale_price,
-							discount_per : 0
-						},
-						// availability : stocks.length ? true : false,
-						quantity : order_line.quantity,
-						timestamp : order_line.timestamp,
-						product_id : product.id
-					}
-					items.push(item);
-				}
-
-				order = order.data()
-				if(order.shipping_address) {
-					let latlng = {}
-					latlng["lat"] = order.shipping_address.lat_long[0]
-					latlng["lng"] = order.shipping_address.lat_long[1]
-					order.shipping_address.lat_long = latlng
-
-				}
-				order.items = items;
-			} else {
-				return res.status(200).send({success:false,message:"Error order not found" , pending:1}); 
-			}
-			let details = {
-				order_data:order,
-				payment_summary:data
-			}
-            return res.status(200).send({success:true, pending:0, summary:details, approx_delivery_time : "30 mins"});
-        } catch (error) {
-            return res.status(500).send({success:false, error:error})
-        }
-	},
 }
 
 export default Order;
