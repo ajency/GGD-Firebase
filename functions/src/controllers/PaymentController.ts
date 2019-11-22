@@ -18,7 +18,7 @@ let PaymentGateway = {
         try {
                 let amount = req.body.amount *100
                 let firestore = admin.firestore();
-                let cart_ref =  await firestore.collection('orders').doc(req.body.order_id).get()
+                let cart_ref =  await firestore.collection('carts').doc(req.body.order_id).get()
                 let user_ref = await firestore.collection('user-details').doc(req.body.order_id)
                 // if(cart_ref.data().status == 'draft') {
                 //     if(cart_ref.data().order_id) {
@@ -40,18 +40,25 @@ let PaymentGateway = {
                 cart_data = JSON.parse(JSON.stringify(cart_data))
                 cart_data["status"] = "draft";
                 let order_ref = await user_ref.collection('orders').add({
-                    ...{cart_data}
+                    ...cart_data
                 })
                 
-                let razorpay_receipt = req.body.order_id+'_'+order_ref.id;
+                let razorpay_receipt = order_ref.id;
                 
                 return await instance.orders.create({amount:amount,currency:'INR', receipt: razorpay_receipt, payment_capture:1,notes:{}})
                 .then(async (data) => {
                    let payment_ref = await firestore.collection('payments').add({
                         pg_order_id: data.id,
                         order_id:order_ref.id,
-                        user_id:req.body.order_id
+                        user_id:req.body.order_id,
+                        status:"draft"
                     })
+                    firestore.collection("user-orders-map").add({
+                        "user_id": req.body.order_id,
+                        "order_id": order_ref.id
+                    })
+                    .then((r) => console.log("user order map created ===> "+ r.id))
+                    .catch(e => console.log("user order mappinf error ===> "+ e ))
                     await firestore.collection('carts').doc(req.body.order_id).update({
                         status:"draft",
                         order_id:order_ref.id
@@ -89,7 +96,6 @@ let PaymentGateway = {
 
     async getRazorpayOrder(order_id) {
         return await instance.orders.fetch(order_id).then((res) => {
-            console.log(res)
             return res
         })
     },
