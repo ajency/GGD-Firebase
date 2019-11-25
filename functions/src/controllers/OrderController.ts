@@ -412,54 +412,74 @@ let Order = {
 	confirmOrder: async (req:Request, res:Response) => {
         try {
 			console.log("confirmation started")
-            let {id, order_id, amount, status} = req.body.payload.payment.entity
+			let {id, order_id, amount, status} = req.body.payload.payment.entity
+			console.log(id, order_id)
             amount = amount /100;
-            let firestore, data, payment_doc ; 
-			console.log("before ftech")
-			let razorpay_order = await PaymentGateway.getRazorpayOrder(order_id)
-			console.log("razorpay_order")
+			let firestore, data, payment_doc ; 
             firestore = admin.firestore();
+			let payment_ref= await firestore.collection('payments').where("pg_order_id", "==", order_id).get()
+			
+			if(payment_ref.docs[0].data().status !="draft") {
+				console.log("recalled")
+				return res.sendStatus(200)
+			}
+			let razorpay_order = await PaymentGateway.getRazorpayOrder(order_id)
 
 			//fetch user id
 			let user_order_map_ref = await firestore.collection('user-orders-map').where("order_id","==",razorpay_order.receipt).get()
-			console.log("user_order_map_data")
-			let user_order_map_data = await user_order_map_ref.docs[0].data()
-			let ggb_order_id =user_order_map_data.order_id;
+			let user_order_map_data = user_order_map_ref.docs[0].data()
+			let ggb_order_id =razorpay_order.receipt;
 			let user_id = user_order_map_data.user_id;
 			let cart_id =user_id;
-    
-				let airtableRec = {
-					contact:'',
-					name:'',
-					email:'',
-					items:0,
-					address:"",
-					amount:amount,
-					order_id:ggb_order_id,
-					payment_id:id,
-					razorpay_order_id:order_id,
-					datetime: new Date().toISOString()
-				}
+
+			let cart_ref = await firestore.collection('carts').doc(cart_id).get()
+			let order_ref = await firestore.collection('user-details').doc(user_id).collection('orders').doc(ggb_order_id).get()
+			
+			let airtableRec = {
+				contact:'',
+				name:'',
+				email:'',
+				items:0,
+				address:"",
+				amount:amount,
+				order_id:ggb_order_id,
+				payment_id:id,
+				razorpay_order_id:order_id,
+				status:status,
+				datetime: new Date().toISOString()
+			}
+
 				
-				
-				let cart_ref = await firestore.collection('carts').doc(cart_id).get()
-				let order_ref = await firestore.collection('user-details').doc(user_id).collection('orders').doc(ggb_order_id).get()
-				let payment_ref= await firestore.collection('payments').where("pg_order_id", "==", order_id).get()
-				payment_ref = payment_ref.docs[0].ref
-
-
-
-				await payment_ref.update({
-					order_id:razorpay_order.receipt,
-					payment_gateway:'Razorpay',
-					pg_payment_id:id,
-					other_details:JSON.stringify(req.body.payload.payment.entity),
-					status:status,
-					timestamp : admin.firestore.FieldValue.serverTimestamp()
-				})
+			
+			payment_ref = payment_ref.docs[0].ref
+			 payment_ref.update({
+				order_id:razorpay_order.receipt,
+				payment_gateway:'Razorpay',
+				pg_payment_id:id,
+				other_details:JSON.stringify(req.body.payload.payment.entity),
+				status:status,
+				timestamp : admin.firestore.FieldValue.serverTimestamp()
+			})
+			
+			let items_airtable =[]
 				
 				if(order_ref.exists) {
 					airtableRec.items = order_ref.data().cart_count;
+
+					if(order_ref.data().items.length) {
+						order_ref.data().items.forEach((item) => {
+							items_airtable.push({fields: {
+								order_id	:razorpay_order.receipt,
+								name		:item.product_name,
+								variant		:item.size,
+								quantity	:item.quantity,
+								veg			:"'"+item.veg+"'",
+								mrp			:item.mrp,
+								sale_price	:item.sale_price
+
+							}})
+						})
+					}
 					if(order_ref.data().shipping_address.formatted_address)	{	
 						airtableRec.address = order_ref.data().shipping_address.formatted_address;
 					}
@@ -480,17 +500,31 @@ let Order = {
 				if(cart_ref.data().order_id == ggb_order_id && status !="failed") {
 					cart_ref.ref.update({
 						items:[],
-						cart_count:0
+						cart_count:0,
+						summary: {
+							cart_discount:0,
+							mrp_total:0,
+							sale_price_total:0,
+							shipping_fee:50,
+							you_pay:0
+						},
+						status:'cart'
 					})
 				}
-				base('orders').create([
+			
+				let airres = await base('orders').create([
 					{
 						"fields": airtableRec
 					}
 				])
-				console.log(airtableRec)
+				if(items_airtable.length) {
+					let items_obj = await base('items').create(items_airtable)
+					
+				}
+				console.log("done")
             return res.sendStatus(200);
         } catch (error) {
+			console.log(error)
             return res.sendStatus(500);
         }
        
