@@ -53,7 +53,7 @@ let User = {
 					phone : phone ? phone : user_data.phone, 
 				  	name: name ? name : user_data.name,
 				  	email : email ? email : user_data.email,
-				  	verfied : is_verified
+				  	verified : is_verified
 				};
 			}
 			else{
@@ -61,7 +61,7 @@ let User = {
 					phone : phone ? phone : '', 
 				  	name: name ? name : '',
 				  	email : email ? email : '',
-				  	verfied : is_verified
+				  	verified : is_verified
 				};
 			}
 			console.log("set user data =>", data)
