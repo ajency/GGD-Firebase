@@ -508,7 +508,8 @@ let Order = {
 							shipping_fee:50,
 							you_pay:0
 						},
-						status:'cart'
+						status:'cart',
+						order_id:''
 					})
 				}
 			
