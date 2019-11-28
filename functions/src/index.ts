@@ -13,7 +13,7 @@ if (process.env.X_GOOGLE_FUNCTION_IDENTITY) {
 else {
 	admin.initializeApp({
 		credential: admin.credential.cert(serviceAccount),
-		databaseURL: "https://project-ggb.firebaseio.com"
+		databaseURL: "https://project-ggb-dev.firebaseio.com"
 	});
 }
 
