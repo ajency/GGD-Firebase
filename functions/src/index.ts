@@ -38,9 +38,13 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("pa
 		let firestore = admin.firestore();
 
 		let pay_details = JSON.parse(payment_data.other_details)
+		let sms_msg ='';
 		// let order_ref = await firestore.collection("user-details").doc(payment_data.user_id).collection('orders').doc(payment_data.order_id).get()
-		
-		let sms_msg = `Your GGB order no. ${payment_data.pg_order_id} for Rs. ${(pay_details.amount/100)} is successfuly placed`
+		if(payment_data.status == 'caputed') {
+			sms_msg = `Your GGB order no. ${payment_data.pg_order_id} for Rs. ${(pay_details.amount/100)} is successfuly placed`
+		} else {
+			sms_msg = `Your GGB order no. ${payment_data.pg_order_id} for Rs. ${(pay_details.amount/100)} is failed please try again`
+		}
 		console.log(sms_msg)
 		// console.log("sending mail started")
 		// 	let transporter = nodemailer.createTransport({
