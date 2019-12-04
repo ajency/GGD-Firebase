@@ -5,7 +5,7 @@ import Locations from './LocationsController';
 import { insidePolygon, headingDistanceTo } from 'geolocation-utils';
 import PaymentGateway from '../controllers/PaymentController';
 import * as Airtable from 'airtable';
-const config = require('../../config.json');
+const config = require('../../credentials.json');
 Airtable.configure({
 	endpointUrl: 'https://api.airtable.com',
 	apiKey: config.airtableApiKey

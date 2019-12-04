@@ -3,7 +3,7 @@ import * as admin from "firebase-admin";
 import { Request, Response } from "express";
 import * as crypto from 'crypto';
 
-const config = require('../../config.json');
+const config = require('../../credentials.json');
 let instance = new Razorpay({
     key_id:config.razorpay_api_key,
     key_secret:config.razorpay_secret
