@@ -5,6 +5,10 @@ import Locations from './LocationsController';
 import { insidePolygon, headingDistanceTo } from 'geolocation-utils';
 import PaymentGateway from '../controllers/PaymentController';
 import * as Airtable from 'airtable';
+
+import * as nodemailer from 'nodemailer';
+import * as smtpTransport from 'nodemailer-smtp-transport';
+import Utils from './utils';
 const config = require('../../credentials.json');
 Airtable.configure({
 	endpointUrl: 'https://api.airtable.com',
@@ -532,7 +536,95 @@ let Order = {
        
 	},
 	
+	async sendOrderReadyNotification(req:Request, res:Response) {
+		let firestore = admin.firestore()
+		let payment_ref = await firestore.collection("payments").doc(req.body.payment_id).get();
+		let payment_data = payment_ref.data();
+		let pay_details = JSON.parse(payment_data.other_details)
+		let sms_msg ='', email_subject ='', email_html = '';
+		let email_content= {
+			name:'',
+			order_nos:'',
+			msg:'',
+			date:'',
+			items:'',
+			customer_name:''
+		};	
+		let order_ref = await firestore.collection("user-details").doc(payment_data.user_id).collection('orders').doc(payment_data.order_id).get()
+		if(!order_ref.exists) {
+			return res.sendStatus(200)
+		}
+		let order_data = order_ref.data()
+		let items = ''		
+		
+		if(payment_data.status == 'captured') {
+			sms_msg = `Your bowl(s) is ready to be picked up. The token number is 1111. Please show this SMS at the pick-up counter.`
+			email_subject = `Order is ready`
+			email_content.msg = `<p>Hurray!</p>
+			<p>Your bowl(s) is ready to be picked up.</p>
+			<p>The token number is 1111. Please show this email at the pick-up counter</p>
+			<p>Looking forward to serve you again.</p>
+			`
+			email_content.order_nos = payment_data.pg_order_id;
+			email_content.customer_name = order_data.shipping_address.name
+			var dateTemp = payment_data.timestamp.toDate()
+			let date = new Date(dateTemp)
+			email_content.date = date.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year: 'numeric' });
+			order_data.items.forEach((item) => {
+				email_content.items=email_content.items+`
+					<tr>
+					<td>${item.product_name}<span class="d-block">(${item.size})</span></td>
+					<td class="text-center">${item.quantity} x ${item.sale_price}</td>
+					<td class="text-right">${(item.quantity * item.sale_price)}</td>
+					</tr>
+				`
+			});
 
+			email_content.items = email_content.items+ `
+				<tr>
+				<td></td>
+				<td class="text-green bold text-right">Grand Total</td>
+				<td class="text-green bold text-right">${ pay_details.amount/100}</td>
+       			 </tr>`
+			email_html =Utils.getEmailMarkup(email_content)
+		} else if(payment_data.status == 'failed') {
+			// sms_msg = `Your order no. ${payment_data.pg_order_id} for Rs. ${(pay_details.amount/100)} is failed please try again`
+			// email_subject = `Payment Failed : ${payment_data.pg_order_id}`
+			// email_html = ''
+			return res.sendStatus(200)
+		} else {
+			return res.sendStatus(200)
+		}
+		console.log(sms_msg)
+		console.log("sending order ready mail started")
+
+		if(order_data.shipping_address.email !='') {
+			const transporter = nodemailer.createTransport(smtpTransport({
+				service: 'gmail',
+				auth: {
+					user:"ggb.aj.test@gmail.com",//config.email_username,
+					pass: "idingqurvsvotbyi"//config.email_password
+				}
+			}));
+			
+			const mailOptions = {
+				from: 'no-reply@ajency.com', // Something like: Jane Doe <janedoe@gmail.com>
+				to: order_data.shipping_address.email,
+				subject: email_subject, // email subject
+				html: email_html
+			};
+			console.log("Email order ready option",mailOptions)
+	
+			// returning result
+		  transporter.sendMail(mailOptions).then((info) => {
+			console.log(" order ready mail sent to ",order_data.shipping_address.email)
+		  }).catch((e) => {
+			console.log(" order ready mail failed ",order_data.shipping_address.email)
+		  })
+
+		}
+		return res.sendStatus(200)
+	}
 }
 
 export default Order;

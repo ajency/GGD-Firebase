@@ -89,4 +89,9 @@ export function routesConfig(app: Application) {
 	app.post('/rest/v1/anonymous/payment/verify-payment',
 		Payment.verifySignature
 	);
+
+	app.post('/rest/v1/order/send-order-ready-notification', 
+		Order.sendOrderReadyNotification
+	);
+
 }
