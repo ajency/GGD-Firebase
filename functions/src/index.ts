@@ -76,11 +76,8 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("pa
 						</div>
 						<div class="">
 							<div class="product-size-c text-capitalize">
-							${item.size}
-							</div>
-							<div class="product-size-c">
-							Qty: ${item.quantity}
-							</div>                      
+							${item.size} | Qty: ${item.quantity}
+							</div>                     
 						</div>            
 					</div>
 					<div class="d-flex align-items-center">                            
@@ -107,7 +104,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("pa
 					</div>
 					<div class="font-weight-light w-50 text-right">₹${order_data.summary.shipping_fee}</div>
 				</div>
-				<div class="summary-item border-grey-y mt-8">
+				<div class="summary-item">
 					<div class="w-50">
 						<label class="font-weight-medium mb-0"><strong>Total</strong></label>
 					</div>
