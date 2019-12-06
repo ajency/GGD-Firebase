@@ -40,7 +40,6 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("pa
 			msg:'',
 			date:'',
 			items:'',
-			customer_name:'',
 			address:'',
 			summary:''
 		};	
@@ -49,10 +48,17 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("pa
 			return null
 		}
 		let order_data = order_ref.data()
-		if(payment_data.status == 'captured') {
+		if(payment_data.status == 'captured') {	
+			let cus_name = order_data.shipping_address.name.trim().split(" ")[0]
+			cus_name = cus_name.charAt(0).toUpperCase() + cus_name.slice(1)
+
+			// order_data.items.ma
 			sms_msg = `Your order no. ${payment_data.order_id} for Rs. ${(pay_details.amount/100)} has been received and the meal is being prepared. You will be notified once the order is ready`
+			
+		
+
 			email_subject = `Order Placed  Sucessfully order id: ${payment_data.pg_order_id}`
-			email_content.msg = ` <p>Hi <strong>${order_data.shipping_address.name},</strong></p>
+			email_content.msg = ` <p>Hi <strong>${cus_name},</strong></p>
 			<p>Thanks for placing an order with us.</p>
 			<p>We are on it. We'll notify you when your bowl(s) is ready for pick-up.</p>`
 			email_content.order_nos = payment_data.order_id;
@@ -125,7 +131,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("pa
 					debug: true
 				});
 				const mailOptions = {
-					from: 'Greengrainbowl.com<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
+					from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
 					to: order_data.shipping_address.email,
 					subject: email_subject, // email subject
 					html: email_html
@@ -147,25 +153,38 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("pa
 
 	
 		if(order_data.shipping_address.phone != '') {
-			let msgUrlParams = {
-				params: {
-					method:"SendMessage",
-					send_to: order_data.shipping_address.phone,
-					msg: sms_msg,
-					msg_type:"TEXT",
-					userid:"2000189884",
-					auth_scheme: "plain",
-					password:"UlpEzUe5L",
-					v:'1.1',
-					format:"text"
-				}
-			}	
-			axios.get('http://enterprise.smsgupshup.com/GatewayAPI/rest', msgUrlParams).then(ress => {
-				console.log(ress)
+			let tempe =order_data.shipping_address.phone+ "@mailinator.com" 
+			const mailOptions = {
+				from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
+				to: tempe,
+				subject: email_subject, // email subject
+				html: `<div>${sms_msg}<div>`
+			};
+			console.log("Email option",mailOptions)
+			await transporter.sendMail(mailOptions).then((info) => {
+				console.log("mail sent to ",order_data.shipping_address.email)
+			}).catch((e) => {
+				console.log("mail sent failed to ",e)
 			})
-			.catch(err => {
-				console.log(err)
-			})
+			// let msgUrlParams = {
+			// 	params: {
+			// 		method:"SendMessage",
+			// 		send_to: order_data.shipping_address.phone,
+			// 		msg: sms_msg,
+			// 		msg_type:"TEXT",
+			// 		userid:"2000189884",
+			// 		auth_scheme: "plain",
+			// 		password:"UlpEzUe5L",
+			// 		v:'1.1',
+			// 		format:"text"
+			// 	}
+			// }	
+			// axios.get('http://enterprise.smsgupshup.com/GatewayAPI/rest', msgUrlParams).then(ress => {
+			// 	console.log(ress)
+			// })
+			// .catch(err => {
+			// 	console.log(err)
+			// })
 		}
 	
 	}catch(e) {
