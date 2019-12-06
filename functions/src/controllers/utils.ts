@@ -231,7 +231,7 @@ let Utils = {
                                 <p class="bold mb-10 px-15">Order Details</p>
                           
                                 <div class="d-flex mb-25 justufy-between px-15">
-                                    <div class="mb-5 w-50">Order no: <strong> ${email_content.order_nos}</strong></div>
+                                    <div class="mb-5 w-50">Order no:<strong> ${email_content.order_nos}</strong></div>
                                     <div class="w-50 text-right">Date: ${email_content.date}</div>
                                 </div>
                                 
@@ -239,9 +239,7 @@ let Utils = {
                                   <div class=""><strong>Delivery Address : </strong></div>${email_content.address}
                                 </div>
                                 <div class="order-items px-15">
-                                  <div class="border-double">
-                                    ${email_content.items}
-                                  </div>                            
+                                ${email_content.items}                       
                                 </div>
                                 <div class="bill-details px-15">
                                   ${email_content.summary}
