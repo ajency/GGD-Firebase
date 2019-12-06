@@ -50,50 +50,49 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("pa
 		}
 		let order_data = order_ref.data()
 		if(payment_data.status == 'captured') {
-			sms_msg = `Your order no. ${payment_data.pg_order_id} for Rs. ${(pay_details.amount/100)} has been received and the meal is being prepared. You ill be notified once the order is ready`
+			sms_msg = `Your order no. ${payment_data.order_id} for Rs. ${(pay_details.amount/100)} has been received and the meal is being prepared. You will be notified once the order is ready`
 			email_subject = `Order Placed  Sucessfully order id: ${payment_data.pg_order_id}`
 			email_content.msg = ` <p>Hi <strong>${order_data.shipping_address.name},</strong></p>
 			<p>Thanks for placing an order with us.</p>
 			<p>We are on it. We'll notify you when your bowl(s) is ready for pick-up.</p>`
-			email_content.order_nos = payment_data.pg_order_id;
+			email_content.order_nos = payment_data.order_id;
 			var dateTemp = payment_data.timestamp.toDate()
 			let date = new Date(dateTemp)
 			email_content.date = date.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year: 'numeric' });
-			order_data.items.map((item) => {
+			for(let item of  order_data.items) {
 				let prod_img ='http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/cracked-wheat-n-chickpea-bowl-chicken.jpg'
-				// if(item.product_id !='') {
-				// 	let prod_ref = await firestore.collection('products').doc(item.product_id).get()
-				// 	prod_img =  prod_ref.data().image_urls[0]
-				// }
-				email_content.items=email_content.items+`
-				<div class="item-container flex-column">
-				<div class="d-flex mb-4">
-				  <div class="product-cartimage d-inline-block">
-					<img class="" alt="" title="" height="50" width="50" src="${prod_img}">
-				  </div>
-				  <div class="product-details d-inline-block">
-					<div class="product-title-c font-weight-light">
-					 	${item.product_name}
+				if(item.product_id !='') {
+					let prod_ref = await firestore.collection('products').doc(item.product_id).get()	
+					prod_img =  prod_ref.data().image_urls[0]
+					email_content.items=email_content.items+`
+					<div class="item-container flex-column">
+					<div class="d-flex mb-4">
+					<div class="product-cartimage d-inline-block">
+						<img class="" alt="" title="" height="50" width="50" src="${prod_img}">
 					</div>
-					<div class="">
-						<div class="product-size-c text-capitalize">
-						  ${item.size}
+					<div class="product-details d-inline-block">
+						<div class="product-title-c font-weight-light">
+							${item.product_name}
 						</div>
-						<div class="product-size-c">
-						  Qty: ${item.quantity}
-						</div>                      
-					</div>            
-				  </div>
-				  <div class="d-flex align-items-center">                            
-					  <div class="product-price font-weight-light text-right pl-3">
-						₹${item.sale_price}
-					  </div>
-				  </div>
-				</div>
-			  </div>
+						<div class="">
+							<div class="product-size-c text-capitalize">
+							${item.size}
+							</div>
+							<div class="product-size-c">
+							Qty: ${item.quantity}
+							</div>                      
+						</div>            
+					</div>
+					<div class="d-flex align-items-center">                            
+						<div class="product-price font-weight-light text-right pl-3">
+							₹${item.sale_price}
+						</div>
+					</div>
+					</div>
+				</div>		
 				`
-			});
-
+				}
+			}
 			email_content.address =`${order_data.shipping_address.address}, ${order_data.shipping_address.landmark}, ${order_data.shipping_address.formatted_address}`
 			email_content.summary = `
 				<div class="summary-item pt-0">
@@ -148,7 +147,6 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("pa
 			return null
 		}
 		console.log(sms_msg)
-		console.log("sending mail started")
 
 	
 		if(order_data.shipping_address.phone != '') {
@@ -158,10 +156,10 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("pa
 					send_to: order_data.shipping_address.phone,
 					msg: sms_msg,
 					msg_type:"TEXT",
-					userid:"",
+					userid:"2000189884",
 					auth_scheme: "plain",
-					password:"",
-					v:'',
+					password:"UlpEzUe5L",
+					v:'1.1',
 					format:"text"
 				}
 			}	
@@ -180,4 +178,3 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("pa
 	return null 
 
 })
-
