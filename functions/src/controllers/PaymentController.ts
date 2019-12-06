@@ -3,10 +3,11 @@ import * as admin from "firebase-admin";
 import { Request, Response } from "express";
 import * as crypto from 'crypto';
 
-const config = require('../../credentials.json');
+const cred = require('../../credentials.json');
+const config = require('../../config.json');
 let instance = new Razorpay({
-    key_id:config.razorpay_api_key,
-    key_secret:config.razorpay_secret
+    key_id:cred.razorpay_api_key,
+    key_secret:cred.razorpay_secret
 });
 let PaymentGateway = {
     /* Todo
@@ -16,6 +17,7 @@ let PaymentGateway = {
     */
     createOrder: async (req: Request, res: Response) => {
         try {
+                console.log("create order ")
                 let amount = req.body.amount *100
                 let firestore = admin.firestore();
                 let cart_ref =  await firestore.collection('carts').doc(req.body.order_id).get()
@@ -53,6 +55,7 @@ let PaymentGateway = {
                         user_id:req.body.order_id,
                         status:"draft"
                     })
+                    console.log("Payment record=>",payment_ref.id)
                     firestore.collection("user-orders-map").add({
                         "user_id": req.body.order_id,
                         "order_id": order_ref.id
@@ -81,7 +84,7 @@ let PaymentGateway = {
             let {razorpay_order_id, razorpay_payment_id, razorpay_signature} = req.body
             let r_order_id = req.query.r_order_id;
             let text = razorpay_order_id + "|" + razorpay_payment_id;
-            let generated_signature = crypto.createHmac('sha256',config.razorpay_secret).update(text).digest('hex');
+            let generated_signature = crypto.createHmac('sha256',cred.razorpay_secret).update(text).digest('hex');
             if (generated_signature == razorpay_signature) {
                 res.redirect(config.frontendUrl+"#/order-summary/"+r_order_id)
             } else {

@@ -9,10 +9,11 @@ import * as Airtable from 'airtable';
 import * as nodemailer from 'nodemailer';
 import * as smtpTransport from 'nodemailer-smtp-transport';
 import Utils from './utils';
-const config = require('../../credentials.json');
+const config = require('../../config.json');
+const cred = require('../../credentials.json');
 Airtable.configure({
 	endpointUrl: 'https://api.airtable.com',
-	apiKey: config.airtableApiKey
+	apiKey: cred.airtableApiKey
 })
 const base = Airtable.base('apptpCcEN0UI8o1rm');
 let Order = {
@@ -602,8 +603,8 @@ let Order = {
 			const transporter = nodemailer.createTransport(smtpTransport({
 				service: 'gmail',
 				auth: {
-					user:config.email_username,
-					pass: config.password
+					user:cred.email_username,
+					pass: cred.password
 				}
 			}));
 			
