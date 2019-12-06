@@ -4,9 +4,10 @@ import * as express from 'express';
 import * as cors from 'cors';
 import * as bodyParser from 'body-parser';
 import * as nodemailer from 'nodemailer';
-import * as smtpTransport from 'nodemailer-smtp-transport';
 import { routesConfig } from './routes-config';
+import axios from 'axios';
 import Utils from './controllers/utils';
+let config = require('../credentials.json')
 let serviceAccount = require('../serviceAccount.json');
 
 if (process.env.X_GOOGLE_FUNCTION_IDENTITY) {
@@ -26,157 +27,6 @@ app.use(cors({ origin: true }));
 routesConfig(app)
 export const api = functions.region('asia-east2').https.onRequest(app);
 
-// export const api = functions.https.onRequest(app);
-// let getEmailMarkup = (email_content) => {
-// return	`		
-// 				<html>
-// 					<head>
-// 					<link href="https://fonts.googleapis.com/css?family=Work+Sans:300,400,600,700&display=swap" rel="stylesheet">
-// 					<style>
-// 					  .email-container{
-// 						  width: 550px;
-// 						  margin: 0 auto;
-// 						  font-family: 'Work Sans', sans-serif;
-// 						  padding: 15px;
-// 						  border: 1px solid #000;
-// 					  }
-// 					  .email-header{
-// 						text-align: center;
-// 						border-bottom: 1px solid #000;
-// 						padding: 15px;
-// 						padding-top: 0;
-// 					  }
-// 					  .email-header img{
-// 						width: 150px;
-// 					  }
-// 					  .email-content{
-// 						padding: 15px;
-// 						padding-top: 30px;
-// 					  }
-// 					  .email-footer{
-// 						padding: 15px;
-// 					  }
-// 					  .email-footer img{
-// 						width: 95px;
-// 						height: auto;
-// 					  }
-// 					  .bold{
-// 						font-weight: 700;
-// 					  }
-// 					  .row{
-// 						clear: both;
-// 						overflow: hidden;
-// 						padding: 15px 5px;
-// 					  }
-// 					  .w-50{
-// 						width: 50%;
-// 						float: left;
-// 					  }
-// 					  .w-50{
-// 						width: 50%;
-// 					  }
-// 					  .w-30{
-// 						width: 30%;
-// 					  }
-// 					  .w-20{
-// 						width: 20%;
-// 					  }
-// 					  .text-left{
-// 						text-align: left;
-// 					  }
-// 					  .text-right{
-// 						text-align: right;
-// 					  }
-// 					  .text-center{
-// 						text-align: center;
-// 					  }
-// 					  .text-green{
-// 						color: #48A748;
-// 					  }
-// 					  p{
-// 						margin: 0;
-// 						margin-bottom: 25px;
-// 					  }
-// 					  .border-grey{
-// 						border: 1px solid #c4c8c4;
-// 					  } 
-// 					  th, td{
-// 						padding: 5px;
-// 					  } 
-// 					  .mb-25{
-// 						margin-bottom: 25px;
-// 					  }
-// 					  .mb-05{
-// 						margin-bottom: 10px;
-// 					  }
-// 					  table{
-// 						padding-top: 15px;
-// 						padding-bottom: 15px;
-// 					  }
-// 					  .email-footer{
-// 						position: relative;
-// 					  }
-// 					  .email-footer .line{
-// 						position: absolute;
-// 						top: 50%;
-// 						left: 0;
-// 						width: 100%;
-// 						transform: translateY(-50%);
-// 						margin: 0;
-// 						height: 0.5px;
-// 						background: #000;
-// 					  }
-// 					  .email-footer img{
-// 						position: relative;
-// 						z-index: 1;
-// 						background: #fff;
-// 						padding: 0 10px;
-// 					  }
-// 					  .d-block{
-// 						display: block;
-// 					  }
-// 					</style>
-// 					</head>
-// 					<body>
-// 					<div class="email-container">
-// 					<div class="email-header">
-// 					  <img src="https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/logo_new.png">
-// 					</div>
-// 					<div class="email-content">
-// 					  	${email_content.msg}
-// 						<p class="bold">Order details</p>
-// 						<div class="mb-25">
-// 						  <div class="row border-grey">
-// 							<div class="w-50">
-// 							  <div class="mb-05">Order No: <span class="bold">${email_content.order_nos}</span></div>
-// 							  <div class="">Date: <span class="bold">${email_content.date}</span></div>
-// 							</div>
-// 							<div class="w-50">
-// 							  <div class="mb-05">Customer Name:</div>
-// 							  <div class="bold">${email_content.customer_name}</div>
-// 							</div>
-// 						  </div>
-// 						</div>
-// 						<table width="100%" class="border-grey">
-// 						  <tr>
-// 							  <th class="text-left w-50">Item Name</th>
-// 							  <th class="text-left w-30 text-center">Qty</th>
-// 							  <th class="text-right w-20">Price</th>
-// 						  </tr>
-// 						  ${email_content.items}
-// 						</table>
-// 					</div>   
-// 					<div class="email-footer text-center">
-// 						<img src="https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/Leaf_with_seperator@2x.png" />
-// 						<div class="line"></div>
-// 					</div>
-// 				  </div>
-// 					</body>
-
-// 				</html>
-// 			`
-// }
-
 exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("payments/{paymentId}").onUpdate(async (snap, context) => {
 	try {
 
@@ -190,47 +40,109 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("pa
 			msg:'',
 			date:'',
 			items:'',
-			customer_name:''
+			customer_name:'',
+			address:'',
+			summary:''
 		};	
 		let order_ref = await firestore.collection("user-details").doc(payment_data.user_id).collection('orders').doc(payment_data.order_id).get()
 		if(!order_ref.exists) {
 			return null
 		}
 		let order_data = order_ref.data()
-		let items = ''		
-		
 		if(payment_data.status == 'captured') {
 			sms_msg = `Your order no. ${payment_data.pg_order_id} for Rs. ${(pay_details.amount/100)} has been received and the meal is being prepared. You ill be notified once the order is ready`
 			email_subject = `Order Placed  Sucessfully order id: ${payment_data.pg_order_id}`
-			email_content.msg = `<p>Hi,</p>
+			email_content.msg = ` <p>Hi <strong>${order_data.shipping_address.name},</strong></p>
 			<p>Thanks for placing an order with us.</p>
 			<p>We are on it. We'll notify you when your bowl(s) is ready for pick-up.</p>`
 			email_content.order_nos = payment_data.pg_order_id;
-			email_content.customer_name = order_data.shipping_address.name
 			var dateTemp = payment_data.timestamp.toDate()
 			let date = new Date(dateTemp)
 			email_content.date = date.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year: 'numeric' });
-			order_data.items.forEach((item) => {
+			order_data.items.map((item) => {
+				let prod_img ='http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/cracked-wheat-n-chickpea-bowl-chicken.jpg'
+				// if(item.product_id !='') {
+				// 	let prod_ref = await firestore.collection('products').doc(item.product_id).get()
+				// 	prod_img =  prod_ref.data().image_urls[0]
+				// }
 				email_content.items=email_content.items+`
-					<tr>
-					<td>${item.product_name}<span class="d-block">(${item.size})</span></td>
-					<td class="text-center">${item.quantity} x ${item.sale_price}</td>
-					<td class="text-right">${(item.quantity * item.sale_price)}</td>
-					</tr>
+				<div class="item-container flex-column">
+				<div class="d-flex mb-4">
+				  <div class="product-cartimage d-inline-block">
+					<img class="" alt="" title="" height="50" width="50" src="${prod_img}">
+				  </div>
+				  <div class="product-details d-inline-block">
+					<div class="product-title-c font-weight-light">
+					 	${item.product_name}
+					</div>
+					<div class="">
+						<div class="product-size-c text-capitalize">
+						  ${item.size}
+						</div>
+						<div class="product-size-c">
+						  Qty: ${item.quantity}
+						</div>                      
+					</div>            
+				  </div>
+				  <div class="d-flex align-items-center">                            
+					  <div class="product-price font-weight-light text-right pl-3">
+						₹${item.sale_price}
+					  </div>
+				  </div>
+				</div>
+			  </div>
 				`
 			});
 
-			email_content.items = email_content.items+ `
-				<tr>
-				<td></td>
-				<td class="text-green bold text-right">Grand Total</td>
-				<td class="text-green bold text-right">${ pay_details.amount/100}</td>
-       			 </tr>`
-			email_html = Utils.getEmailMarkup(email_content)
+			email_content.address =`${order_data.shipping_address.address}, ${order_data.shipping_address.landmark}, ${order_data.shipping_address.formatted_address}`
+			email_content.summary = `
+				<div class="summary-item pt-0">
+					<div class="w-50">
+						<label class="font-weight-light">Total Item Price</label>
+					</div>
+				<div class="font-weight-light w-50 text-right">₹${order_data.summary.sale_price_total} </div>
+				</div>
+				<div class="summary-item">
+					<div class="w-50">
+						<label class="font-weight-light">Delivery fee</label>
+					</div>
+					<div class="font-weight-light w-50 text-right">₹${order_data.summary.shipping_fee}</div>
+				</div>
+				<div class="summary-item border-grey-y mt-8">
+					<div class="w-50">
+						<label class="font-weight-medium mb-0"><strong>Total</strong></label>
+					</div>
+					<div class="font-weight-bold w-50 text-right"><strong>₹${order_data.summary.you_pay}</strong></div>
+				</div>
+			`
+			email_html =  Utils.getEmailMarkup(email_content)
+			if(order_data.shipping_address.email !='') {
+		
+				var transporter = nodemailer.createTransport({
+					port: 587,
+					host: 'email-smtp.us-east-1.amazonaws.com',
+					secure: false,
+					auth: {
+					user:config.aws_user ,
+					pass: config.aws_pass
+					},
+					debug: true
+				});
+				const mailOptions = {
+					from: 'Greengrainbowl.com<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
+					to: order_data.shipping_address.email,
+					subject: email_subject, // email subject
+					html: email_html
+				};
+				console.log("Email option",mailOptions)
+				await transporter.sendMail(mailOptions).then((info) => {
+					console.log("mail sent to ",order_data.shipping_address.email)
+				}).catch((e) => {
+					console.log("mail sent failed to ",e)
+				})
+		
+			}
 		} else if(payment_data.status == 'failed') {
-			// sms_msg = `Your order no. ${payment_data.pg_order_id} for Rs. ${(pay_details.amount/100)} is failed please try again`
-			// email_subject = `Payment Failed : ${payment_data.pg_order_id}`
-			// email_html = ''
 			return null
 		} else {
 			return null
@@ -238,29 +150,27 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("pa
 		console.log(sms_msg)
 		console.log("sending mail started")
 
-		if(order_data.shipping_address.email !='') {
-			const transporter = nodemailer.createTransport(smtpTransport({
-				service: 'gmail',
-				auth: {
-					user:"ggb.aj.test@gmail.com",//config.email_username,
-					pass: "idingqurvsvotbyi"//config.email_password
-				}
-			}));
-			
-			const mailOptions = {
-				from: 'no-reply@ajency.com', // Something like: Jane Doe <janedoe@gmail.com>
-				to: order_data.shipping_address.email,
-				subject: email_subject, // email subject
-				html: email_html
-			};
-			console.log("Email option",mailOptions)
 	
-			// returning result
-		  await transporter.sendMail(mailOptions).then((info) => {
-			console.log("mail sent to ",order_data.shipping_address.email)
-		  }).catch((e) => {
-			console.log("mail sent failed to ",order_data.shipping_address.email)
-		  })
+		if(order_data.shipping_address.phone != '') {
+			let msgUrlParams = {
+				params: {
+					method:"SendMessage",
+					send_to: order_data.shipping_address.phone,
+					msg: sms_msg,
+					msg_type:"TEXT",
+					userid:"",
+					auth_scheme: "plain",
+					password:"",
+					v:'',
+					format:"text"
+				}
+			}	
+			axios.get('http://enterprise.smsgupshup.com/GatewayAPI/rest', msgUrlParams).then(ress => {
+				console.log(ress)
+			})
+			.catch(err => {
+				console.log(err)
+			})
 		}
 	
 	}catch(e) {

@@ -602,8 +602,8 @@ let Order = {
 			const transporter = nodemailer.createTransport(smtpTransport({
 				service: 'gmail',
 				auth: {
-					user:"ggb.aj.test@gmail.com",//config.email_username,
-					pass: "idingqurvsvotbyi"//config.email_password
+					user:config.email_username,
+					pass: config.password
 				}
 			}));
 			
