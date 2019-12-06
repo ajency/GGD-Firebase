@@ -55,7 +55,7 @@ let PaymentGateway = {
                         user_id:req.body.order_id,
                         status:"draft"
                     })
-                    console.log("Payment record=>",payment_ref.id)
+                    console.log("Payment id ==> ", payment_ref.id)
                     firestore.collection("user-orders-map").add({
                         "user_id": req.body.order_id,
                         "order_id": order_ref.id
