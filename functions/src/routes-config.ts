@@ -90,8 +90,8 @@ export function routesConfig(app: Application) {
 		Payment.verifySignature
 	);
 
-	app.post('/rest/v1/order/send-order-ready-notification', 
-		Order.sendOrderReadyNotification
+	app.post('/rest/v1/order/update-status', 
+		Order.updateOrderStatus
 	);
 
 }

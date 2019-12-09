@@ -22,27 +22,13 @@ let PaymentGateway = {
                 let firestore = admin.firestore();
                 let cart_ref =  await firestore.collection('carts').doc(req.body.order_id).get()
                 let user_ref = await firestore.collection('user-details').doc(req.body.order_id)
-                // if(cart_ref.data().status == 'draft') {
-                //     if(cart_ref.data().order_id) {
-                //         let orderExisting = await firestore.collection('user-details').doc(req.body.order_id).collection('orders').doc(cart_ref.data().order_id).get();
-                //         if(orderExisting.data().status == "order") {
-                //             return res.status(500).send({message: "Payment already done"})
-                //         } else {
-                //            let payment_ref =  await firestore.collection('payments').where("order_id", "==", orderExisting.id).get()
-                //            let razorpay_order_id = payment_ref.docs[0].data().pg_order_id;
-                //            return res.status(200).send({order_id:razorpay_order_id})
-                //         }
-                        
-                //     }
-                // }
-
                 let cart_data = cart_ref.data()
                 cart_data.created_at = undefined
                 cart_data.order_type = undefined
                 cart_data = JSON.parse(JSON.stringify(cart_data))
                 cart_data["status"] = "draft";
                 let order_ref = await user_ref.collection('orders').add({
-                    ...cart_data
+                    ...cart_data, ...{food_status: '', delivery_status:''}
                 })
                 
                 let razorpay_receipt = order_ref.id;
