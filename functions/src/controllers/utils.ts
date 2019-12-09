@@ -217,43 +217,46 @@ let Utils = {
 
                         </head>
                         <body>
-                          <div class="email-container">
-                            <div class="email-header">
+                          <div class="email-container" style="width: 500px; margin: 0 auto; font-family: 'Work Sans',sans-serif; color: #212529; font-size: 14px;">
+                            <div class="email-header" style="text-align: center; padding: 15px; background: #ecf6ec;">
                               <div class="logo" style="width: 60%;display: inline-block;text-align: right;">
-                                <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/GGB-logo.png">
+                                <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/GGB-logo.png" style="width: 100px;
+                                vertical-align: middle;>
                               </div>
                               <div class="" style="display: inline-block;text-align: right;width: 38%;">
                                 <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/slidein/checkout.png" style="width: 17px;display:inline-block;vertical-align:middle;">
                                 <span style="font-weight: 600;text-transform: uppercase;font-size: 12px;display:inline-block;vertical-align:middle;margin-left: 2px;">Order placed</span>
                               </div>
                             </div>
-                            <div class="email-content">
-                                <div class="order-number mb-25 text-right" style="padding-right:15px;">
+                            <div class="email-content" style="padding: 15px; padding-top: 30px; padding-bottom: 30px; padding-left: 0; padding-right: 0;">
+                                <div class="order-number mb-25 text-right" style="padding-right:15px;margin-bottom:25px;text-align:right;">
                                   Order no: <strong>${email_content.order_nos}</strong>
                                 </div>
-                                <div class="px-15">${email_content.msg}</div>
-                                <p class="bold mb-10 px-15">Order Details</p>
+                                <div class="px-15" style="padding-left: 15px; padding-right: 15px;">${email_content.msg}</div>
+                                <p class="bold mb-10 px-15" style="margin-bottom: 5px;">Order Details</p>
                           
-                                <div class="d-flex mb-25 justufy-between px-15">
-                                    <div class="mb-5 w-50">Order no:<strong> ${email_content.order_nos}</strong></div>
-                                    <div class="w-50 text-right">Date: ${email_content.date}</div>
+                                <div class="d-flex mb-25 justufy-between px-15" style="padding-left: 15px; padding-right: 15px;">
+                                    <div class="mb-5 w-50" style="margin-bottom:5px;width:50%;float:left;">Order no:<strong> ${email_content.order_nos}</strong></div>
+                                    <div class="w-50 text-right" style="width: 50%;text-align: right;float:left;">Date: ${email_content.date}</div>
                                 </div>
                                 
-                                <div class="list-text-block ">
+                                <div class="list-text-block" style="padding: 15px; padding-top: 0; padding-bottom: 0; margin-bottom: 25px; line-height: 22px;">
                                   ${email_content.address}
                                 </div>
-                                <div class="order-items px-15">
-                                ${email_content.items}                       
+                                <div class="order-items px-15" style="margin-bottom: 15px;padding-left: 15px;padding-right: 15px;">
+                                  <div class="border-double" style="border-top: 4px double #47a748; border-bottom: 4px double #47a748; padding-top: 1.5rem;">
+                                    ${email_content.items}    
+                                  </div>                   
                                 </div>
-                                <div class="bill-details px-15">
+                                <div class="bill-details px-15" style="padding-left: 15px;padding-right: 15px;">
                                   ${email_content.summary}
                                 </div>
                           
                             </div>
                           
-                            <div class="email-footer">
-                              <div class="follow-text mb-15 w-50 text-left">
-                                  <p class="mb-5"><strong>Follow Us</strong></p>
+                            <div class="email-footer" style="padding: 15px 15px; background: #ecf6ec;position: relative;">
+                              <div class="follow-text mb-15 w-50 text-left" style="margin-bottom: 15px;width: 50%;text-align: left;float:left;">
+                                  <p class="mb-5" style="margin-bottom: 5px;"><strong>Follow Us</strong></p>
                                   <a href="#" class="d-inline-block">
                                     <img width="30" src="https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/fb.png"/>
                                   </a>
@@ -261,13 +264,14 @@ let Utils = {
                                     <img width="30" src="https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/insta.png"/>
                                   </a>
                               </div>
-                              <div class="contact-text w-50 text-right">
-                                <p class="mb-5"><strong>Need help?</strong></p>
-                                <p class="mb-5">Email: <a class="text-green" href="mailto:test@test.com">test@test.com</a></p>
-                                <p class="mb-15">Mobile: <a class="text-green" href="https://api.whatsapp.com/send?phone=+917770004258">7770004258</a></p>      
+                              <div class="contact-text w-50 text-right" style="width:50%;text-align:right;float:left;">
+                                <p class="mb-5" style="margin-bottom: 5px;"><strong>Need help?</strong></p>
+                                <p class="mb-5" style="margin-bottom: 5px;">Email: <a class="text-green" href="mailto:test@test.com" style="color: #47a748;text-decoration: underline;">test@test.com</a></p>
+                                <p class="mb-15">Mobile: <a class="text-green" href="https://api.whatsapp.com/send?phone=+917770004258" style="style="color: #47a748;text-decoration: underline;"">7770004258</a></p>      
                               </div>
                               
-                              <div class="text-center clearfix font-size-12">(C) 2019 Digital Dwarves Pvt Ltd. All Right Reserved</div>
+                              <div class="text-center clearfix font-size-12" style="font-size: 12px;clear: both; overflow: hidden;text-align: center;
+                              ">(C) 2019 Digital Dwarves Pvt Ltd. All Right Reserved</div>
                             </div>
                         
                           </div>

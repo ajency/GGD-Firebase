@@ -68,9 +68,9 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 
 			}
 			email_subject = `Thank you for your order at Green Grain Bowl`
-			email_content.msg = ` <p>Hi <strong>${cus_name},</strong></p>
-			<p>Thanks for placing an order with us.</p>
-			<p>We are on it. We'll notify you when your bowl(s) is ready for pick-up.</p>`
+			email_content.msg = ` <p style="margin: 0; margin-bottom: 25px;">Hi <strong>${cus_name},</strong></p>
+			<p style="margin: 0; margin-bottom: 25px;">Thanks for placing an order with us.</p>
+			<p style="margin: 0; margin-bottom: 25px;">We are on it. We'll notify you when your bowl(s) is ready for pick-up.</p>`
 
 
 		} else if(order_data.status.toLowerCase() == 'failed') {
@@ -96,25 +96,25 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				prod_img =  prod_ref.data().image_urls[0]
 				email_content.items=email_content.items+`
 				<div class="item-container flex-column">
-				<div class="d-flex mb-4">
-				<div class="product-cartimage d-inline-block">
-					<img class="" alt="" title="" height="50" width="50" src="${prod_img}">
-				</div>
-				<div class="product-details d-inline-block">
-					<div class="product-title-c font-weight-light">
-						${item.product_name}
+					<div class="d-flex mb-4" style="margin-bottom: 1.5rem!important;display:flex;">
+					<div class="product-cartimage d-inline-block" style="padding-right: 10px;width: 17%;display: inline-block!important;">
+						<img class="" alt="" title="" height="50" width="50" src="${prod_img}" style="object-fit: cover;border-radius: 50%;">
 					</div>
-					<div class="">
-						<div class="product-size-c text-capitalize">
-						${item.size} | Qty: ${item.quantity}
-						</div>                     
-					</div>            
-				</div>
-				<div class="d-flex align-items-center">                            
-					<div class="product-price font-weight-light text-right pl-3">
-						₹${item.sale_price}
+					<div class="product-details d-inline-block" style="width: 100%;display:inline-block!important;">
+						<div class="product-title-c font-weight-light">
+							${item.product_name}
+						</div>
+						<div class="">
+							<div class="product-size-c text-capitalize" style="font-size: 14px; line-height: 14px; margin-top: 5px;text-transform;">
+							${item.size} | Qty: ${item.quantity}
+							</div>                     
+						</div>            
 					</div>
-				</div>
+					<div class="d-flex align-items-center" style="display: flex;">                            
+						<div class="product-price font-weight-light text-right pl-3" style="text-align: right;">
+							₹${item.sale_price}
+						</div>
+					</div>
 				</div>
 			</div>		
 			`
@@ -122,23 +122,23 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 		}
 
 		email_content.summary = `
-				<div class="summary-item pt-0">
-					<div class="w-50">
+				<div class="summary-item pt-0" style="display: flex; justify-content: space-between; padding-top: 10px; padding-bottom: 10px;">
+					<div class="w-50" style="width: 50%;float:left;">
 						<label class="font-weight-light">Total Item Price</label>
 					</div>
-				<div class="font-weight-light w-50 text-right">₹${order_data.summary.sale_price_total} </div>
+				<div class="font-weight-light w-50 text-right" style="width:50%;text-right:50%;float:left;">₹${order_data.summary.sale_price_total} </div>
 				</div>
-				<div class="summary-item">
-					<div class="w-50">
+				<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 10px; padding-bottom: 10px;">
+					<div class="w-50" style="width: 50%;float:left;">
 						<label class="font-weight-light">Delivery fee</label>
 					</div>
-					<div class="font-weight-light w-50 text-right">₹${order_data.summary.shipping_fee}</div>
+					<div class="font-weight-light w-50 text-right" style="width:50%;text-right:50%;float:left;">₹${order_data.summary.shipping_fee}</div>
 				</div>
-				<div class="summary-item">
-					<div class="w-50">
+				<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 10px; padding-bottom: 10px;">
+					<div class="w-50" style="width: 50%;float:left;">
 						<label class="font-weight-medium mb-0"><strong>Total</strong></label>
 					</div>
-					<div class="font-weight-bold w-50 text-right"><strong>₹${order_data.summary.you_pay}</strong></div>
+					<div class="font-weight-bold w-50 text-right" style="width:50%;text-right:50%;float:left;"><strong>₹${order_data.summary.you_pay}</strong></div>
 				</div>
 			`
 
