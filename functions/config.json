@@ -3,5 +3,10 @@
 	"location" : "15.2832187,73.98619099999999",
 	"radius" : 50000,
 	"business_id" : "zq6Rzdvcx0UrULwzeSEr",
-	"frontendUrl" : "http://greengrainbowl.com/"
+	"frontendUrl" : "http://greengrainbowl-com.digitaldwarve.staging.wpengine.com/",
+	"order_status": {
+		"placed":"Placed",
+		"accepted":"Accepted",
+		"rejected":"Rejected"
+	}
 }
