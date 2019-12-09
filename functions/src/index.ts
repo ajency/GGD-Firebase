@@ -67,17 +67,22 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				sms_msg = `We have received your order for ${order_data.items[0].product_name} (${order_data.items[0].quantity}) bowl(s), We are on it.`
 
 			}
-			email_subject = `Order Placed  Sucessfully order id: ${payment_data.order_id}`
+			email_subject = `Thank you for your order at Green Grain Bowl`
 			email_content.msg = ` <p>Hi <strong>${cus_name},</strong></p>
 			<p>Thanks for placing an order with us.</p>
 			<p>We are on it. We'll notify you when your bowl(s) is ready for pick-up.</p>`
 
-			email_content.address =`${order_data.shipping_address.address}, ${order_data.shipping_address.landmark}, ${order_data.shipping_address.formatted_address}`
 
 		} else if(order_data.status.toLowerCase() == 'failed') {
 			return null
 		} else if (order_data.status.toLowerCase() == 'accepted') {
 			return null
+		}
+		if(order_data.order_mode == "kaos") {
+			email_content.address =`<div class=""><strong>Pick up from  : </strong>GGB Counter</div> `
+		} else {
+			email_content.address =`<div class=""><strong>Delivery Address : </strong></div>
+				${order_data.shipping_address.address}, ${order_data.shipping_address.landmark}, ${order_data.shipping_address.formatted_address}`
 		}
 		
 		email_content.order_nos = payment_data.order_id;

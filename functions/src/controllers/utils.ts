@@ -236,7 +236,7 @@ let Utils = {
                                 </div>
                                 
                                 <div class="list-text-block ">
-                                  <div class=""><strong>Delivery Address : </strong></div>${email_content.address}
+                                  ${email_content.address}
                                 </div>
                                 <div class="order-items px-15">
                                 ${email_content.items}                       
