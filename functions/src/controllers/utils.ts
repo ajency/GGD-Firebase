@@ -218,13 +218,17 @@ let Utils = {
                         </head>
                         <body>
                           <div class="email-container">
-
                             <div class="email-header">
-                              <img src="https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/logo_new.png">
+                              <div class="logo" style="width: 60%;display: inline-block;text-align: right;">
+                                <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/GGB-logo.png">
+                              </div>
+                              <div class="" style="display: inline-block;text-align: right;width: 38%;">
+                                <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/slidein/checkout.png" style="width: 17px;display:inline-block;vertical-align:middle;">
+                                <span style="font-weight: 600;text-transform: uppercase;font-size: 12px;display:inline-block;vertical-align:middle;margin-left: 2px;">Order placed</span>
+                              </div>
                             </div>
-                        
                             <div class="email-content">
-                                <div class="order-number mb-25 text-right">
+                                <div class="order-number mb-25 text-right" style="padding-right:15px;">
                                   Order no: <strong>${email_content.order_nos}</strong>
                                 </div>
                                 <div class="px-15">${email_content.msg}</div>
@@ -260,7 +264,7 @@ let Utils = {
                               <div class="contact-text w-50 text-right">
                                 <p class="mb-5"><strong>Need help?</strong></p>
                                 <p class="mb-5">Email: <a class="text-green" href="mailto:test@test.com">test@test.com</a></p>
-                                <p class="mb-15">Mobile: <a class="text-green" href="https://api.whatsapp.com/send?phone=+919823036238">9823036238</a></p>      
+                                <p class="mb-15">Mobile: <a class="text-green" href="https://api.whatsapp.com/send?phone=+917770004258">7770004258</a></p>      
                               </div>
                               
                               <div class="text-center clearfix font-size-12">(C) 2019 Digital Dwarves Pvt Ltd. All Right Reserved</div>
