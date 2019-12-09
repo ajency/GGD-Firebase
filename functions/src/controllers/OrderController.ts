@@ -499,7 +499,7 @@ let Order = {
 				}
 				
 				firestore.collection('user-details').doc(user_id).collection('orders').doc(razorpay_order.receipt).update({
-                    status:"order"
+                    status:"placed"
 				})
 
 				if(cart_ref.data().order_id == ggb_order_id && status !="failed") {
