@@ -169,19 +169,19 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					<div class="w-50" style="width: 50%;float:left;">
 						<label class="font-weight-light">Total Item Price</label>
 					</div>
-				<div class="font-weight-light w-50 text-right" style="width:50%;text-right:50%;float:left;">₹${order_data.summary.sale_price_total} </div>
+				<div class="font-weight-light w-50 text-right" style="width:50%;float:left;text-align:right;">₹${order_data.summary.sale_price_total} </div>
 				</div>
 				<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 10px; padding-bottom: 10px;">
 					<div class="w-50" style="width: 50%;float:left;">
 						<label class="font-weight-light">Delivery fee</label>
 					</div>
-					<div class="font-weight-light w-50 text-right" style="width:50%;text-right:50%;float:left;">₹${order_data.summary.shipping_fee}</div>
+					<div class="font-weight-light w-50 text-right" style="width:50%;float:left;text-align:right;">₹${order_data.summary.shipping_fee}</div>
 				</div>
 				<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 10px; padding-bottom: 10px;">
 					<div class="w-50" style="width: 50%;float:left;">
 						<label class="font-weight-medium mb-0"><strong>Total</strong></label>
 					</div>
-					<div class="font-weight-bold w-50 text-right" style="width:50%;text-right:50%;float:left;"><strong>₹${order_data.summary.you_pay}</strong></div>
+					<div class="font-weight-bold w-50 text-right" style="width:50%;float:left;text-align:right;"><strong>₹${order_data.summary.you_pay}</strong></div>
 				</div>
 			`
 
