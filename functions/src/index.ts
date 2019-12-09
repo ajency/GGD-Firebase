@@ -51,11 +51,21 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("pa
 		if(payment_data.status == 'captured') {	
 			let cus_name = order_data.shipping_address.name.trim().split(" ")[0]
 			cus_name = cus_name.charAt(0).toUpperCase() + cus_name.slice(1)
+			if(order_data.items.length > 1) {
+				let item_temp_arr = order_data.items.map((i) => {
+					return i.quantity
+				})
+				let item_max = Math.max.apply( Math, item_temp_arr );
+				let showItem = order_data.items[item_temp_arr.indexOf(item_max)]
+			   let totalItem = item_temp_arr.reduce((a,b) => {return a+b}) - item_max
+			   // sms_msg = `Your order no. ${payment_data.order_id} for Rs. ${(pay_details.amount/100)} has been received and the meal is being prepared. You will be notified once the order is ready`
+			   sms_msg = `We have received your order for ${showItem.product_name} (${showItem.quantity}) and ${totalItem} other bowl(s), We are on it			`
+		   
+			} else {
+				sms_msg = `We have received your order for ${order_data.items[0].product_name} (${order_data.items[0].quantity}) bowl(s), We are on it.`
 
-			// order_data.items.ma
-			sms_msg = `Your order no. ${payment_data.order_id} for Rs. ${(pay_details.amount/100)} has been received and the meal is being prepared. You will be notified once the order is ready`
+			}
 			
-		
 
 			email_subject = `Order Placed  Sucessfully order id: ${payment_data.pg_order_id}`
 			email_content.msg = ` <p>Hi <strong>${cus_name},</strong></p>
@@ -153,11 +163,11 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("pa
 
 	
 		if(order_data.shipping_address.phone != '') {
-			let tempe =order_data.shipping_address.phone+ "@mailinator.com" 
+			let tempe ="anuj@ajency.in" 
 			const mailOptions = {
 				from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
 				to: tempe,
-				subject: email_subject, // email subject
+				subject: "GGB SMS", // email subject
 				html: `<div>${sms_msg}<div>`
 			};
 			console.log("Email option",mailOptions)
