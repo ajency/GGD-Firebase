@@ -217,7 +217,7 @@ let Utils = {
 
                         </head>
                         <body>
-                          <div class="email-container" style="width: 500px; margin: 0 auto; font-family: 'Work Sans',sans-serif; color: #212529; font-size: 14px;">
+                          <div class="email-container" style="max-width: 500px; width:100%;margin: 0 auto; font-family: 'Work Sans',sans-serif; color: #212529; font-size: 14px;">
                             <div class="email-header" style="text-align: center; padding: 15px; background: #ecf6ec;">
                               <div class="logo" style="width: 60%;display: inline-block;text-align: right;">
                                 <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/GGB-logo.png" style="width: 100px;
@@ -237,7 +237,7 @@ let Utils = {
                                 <p class="bold mb-10 px-15" style="margin-bottom: 5px;padding-left: 15px; padding-right: 15px;font-weight:700;">Order Details</p>
                           
                                 <div class="d-flex mb-25 justufy-between px-15" style="padding-left: 15px; padding-right: 15px;margin-bottom:25px;clear:both;overflow:hidden;">
-                                
+
                                     <div class="mb-5 w-50" style="margin-bottom:5px;width:50%;float:left;">Order no:<strong> ${email_content.order_nos}</strong></div>
                                     <div class="w-50 text-right" style="width: 50%;text-align: right;float:left;">Date: ${email_content.date}</div>
                                 </div>
