@@ -221,10 +221,10 @@ let Utils = {
                             <div class="email-header" style="text-align: center; padding: 15px; background: #ecf6ec;">
                               <div class="logo" style="width: 60%;display: inline-block;text-align: right;">
                                 <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/GGB-logo.png" style="width: 100px;
-                                vertical-align: middle;>
+                                vertical-align: middle;/>
                               </div>
-                              <div class="" style="display: inline-block;text-align: right;width: 38%;">
-                                <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/slidein/checkout.png" style="width: 17px;display:inline-block;vertical-align:middle;">
+                              <div class="" style="display:inline-block;text-align: right;width: 38%;">
+                                <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/slidein/checkout.png" style="width:17px;display:inline-block;vertical-align:middle;"/>
                                 <span style="font-weight: 600;text-transform: uppercase;font-size: 12px;display:inline-block;vertical-align:middle;margin-left: 2px;">Order placed</span>
                               </div>
                             </div>
@@ -233,9 +233,11 @@ let Utils = {
                                   Order no: <strong>${email_content.order_nos}</strong>
                                 </div>
                                 <div class="px-15" style="padding-left: 15px; padding-right: 15px;">${email_content.msg}</div>
-                                <p class="bold mb-10 px-15" style="margin-bottom: 5px;">Order Details</p>
+
+                                <p class="bold mb-10 px-15" style="margin-bottom: 5px;padding-left: 15px; padding-right: 15px;font-weight:700;">Order Details</p>
                           
-                                <div class="d-flex mb-25 justufy-between px-15" style="padding-left: 15px; padding-right: 15px;">
+                                <div class="d-flex mb-25 justufy-between px-15" style="padding-left: 15px; padding-right: 15px;margin-bottom:25px;clear:both;overflow:hidden;">
+                                
                                     <div class="mb-5 w-50" style="margin-bottom:5px;width:50%;float:left;">Order no:<strong> ${email_content.order_nos}</strong></div>
                                     <div class="w-50 text-right" style="width: 50%;text-align: right;float:left;">Date: ${email_content.date}</div>
                                 </div>
@@ -256,18 +258,18 @@ let Utils = {
                           
                             <div class="email-footer" style="padding: 15px 15px; background: #ecf6ec;position: relative;">
                               <div class="follow-text mb-15 w-50 text-left" style="margin-bottom: 15px;width: 50%;text-align: left;float:left;">
-                                  <p class="mb-5" style="margin-bottom: 5px;"><strong>Follow Us</strong></p>
-                                  <a href="#" class="d-inline-block">
+                                  <p class="mb-5" style="margin-bottom: 5px;margnin-top:0;><strong>Follow Us</strong></p>
+                                  <a href="#" class="d-inline-block" style="text-decoration: none;">
                                     <img width="30" src="https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/fb.png"/>
                                   </a>
-                                  <a href="#" class="d-inline-block">
+                                  <a href="#" class="d-inline-block" style="text-decoration: none;">
                                     <img width="30" src="https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/insta.png"/>
                                   </a>
                               </div>
                               <div class="contact-text w-50 text-right" style="width:50%;text-align:right;float:left;">
-                                <p class="mb-5" style="margin-bottom: 5px;"><strong>Need help?</strong></p>
-                                <p class="mb-5" style="margin-bottom: 5px;">Email: <a class="text-green" href="mailto:test@test.com" style="color: #47a748;text-decoration: underline;">test@test.com</a></p>
-                                <p class="mb-15">Mobile: <a class="text-green" href="https://api.whatsapp.com/send?phone=+917770004258" style="style="color: #47a748;text-decoration: underline;"">7770004258</a></p>      
+                                <p class="mb-5" style="margin-bottom: 5px;margnin-top:0;"><strong>Need help?</strong></p>
+                                <p class="mb-5" style="margin-bottom: 5px;margnin-top:0;">Email: <a class="text-green" href="mailto:test@test.com" style="color:#47a748;text-decoration: underline;">test@test.com</a></p>
+                                <p class="mb-15" style="margnin-top:0;">Mobile: <a class="text-green" href="https://api.whatsapp.com/send?phone=+917770004258" style="color: #47a748;text-decoration: underline;>7770004258</a></p>      
                               </div>
                               
                               <div class="text-center clearfix font-size-12" style="font-size: 12px;clear: both; overflow: hidden;text-align: center;
