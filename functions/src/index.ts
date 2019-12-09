@@ -40,7 +40,8 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			date:'',
 			items:'',
 			address:'',
-			summary:''
+			summary:'',
+			url:''
 		};	
 		let payment_ref = await firestore.collection('payments').where("order_id", "==", snap.after.id).get()
 		let payment_data = payment_ref.docs[0].data()
@@ -61,7 +62,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			secondItem = order_data.items[item_temp_arr.indexOf(item_max)]
 			
 		}
-		
+		email_content.url = `https://greengrainbowl.com/#/order-details/${snap.after.id}`
 		if(order_data.status.toLowerCase() == 'placed' && order_data.order_mode == "online") {
 
 			if(order_data.items.length > 2) {
@@ -116,6 +117,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 		}
 
 		if(order_data.order_mode == "kaos") {
+			email_content.url = `https://greengrainbowl.com/oyofourth/#/order-details/${snap.after.id}`
 			email_content.address =`<div class=""><strong>Pick up from: </strong>GGB Counter</div> `
 		} else {
 			email_content.address =`<div class=""><strong>Delivery Address: </strong></div>

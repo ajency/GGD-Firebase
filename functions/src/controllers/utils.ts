@@ -230,7 +230,7 @@ let Utils = {
                             </div>
                             <div class="email-content" style="padding: 15px; padding-top: 30px; padding-bottom: 30px; padding-left: 0; padding-right: 0;">
                                 <div class="order-number mb-25 text-right" style="padding-right:15px;margin-bottom:25px;text-align:right;">
-                                  Order no: <strong>${email_content.order_nos}</strong>
+                                  Order no: <strong><a href="${email_content.url}">${email_content.order_nos}</a></strong>
                                 </div>
                                 <div class="px-15" style="padding-left: 15px; padding-right: 15px;">${email_content.msg}</div>
 
@@ -238,7 +238,7 @@ let Utils = {
                           
                                 <div class="d-flex mb-25 justufy-between px-15" style="padding-left: 15px; padding-right: 15px;margin-bottom:25px;clear:both;overflow:hidden;">
 
-                                    <div class="mb-5 w-50" style="margin-bottom:5px;width:50%;float:left;">Order no:<strong> ${email_content.order_nos}</strong></div>
+                                    <div class="mb-5 w-50" style="margin-bottom:5px;width:50%;float:left;">Order no:<strong> <a href="${email_content.url}">${email_content.order_nos}</a></strong></div>
                                     <div class="w-50 text-right" style="width: 50%;text-align: right;float:left;">Date: ${email_content.date}</div>
                                 </div>
                                 
