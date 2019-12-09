@@ -29,8 +29,8 @@ export const api = functions.region('asia-east2').https.onRequest(app);
 
 exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("user-details/{userDetailsId}/orders/{paymentId}").onUpdate(async (snap, context) => {
 	try {
-
-		let order_data = snap.after.data()
+		let order_data = snap.after.data();
+		let prev_order_data = snap.before.data();
 		let firestore = admin.firestore();
 		let sms_msg ='', email_subject ='', email_html = '';
 		let email_content= {
@@ -48,36 +48,79 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 
 		let cus_name = order_data.shipping_address.name.trim().split(" ")[0]
 		cus_name = cus_name.charAt(0).toUpperCase() + cus_name.slice(1)
-		let showItem,totalItem
-		if(order_data.items.length > 1) {
+		let showItem,totalItem, secondItem
+		if(order_data.items.length > 2) {
 			let item_temp_arr = order_data.items.map((i) => {
 				return i.quantity
 			})
 			let item_max = Math.max.apply( Math, item_temp_arr );
-			 showItem = order_data.items[item_temp_arr.indexOf(item_max)]
-		    totalItem = item_temp_arr.reduce((a,b) => {return a+b}) - item_max
-	   
+			showItem = order_data.items[item_temp_arr.indexOf(item_max)]
+			totalItem = item_temp_arr.length - 2
+			item_temp_arr.splice(item_temp_arr.indexOf(item_max))
+			 item_max = Math.max.apply( Math, item_temp_arr );
+			secondItem = order_data.items[item_temp_arr.indexOf(item_max)]
+			
 		}
 		
-		if(order_data.status.toLowerCase() == 'placed') {
+		if(order_data.status.toLowerCase() == 'placed' && order_data.order_mode == "online") {
 
-			if(order_data.items.length > 1) {
-				sms_msg = `We have received your order for ${showItem.product_name} (${showItem.quantity}) and ${totalItem} other bowl(s), We are on it			`
+			if(order_data.items.length > 2) {
+				sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} 
+					for ${showItem.product_name}  and ${secondItem.product_name} and ${totalItem} other bowl(s),
+					 We are on it. Check your order at <link>`
+			} else if(order_data.items.length == 2) {
+				sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} 
+				for ${order_data.items[0].product_name} and ${order_data.items[1].product_name} bowl, We are on it. Check your order at <link>`
+
 			} else {
-				sms_msg = `We have received your order for ${order_data.items[0].product_name} (${order_data.items[0].quantity}) bowl(s), We are on it.`
-
+				sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} 
+				for ${order_data.items[0].product_name}  bowl, We are on it. Check your order at <link>`
 			}
+
 			email_subject = `Thank you for your order at Green Grain Bowl`
 			email_content.msg = ` <p style="margin: 0; margin-bottom: 25px;">Hi <strong>${cus_name},</strong></p>
 			<p style="margin: 0; margin-bottom: 25px;">Thanks for placing an order with us.</p>
 			<p style="margin: 0; margin-bottom: 25px;">We are on it. We'll notify you when your bowl(s) is ready for pick-up.</p>`
 
 
+		} else if(order_data.status.toLowerCase() == 'placed' ) {
+
+			// if(order_data.items.length > 2) {
+			// 	sms_msg = `We have received your order for ${showItem.product_name}  and ${secondItem.product_name} and ${totalItem} other bowl(s), We are on it			`
+			// } else if(order_data.items.length == 2) {
+			// 	sms_msg = `We have received your order for ${order_data.items[0].product_name} and ${order_data.items[1].product_name} bowl, We are on it.`
+
+			// } else {
+			// 	sms_msg = `We have received your order for ${order_data.items[0].product_name}  bowl, We are on it.`
+			// }
+			// email_subject = `Thank you for your order at Green Grain Bowl`
+			// email_content.msg = ` <p>Hi <strong>${cus_name},</strong></p>
+			// <p>Thanks for placing an order with us.</p>
+			// <p>We are on it. We'll notify you when your bowl(s) is ready for pick-up.</p>`
+
+
 		} else if(order_data.status.toLowerCase() == 'failed') {
 			return null
-		} else if (order_data.status.toLowerCase() == 'accepted') {
+		} else if (prev_order_data.status.toLowerCase() == "placed" && order_data.status.toLowerCase() == 'accepted') {
 			return null
+		} else if (prev_order_data.status.toLowerCase() == "placed" && order_data.status.toLowerCase() == 'rejected') {
+
+		} else if (order_data.food_status.toLowerCase() == "food_is_ready" && order_data.order_mode == "kaos") {
+			
+			if(order_data.items.length > 2) {
+				sms_msg = `We have received your order for ${showItem.product_name}  and ${secondItem.product_name} and ${totalItem} other bowl(s), We are on it			`
+			} else if(order_data.items.length == 2) {
+				sms_msg = `We have received your order for ${order_data.items[0].product_name} and ${order_data.items[1].product_name} bowl, We are on it.`
+
+			} else {
+				sms_msg = `We have received your order for ${order_data.items[0].product_name}  bowl, We are on it.`
+			}
+			email_subject = `Thank you for your order at Green Grain Bowl`
+			email_content.msg = ` <p>Hi <strong>${cus_name},</strong></p>
+			<p>Thanks for placing an order with us.</p>
+			<p>We are on it. We'll notify you when your bowl(s) is ready for pick-up.</p>`
 		}
+
 		if(order_data.order_mode == "kaos") {
 			email_content.address =`<div class=""><strong>Pick up from  : </strong>GGB Counter</div> `
 		} else {
@@ -147,7 +190,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 	
 			var transporter = nodemailer.createTransport({
 				port: 587,
-				host: 'email-smtp.us-east-1.amazonaws.com',
+				host: config.aws_smtp_server,
 				secure: false,
 				auth: {
 				user:config.aws_user ,
