@@ -563,8 +563,9 @@ let Order = {
 				updateData["delivery_status"]= status
 			}  else if(statusType == 'order') {
 				updateData["status"]= status
-			} else {
-				return res.sendStatus(200)
+			} else if(statusType == 'food')  {
+				updateData["status"]= status
+				// return res.sendStatus(200)
 			}
 
 			let updateStatus = await order_ref.ref.update(updateData)

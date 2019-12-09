@@ -83,48 +83,42 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			<p style="margin: 0; margin-bottom: 25px;">We are on it. We'll notify you when your bowl(s) is ready for pick-up.</p>`
 
 
-		} else if(order_data.status.toLowerCase() == 'placed' ) {
+		} else if(order_data.status.toLowerCase() == 'placed' &&  order_data.order_mode =='kaos') {
 
-			// if(order_data.items.length > 2) {
-			// 	sms_msg = `We have received your order for ${showItem.product_name}  and ${secondItem.product_name} and ${totalItem} other bowl(s), We are on it			`
-			// } else if(order_data.items.length == 2) {
-			// 	sms_msg = `We have received your order for ${order_data.items[0].product_name} and ${order_data.items[1].product_name} bowl, We are on it.`
+			if(order_data.items.length > 2) {
+				sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} for ${showItem.product_name}  and ${secondItem.product_name} and ${totalItem} other bowl(s), We are on it			`
+			} else if(order_data.items.length == 2) {
+				sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} for ${order_data.items[0].product_name} and ${order_data.items[1].product_name} bowl, We are on it.`
 
-			// } else {
-			// 	sms_msg = `We have received your order for ${order_data.items[0].product_name}  bowl, We are on it.`
-			// }
-			// email_subject = `Thank you for your order at Green Grain Bowl`
-			// email_content.msg = ` <p>Hi <strong>${cus_name},</strong></p>
-			// <p>Thanks for placing an order with us.</p>
-			// <p>We are on it. We'll notify you when your bowl(s) is ready for pick-up.</p>`
-
+			} else {
+				sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} for ${order_data.items[0].product_name}  bowl, We are on it.`
+			}
+			email_subject = `Thank you for your order at Green Grain Bowl`
+			email_content.msg = ` <p>Hi <strong>${cus_name},</strong></p>
+			<p>A lot of time and effort has gone into creating each bowl.</p>
+			<p>What’s great is that it’s a beautifully balanced meal, cooked from scratch, using fresh, seasonal produce.
+			Happy to have you join our tribe that eats well, and feels great!</p>`
 
 		} else if(order_data.status.toLowerCase() == 'failed') {
 			return null
-		} else if (prev_order_data.status.toLowerCase() == "placed" && order_data.status.toLowerCase() == 'accepted') {
+		} else if (prev_order_data.status.toLowerCase() == "placed" && order_data.status.toLowerCase() == 'accepted' && order_data.order_mode =='online') {
 			return null
 		} else if (prev_order_data.status.toLowerCase() == "placed" && order_data.status.toLowerCase() == 'rejected') {
 
 		} else if (order_data.food_status.toLowerCase() == "food_is_ready" && order_data.order_mode == "kaos") {
-			
-			if(order_data.items.length > 2) {
-				sms_msg = `We have received your order for ${showItem.product_name}  and ${secondItem.product_name} and ${totalItem} other bowl(s), We are on it			`
-			} else if(order_data.items.length == 2) {
-				sms_msg = `We have received your order for ${order_data.items[0].product_name} and ${order_data.items[1].product_name} bowl, We are on it.`
-
-			} else {
-				sms_msg = `We have received your order for ${order_data.items[0].product_name}  bowl, We are on it.`
-			}
+			sms_msg = `Your bowl(s) is ready to be picked up. The token number is ^number^. Please show this SMS at the pick-up counter`
 			email_subject = `Thank you for your order at Green Grain Bowl`
 			email_content.msg = ` <p>Hi <strong>${cus_name},</strong></p>
-			<p>Thanks for placing an order with us.</p>
-			<p>We are on it. We'll notify you when your bowl(s) is ready for pick-up.</p>`
+			<p>We are about to change the way you have tasted, perceived and experienced salads before.
+			All dressed up, ready to be picked up - a well balanced meal, salad style, that promises to put a smile on your face.
+			</p>
+		`
 		}
 
 		if(order_data.order_mode == "kaos") {
-			email_content.address =`<div class=""><strong>Pick up from  : </strong>GGB Counter</div> `
+			email_content.address =`<div class=""><strong>Pick up from: </strong>GGB Counter</div> `
 		} else {
-			email_content.address =`<div class=""><strong>Delivery Address : </strong></div>
+			email_content.address =`<div class=""><strong>Delivery Address: </strong></div>
 				${order_data.shipping_address.address}, ${order_data.shipping_address.landmark}, ${order_data.shipping_address.formatted_address}`
 		}
 		

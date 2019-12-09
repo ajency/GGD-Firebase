@@ -28,7 +28,7 @@ let PaymentGateway = {
                 cart_data = JSON.parse(JSON.stringify(cart_data))
                 cart_data["status"] = "draft";
                 let order_ref = await user_ref.collection('orders').add({
-                    ...cart_data, ...{food_status: '', delivery_status:''}
+                    ...cart_data, ...{food_status: '', delivery_status:'', order_mode:"kaos"}
                 })
                 
                 let razorpay_receipt = order_ref.id;
