@@ -219,18 +219,20 @@ let Utils = {
                         <body>
                           <div class="email-container" style="max-width: 500px; width:100%;margin: 0 auto; font-family: 'Work Sans',sans-serif; color: #212529; font-size: 14px;">
                             <div class="email-header" style="text-align: center; padding: 15px; background: #ecf6ec;">
-                              <div class="logo" style="width: 60%;display: inline-block;text-align: right;">
+                              <div class="logo" style="width: 100%;">
                                 <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/GGB-logo.png" style="width: 100px;
                                 vertical-align: middle;/>
-                              </div>
-                              <div class="" style="display:inline-block;text-align: right;width: 38%;">
-                                <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/slidein/checkout.png" style="width:17px;display:inline-block;vertical-align:middle;"/>
-                                <span style="font-weight: 600;text-transform: uppercase;font-size: 12px;display:inline-block;vertical-align:middle;margin-left: 2px;">Order placed</span>
-                              </div>
+                              </div>                              
                             </div>
                             <div class="email-content" style="padding: 15px; padding-top: 30px; padding-bottom: 30px; padding-left: 0; padding-right: 0;">
-                                <div class="order-number mb-25 text-right" style="padding-right:15px;margin-bottom:25px;text-align:right;">
-                                  Order no: <strong><a href="${email_content.url}">${email_content.order_nos}</a></strong>
+                                <div class="" style="margin-bottom:25px;clear:both;overflow:hidden;display:flex;">
+                                  <div class="" style="text-align:left;padding-left:15px;width:50%;float:left;">
+                                    <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/slidein/checkout.png" style="width:17px;display:inline-block;vertical-align:middle;"/>
+                                    <span style="font-weight: 600;text-transform: uppercase;font-size: 12px;display:inline-block;vertical-align:middle;margin-left: 2px;">Order placed</span>
+                                  </div>
+                                  <div class="order-number text-right" style="padding-right:15px;text-align:right;width:50%;float:left;margin-bottom:0;">
+                                    Order no: <strong><a href="${email_content.url}">${email_content.order_nos}</a></strong>
+                                  </div>
                                 </div>
                                 <div class="px-15" style="padding-left: 15px; padding-right: 15px;">${email_content.msg}</div>
 
