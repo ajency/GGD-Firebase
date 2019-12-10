@@ -553,7 +553,7 @@ let Order = {
 
 	updateOrderStatus: async (req:Request, res:Response) => {
 		try {
-			let { order_id, user_id, status:string, statusType } = req.body
+			let { order_id, user_id, status, statusType } = req.body
 			let firestore = admin.firestore();
 			if(!order_id) {
 				console.log("Airtable status updated failed: Order_id empty")

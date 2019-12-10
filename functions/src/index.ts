@@ -129,7 +129,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 		}
 
 		if(order_data.order_mode == "kiosk") {
-			email_content.url = `https://greengrainbowl.com/oyofourth/#/order-details/${snap.after.id}`
+			email_content.url = `https://greengrainbowl.com/oyo/#/order-details/${snap.after.id}`
 			email_content.address =`<div class=""><strong>Pick up from: </strong>GGB Counter</div> `
 		} else {
 			email_content.address =`<div class=""><strong>Delivery Address: </strong></div>
@@ -141,7 +141,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 		let date = new Date(dateTemp)
 		email_content.date = date.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year: 'numeric' });
 		for(let item of  order_data.items) {
-			let prod_img ='http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/cracked-wheat-n-chickpea-bowl-chicken.jpg'
+			let prod_img =''
 			if(item.product_id !='') {
 				let prod_ref = await firestore.collection('products').doc(item.product_id).get()	
 				prod_img =  prod_ref.data().image_urls[0]
@@ -222,7 +222,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 		}
 	
 		if(order_data.shipping_address.phone != '') {
-			let tempe ="viraj@ajency.in" 
+			let tempe ="akshata@ajency.in" 
 			const mailOptions = {
 				from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
 				to: tempe,
