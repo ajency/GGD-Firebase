@@ -511,9 +511,28 @@ let Order = {
 						}
 					}
 				}
-				
+
+				let tokens = firestore.collection("tokens").doc(new Date().toDateString());
+
+				let order_token = await firestore.runTransaction(function(transaction) {
+					return transaction.get(tokens).then(function(sfDoc) {
+						let new_count; 
+						if (!sfDoc.exists) {
+							new_count =  1; 
+						} else {
+							new_count = sfDoc.data().count + 1;
+						}
+
+						
+						transaction.set(tokens, { count: new_count },{merge:true});
+						return new_count;
+					});
+				})
+				Order.sleep(10);
+
 				firestore.collection('user-details').doc(user_id).collection('orders').doc(razorpay_order.receipt).update({
-                    status:"placed"
+					status:"placed",
+					token: order_token 
 				})
 
 				if(cart_ref.data().order_id == ggb_order_id && status !="failed") {
@@ -601,7 +620,10 @@ let Order = {
 			return res.status(200).send(error)
 		}
 		
-	}	
+	},
+ 	sleep(ms) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
 }
 
 export default Order;
