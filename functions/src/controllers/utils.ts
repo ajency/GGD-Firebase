@@ -67,7 +67,7 @@ let Utils = {
                           }
                           p{
                             margin: 0;
-                            margin-bottom: 25px;
+                            margin-bottom: 15px;
                           }
                           .border-grey{
                             border: 1px solid #c4c8c4;
@@ -76,7 +76,7 @@ let Utils = {
                             padding: 5px;
                           } 
                           .mb-25{
-                            margin-bottom: 25px;
+                            margin-bottom: 15px;
                           }
                           .mb-05{
                             margin-bottom: 10px;
@@ -126,7 +126,7 @@ let Utils = {
                             padding: 15px;
                             padding-top: 0;
                             padding-bottom: 0;
-                            margin-bottom: 25px;
+                            margin-bottom: 15px;
                             line-height: 22px;
                           }  
                           .list-text-block .mb-5{
@@ -177,7 +177,7 @@ let Utils = {
                           }
                         
                           .follow-text a{
-                            margin-right: 10px;    
+                            margin-right: 0;    
                           }
                         
                           .follow-text a:last-child{
@@ -226,7 +226,7 @@ let Utils = {
                               </div>                              
                             </div>
                             <div class="email-content" style="padding: 15px; padding-top: 30px; padding-bottom: 20px; padding-left: 0; padding-right: 0;">
-                                <div class="" style="margin-bottom:25px;clear:both;overflow:hidden;display:flex;">
+                                <div class="" style="margin-bottom:15px;clear:both;overflow:hidden;display:flex;">
                                   <div class="" style="text-align:left;padding-left:15px;width:45%;float:left;">
                                     <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/slidein/checkout.png" style="width:17px;display:inline-block;vertical-align:middle;" />
                                     <span style="font-weight: 600;text-transform: uppercase;font-size: 12px;display:inline-block;vertical-align:middle;margin-left: 2px;">${email_content.label}</span>
@@ -239,12 +239,12 @@ let Utils = {
 
                                 <p class="bold mb-10 px-15" style="margin-bottom: 5px;padding-left: 15px; padding-right: 15px;font-weight:700;">Order Details</p>
                           
-                                <div class="d-flex mb-25 justufy-between px-15" style="padding-left: 15px; padding-right: 15px;margin-bottom:25px;clear:both;overflow:hidden;">
+                                <div class="d-flex mb-25 justufy-between px-15" style="padding-left: 15px; padding-right: 15px;margin-bottom:15px;clear:both;overflow:hidden;">
                                     <div class="mb-5" style="margin-bottom:5px;width:55%;float:left;">Order no:<strong> <a href="${email_content.url}" style="color:#212529!important;">${email_content.order_nos}</a></strong></div>
                                     <div class="text-right" style="width: 45%;text-align: right;float:left;">Date: ${email_content.date}</div>
                                 </div>
                                 
-                                <div class="list-text-block" style="padding: 15px; padding-top: 0; padding-bottom: 0; margin-bottom: 25px; line-height: 22px;">
+                                <div class="list-text-block" style="padding: 15px; padding-top: 0; padding-bottom: 0; margin-bottom: 15px; line-height: 22px;">
                                   ${email_content.address}
                                 </div>
                                 <div class="order-items px-15" style="margin-bottom: 15px;padding-left: 15px;padding-right: 15px;">
@@ -261,7 +261,7 @@ let Utils = {
                             <div class="email-footer" style="padding: 15px 15px; background: #ecf6ec;position: relative;">
                               <div class="" style="clear: both; overflow: hidden;">
                                 <div class="follow-text mb-15 w-50 text-left" style="margin-bottom: 15px;width: 50%;text-align:left;float:left;">
-                                    <p class="mb-5" style="margin-bottom: 5px;margnin-top:0;"><strong>Follow Us</strong></p>
+                                    <p class="mb-5" style="margin-bottom:5px;margnin-top:0;"><strong>Follow Us</strong></p>
                                     <a href="#" class="d-inline-block" style="text-decoration: none;">
                                       <img width="30" src="https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/fb.png"/>
                                     </a>
@@ -270,8 +270,8 @@ let Utils = {
                                     </a>
                                 </div>
                                 <div class="contact-text w-50 text-right" style="width:50%;text-align:right;float:left;">
-                                  <p class="mb-5" style="margin-bottom: 5px;margnin-top:0;"><strong>Need help?</strong></p>
-                                  <p class="mb-5" style="margin-bottom: 5px;margnin-top:0;">Email: <a class="text-green" href="mailto:test@test.com" style="color:#47a748;text-decoration: underline;">test@test.com</a></p>
+                                  <p class="mb-5" style="margin-bottom:5px;margnin-top:0;"><strong>Need help?</strong></p>
+                                  <p class="mb-5" style="margin-bottom:5px;margnin-top:0;">Email: <a class="text-green" href="mailto:test@test.com" style="color:#47a748;text-decoration: underline;">test@test.com</a></p>
                                   <p class="mb-15" style="margnin-top:0;">Mobile: <a class="text-green" href="https://api.whatsapp.com/send?phone=+917770004258" style="color: #47a748;text-decoration: underline;">7770004258</a></p>      
                                 </div>     
                               </div>                         
