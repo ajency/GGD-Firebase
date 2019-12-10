@@ -103,19 +103,29 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 
 		}  else if(order_data.status.toLowerCase() == 'failed') {
 			return null
-		} else if (prev_order_data.status.toLowerCase() == "placed" && order_data.status.toLowerCase() == 'accepted' && order_data.order_mode =='online') {
+		} else if (prev_order_data.status.toLowerCase() == "placed" && order_data.status.toLowerCase() == 'accepted' && order_data.order_mode =='online' && order_data.food_status =='') {
 			return null
 		} else if (prev_order_data.status.toLowerCase() == "placed" && order_data.status.toLowerCase() == 'rejected') {
 			return null
-		} else if (order_data.food_status.toLowerCase() == "food_is_ready" && order_data.order_mode == "kiosk") {
+		} else if(prev_order_data.food_status == "" && order_data.food_status == "being_prepared" ) {
+			return null
+		} else if(prev_order_data.food_status == "being_prepared" && order_data.food_status == "food_is_ready" && order_data.order_mode == "online")  {
+			return null
+		} else if (order_data.food_status.toLowerCase() == "food_is_ready" && order_data.order_mode == "kiosk" && order_data.delivery_status == '') {
 			email_content.label="ready for pickup"
-			sms_msg = `Your bowl(s) is ready to be picked up. The token number is ^number^. Please show this SMS at the pick-up counter`
+			sms_msg = `Your bowl(s) is ready to be picked up. The token number is 546. Please show this SMS at the pick-up counter`
 			email_subject = `Your bowl(s) is ready to be picked up`
 			email_content.msg = ` <p>Hi <strong>${cus_name},</strong></p>
 			<p>We are about to change the way you have tasted, perceived and experienced salads before.
 			All dressed up, ready to be picked up - a well balanced meal, salad style, that promises to put a smile on your face.
 			</p>
 		`
+		} else if(prev_order_data.delivery_status == '' && order_data.food_status == 'food_is_ready' && order_data.delivery_status == 'picked_up') {
+			return null
+		} else if (prev_order_data.delivery_status == 'picked_up' && order_data.delivery_status == 'delivered') {
+			return null
+		} else if (prev_order_data.delivery_status == 'picked_up' && order_data.delivery_status == 'failed') {
+			return null
 		}
 
 		if(order_data.order_mode == "kiosk") {
