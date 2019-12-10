@@ -261,7 +261,7 @@ let Utils = {
                             <div class="email-footer" style="padding: 15px 15px; background: #ecf6ec;position: relative;">
                               <div class="" style="clear: both; overflow: hidden;">
                                 <div class="follow-text mb-15 w-50 text-left" style="margin-bottom: 15px;width: 50%;text-align:left;float:left;">
-                                    <p class="mb-5" style="margin-bottom:5px;margnin-top:0;"><strong>Follow Us</strong></p>
+                                    <p class="mb-5" style="margin-bottom:5px;margin-top:0;"><strong>Follow Us</strong></p>
                                     <a href="#" class="d-inline-block" style="text-decoration: none;">
                                       <img width="30" src="https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/fb.png"/>
                                     </a>
@@ -270,9 +270,9 @@ let Utils = {
                                     </a>
                                 </div>
                                 <div class="contact-text w-50 text-right" style="width:50%;text-align:right;float:left;">
-                                  <p class="mb-5" style="margin-bottom:5px;margnin-top:0;"><strong>Need help?</strong></p>
-                                  <p class="mb-5" style="margin-bottom:5px;margnin-top:0;">Email: <a class="text-green" href="mailto:test@test.com" style="color:#47a748;text-decoration: underline;">test@test.com</a></p>
-                                  <p class="mb-15" style="margnin-top:0;">Mobile: <a class="text-green" href="https://api.whatsapp.com/send?phone=+917770004258" style="color: #47a748;text-decoration: underline;">7770004258</a></p>      
+                                  <p class="mb-5" style="margin-bottom:5px;margin-top:0;"><strong>Need help?</strong></p>
+                                  <p class="mb-5" style="margin-bottom:5px;margin-top:0;">Email: <a class="text-green" href="mailto:test@test.com" style="color:#47a748;text-decoration: underline;">test@test.com</a></p>
+                                  <p class="mb-15" style="margin-top:0;">Mobile: <a class="text-green" href="https://api.whatsapp.com/send?phone=+917770004258" style="color: #47a748;text-decoration: underline;">7770004258</a></p>      
                                 </div>     
                               </div>                         
                               <div class="text-center clearfix font-size-12" style="font-size: 12px;clear: both; overflow: hidden;text-align: center;">(C) 2019 Digital Dwarves Pvt Ltd. All Right Reserved</div>
