@@ -85,13 +85,29 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			<p style="margin: 0; margin-bottom: 25px;">We are on it. We'll notify you when your bowl(s) is ready for pick-up.</p>`
 
 
-		} else if(order_data.status.toLowerCase() == 'failed') {
+		} else if(order_data.status.toLowerCase() == 'placed' &&  order_data.order_mode =='kiosk' && order_data.food_status =='' && order_data.delivery_status == '') {
+
+			if(order_data.items.length > 2) {
+				sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} for ${showItem.product_name}  and ${secondItem.product_name} and ${totalItem} other bowl(s), We are on it			`
+			} else if(order_data.items.length == 2) {
+				sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} for ${order_data.items[0].product_name} and ${order_data.items[1].product_name} bowl, We are on it.`
+
+			} else {
+				sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} for ${order_data.items[0].product_name}  bowl, We are on it.`
+			}
+			email_subject = `Thank you for your order at Green Grain Bowl`
+			email_content.msg = ` <p>Hi <strong>${cus_name},</strong></p>
+			<p>A lot of time and effort has gone into creating each bowl.</p>
+			<p>What’s great is that it’s a beautifully balanced meal, cooked from scratch, using fresh, seasonal produce.
+			Happy to have you join our tribe that eats well, and feels great!</p>`
+
+		}  else if(order_data.status.toLowerCase() == 'failed') {
 			return null
 		} else if (prev_order_data.status.toLowerCase() == "placed" && order_data.status.toLowerCase() == 'accepted' && order_data.order_mode =='online') {
 			return null
 		} else if (prev_order_data.status.toLowerCase() == "placed" && order_data.status.toLowerCase() == 'rejected') {
 			return null
-		} else if (order_data.food_status.toLowerCase() == "food_is_ready" && order_data.order_mode == "kaos") {
+		} else if (order_data.food_status.toLowerCase() == "food_is_ready" && order_data.order_mode == "kiosk") {
 			email_content.label="ready for pickup"
 			sms_msg = `Your bowl(s) is ready to be picked up. The token number is ^number^. Please show this SMS at the pick-up counter`
 			email_subject = `Your bowl(s) is ready to be picked up`
@@ -102,7 +118,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 		`
 		}
 
-		if(order_data.order_mode == "kaos") {
+		if(order_data.order_mode == "kiosk") {
 			email_content.url = `https://greengrainbowl.com/oyofourth/#/order-details/${snap.after.id}`
 			email_content.address =`<div class=""><strong>Pick up from: </strong>GGB Counter</div> `
 		} else {
