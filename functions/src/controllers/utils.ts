@@ -3,6 +3,7 @@ let Utils = {
         return	`		
                         <html>
                         <head>
+                        <meta name="viewport" content="width=device-width, initial-scale=1">
                         <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,400,600,700&display=swap" rel="stylesheet">
                         <style>
                           .email-container{
@@ -24,7 +25,7 @@ let Utils = {
                           .email-content{
                             padding: 15px;
                             padding-top: 30px;
-                            padding-bottom: 30px;
+                            padding-bottom: 20px;
                             padding-left: 0;
                             padding-right: 0;
                           }
@@ -224,14 +225,14 @@ let Utils = {
                                 vertical-align: middle;" />
                               </div>                              
                             </div>
-                            <div class="email-content" style="padding: 15px; padding-top: 30px; padding-bottom: 30px; padding-left: 0; padding-right: 0;">
+                            <div class="email-content" style="padding: 15px; padding-top: 30px; padding-bottom: 20px; padding-left: 0; padding-right: 0;">
                                 <div class="" style="margin-bottom:25px;clear:both;overflow:hidden;display:flex;">
-                                  <div class="" style="text-align:left;padding-left:15px;width:50%;float:left;">
+                                  <div class="" style="text-align:left;padding-left:15px;width:45%;float:left;">
                                     <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/slidein/checkout.png" style="width:17px;display:inline-block;vertical-align:middle;" />
                                     <span style="font-weight: 600;text-transform: uppercase;font-size: 12px;display:inline-block;vertical-align:middle;margin-left: 2px;">${email_content.label}</span>
                                   </div>
-                                  <div class="order-number text-right" style="padding-right:15px;text-align:right;width:50%;float:left;margin-bottom:0;">
-                                    Order no: <strong><a href="${email_content.url}">${email_content.order_nos}</a></strong>
+                                  <div class="order-number text-right" style="padding-right:15px;text-align:right;width:55%;float:left;margin-bottom:0;">
+                                    Order no: <strong><a href="${email_content.url}" style="color:#212529!important;">${email_content.order_nos}</a></strong>
                                   </div>
                                 </div>
                                 <div class="px-15" style="padding-left: 15px; padding-right: 15px;">${email_content.msg}</div>
@@ -239,9 +240,8 @@ let Utils = {
                                 <p class="bold mb-10 px-15" style="margin-bottom: 5px;padding-left: 15px; padding-right: 15px;font-weight:700;">Order Details</p>
                           
                                 <div class="d-flex mb-25 justufy-between px-15" style="padding-left: 15px; padding-right: 15px;margin-bottom:25px;clear:both;overflow:hidden;">
-
-                                    <div class="mb-5 w-50" style="margin-bottom:5px;width:50%;float:left;">Order no:<strong> <a href="${email_content.url}">${email_content.order_nos}</a></strong></div>
-                                    <div class="w-50 text-right" style="width: 50%;text-align: right;float:left;">Date: ${email_content.date}</div>
+                                    <div class="mb-5" style="margin-bottom:5px;width:55%;float:left;">Order no:<strong> <a href="${email_content.url}" style="color:#212529!important;">${email_content.order_nos}</a></strong></div>
+                                    <div class="text-right" style="width: 45%;text-align: right;float:left;">Date: ${email_content.date}</div>
                                 </div>
                                 
                                 <div class="list-text-block" style="padding: 15px; padding-top: 0; padding-bottom: 0; margin-bottom: 25px; line-height: 22px;">
