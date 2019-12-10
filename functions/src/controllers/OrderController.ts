@@ -566,7 +566,7 @@ let Order = {
 				return res.status(200).send("Status can not be empty")
 			}
 
-			let statusObj = statuses.find((stat) => { return stat.label == status.trim.toLowerCase()})
+			let statusObj = statuses.find((stat) => { return stat.label == status.trim().toLowerCase()})
 			if(!statusObj) {
 				return res.status(200).send("status is invalid")
 			}
