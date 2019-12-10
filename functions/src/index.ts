@@ -103,13 +103,13 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 
 		}  else if(order_data.status.toLowerCase() == 'failed') {
 			return null
-		} else if (prev_order_data.status.toLowerCase() == "placed" && order_data.status.toLowerCase() == 'accepted' && order_data.order_mode =='online' && order_data.food_status =='') {
+		} else if (prev_order_data.status.toLowerCase() == "placed" && order_data.status.toLowerCase() == 'accepted' && order_data.order_mode =='online' && order_data.food_status =='' && order_data.delivery_status =='') {
 			return null
 		} else if (prev_order_data.status.toLowerCase() == "placed" && order_data.status.toLowerCase() == 'rejected') {
 			return null
 		} else if(prev_order_data.food_status == "" && order_data.food_status == "being_prepared" ) {
 			return null
-		} else if(prev_order_data.food_status == "being_prepared" && order_data.food_status == "food_is_ready" && order_data.order_mode == "online")  {
+		} else if(prev_order_data.food_status == "being_prepared" && order_data.food_status == "food_is_ready" && order_data.order_mode == "online"  && order_data.delivery_status =='')  {
 			return null
 		} else if (order_data.food_status.toLowerCase() == "food_is_ready" && order_data.order_mode == "kiosk" && order_data.delivery_status == '') {
 			email_content.label="ready for pickup"
@@ -120,7 +120,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			All dressed up, ready to be picked up - a well balanced meal, salad style, that promises to put a smile on your face.
 			</p>
 		`
-		} else if(prev_order_data.delivery_status == '' && order_data.food_status == 'food_is_ready' && order_data.delivery_status == 'picked_up') {
+		} else if(prev_order_data.delivery_status == '' && order_data.food_status == 'food_is_ready' && order_data.delivery_status == 'picked_up' ) {
 			return null
 		} else if (prev_order_data.delivery_status == 'picked_up' && order_data.delivery_status == 'delivered') {
 			return null
