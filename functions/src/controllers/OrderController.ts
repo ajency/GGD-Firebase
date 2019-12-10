@@ -564,7 +564,7 @@ let Order = {
 			}  else if(statusType == 'order') {
 				updateData["status"]= status
 			} else if(statusType == 'food')  {
-				updateData["status"]= status
+				updateData["food_status"]= status
 				// return res.sendStatus(200)
 			}
 

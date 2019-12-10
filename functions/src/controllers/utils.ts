@@ -228,7 +228,7 @@ let Utils = {
                                 <div class="" style="margin-bottom:25px;clear:both;overflow:hidden;display:flex;">
                                   <div class="" style="text-align:left;padding-left:15px;width:50%;float:left;">
                                     <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/slidein/checkout.png" style="width:17px;display:inline-block;vertical-align:middle;" />
-                                    <span style="font-weight: 600;text-transform: uppercase;font-size: 12px;display:inline-block;vertical-align:middle;margin-left: 2px;">Order placed</span>
+                                    <span style="font-weight: 600;text-transform: uppercase;font-size: 12px;display:inline-block;vertical-align:middle;margin-left: 2px;">${email_content.label}</span>
                                   </div>
                                   <div class="order-number text-right" style="padding-right:15px;text-align:right;width:50%;float:left;margin-bottom:0;">
                                     Order no: <strong><a href="${email_content.url}">${email_content.order_nos}</a></strong>
