@@ -433,7 +433,11 @@ let Order = {
 			let firestore, data, payment_doc ; 
             firestore = admin.firestore();
 			let payment_ref= await firestore.collection('payments').where("pg_order_id", "==", order_id).get()
-			
+			if(!payment_ref.docs.length) {
+				console.log(id, order_id, "record empty")
+				return res.sendStatus(200)
+			}
+
 			if(payment_ref.docs[0].data().status !="draft") {
 				console.log("recalled")
 				return res.sendStatus(200)
