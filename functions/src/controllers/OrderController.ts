@@ -16,6 +16,16 @@ Airtable.configure({
 	apiKey: cred.airtableApiKey
 })
 const base = Airtable.base('apptpCcEN0UI8o1rm');
+const statuses = [
+					{id: "food_is_ready",	label: "food is ready"},
+					{id: "being_prepared",	label: "being prepared"}, 
+					{id: "accepted",	 	label: "accepted"}, 
+					{id: "rejected" , 		label: "rejected"}, 
+					{id: "cancelled", 		label: "cancelled"}, 
+					{id: "delivered", 		label: "delivered"},
+					{id: "picked_up",		label: "picked up"}, 
+					{id: "failed", 			label: "failed"}
+				]
 let Order = {
 
 	addToCart : async (req: Request, res: Response) => {
@@ -538,40 +548,55 @@ let Order = {
 	},
 
 	updateOrderStatus: async (req:Request, res:Response) => {
-		let { order_id, user_id, status, statusType } = req.body
-		let firestore = admin.firestore();
-		if(!order_id) {
-			console.log("Airtable status updated failed: Order_id empty")
-			return res.sendStatus(200)
-		} 
+		try {
+			let { order_id, user_id, status:string, statusType } = req.body
+			let firestore = admin.firestore();
+			if(!order_id) {
+				console.log("Airtable status updated failed: Order_id empty")
+				return res.status(200).send("Order can not be empty")
+			} 
 
-		if(!user_id) {
-			console.log("Airtable status updated failed: User_id empty")
-			return res.sendStatus(200)
-		}
-
-		if(!status) {
-			console.log("Airtable status updated failed: status empty")
-			return res.sendStatus(200)
-		}
-
-		let order_ref = await firestore.collection("user-details").doc(user_id).collection("orders").doc(order_id).get()
-		let updateData = {};
-		if(order_ref.exists) {
-			let order_data = order_ref.data()
-			if(statusType == 'delivery') {
-				updateData["delivery_status"]= status
-			}  else if(statusType == 'order') {
-				updateData["status"]= status
-			} else if(statusType == 'food')  {
-				updateData["food_status"]= status
-				// return res.sendStatus(200)
+			if(!user_id) {
+				console.log("Airtable status updated failed: User_id empty")
+				return res.status(200).send("User id can not be empty")
 			}
 
-			let updateStatus = await order_ref.ref.update(updateData)
+			if(!status) {
+				console.log("Airtable status updated failed: status empty")
+				return res.status(200).send("Status can not be empty")
+			}
+
+			let statusObj = statuses.find((stat) => { return stat.label == status.trim.toLowerCase()})
+			if(!statusObj) {
+				return res.status(200).send("status is invalid")
+			}
+			let order_ref = await firestore.collection("user-details").doc(user_id).collection("orders").doc(order_id).get()
+			let updateData = {};
+
+			if(order_ref.exists) {
+				let order_data = order_ref.data()
+				if(statusType == 'delivery') {
+					if(order_data.status == "accepted" && order_data.food_status == "food_is_ready") {
+						updateData["delivery_status"]= statusObj.id
+					}
+				}  else if(statusType == 'order') {
+					if(order_data.status == "placed") {
+						updateData["status"]= statusObj.id
+					}
+				} else if(statusType == 'food')  {
+						updateData["food_status"]= statusObj.id
+					// return res.sendStatus(200)
+				}
+
+				let updateStatus = await order_ref.ref.update(updateData)
+			}
+			
+			return res.sendStatus(200)
+		} catch (error) {
+			console.log(error)
+			return res.status(200).send(error)
 		}
 		
-		return res.sendStatus(200)
 	}	
 }
 
