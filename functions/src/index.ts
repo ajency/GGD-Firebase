@@ -113,12 +113,13 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			return null
 		} else if (order_data.food_status.toLowerCase() == "food_is_ready" && order_data.order_mode == "kiosk" && order_data.delivery_status == '') {
 			email_content.label="ready for pickup"
-			sms_msg = `Your bowl(s) is ready to be picked up. The token number is 546. Please show this SMS at the pick-up counter`
+			sms_msg = `Your bowl(s) is ready to be picked up. The token number is ${order_data.token}. Please show this SMS at the pick-up counter`
 			email_subject = `Your bowl(s) is ready to be picked up`
 			email_content.msg = ` <p>Hi <strong>${cus_name},</strong></p>
 			<p>We are about to change the way you have tasted, perceived and experienced salads before.
 			All dressed up, ready to be picked up - a well balanced meal, salad style, that promises to put a smile on your face.
 			</p>
+			<p>The token number is ${order_data.token}. Please show this Email at the pick-up counter</p>
 		`
 		} else if(prev_order_data.delivery_status == '' && order_data.food_status == 'food_is_ready' && order_data.delivery_status == 'picked_up' ) {
 			return null
@@ -222,7 +223,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 		}
 	
 		if(order_data.shipping_address.phone != '') {
-			let tempe ="akshata@ajency.in" 
+			let tempe ="viraj@ajency.in" 
 			const mailOptions = {
 				from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
 				to: tempe,
