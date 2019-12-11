@@ -65,21 +65,32 @@ let PaymentGateway = {
         
     },
 
-    verifySignature: (req: Request, res: Response) => {
+    verifySignature: async (req: Request, res: Response) => {
+        let {razorpay_order_id, razorpay_payment_id, razorpay_signature} = req.body
+        let append ='', rp_order;
+        let redirect_url
+        let site_mode = req.query.site_mode
+        rp_order = await PaymentGateway.getRazorpayOrder( req.query.r_order_id)
+        redirect_url = config.frontendUrl+"#/order-summary/"+ req.query.r_order_id;
+        if(site_mode) {
+            if(site_mode == 'kiosk') {
+                append = 'oyo/'
+                redirect_url = config.frontendUrl+"oyo/"+"#/order-details/"+rp_order.receipt
+            } 
+        } 
+        console.log(redirect_url,site_mode)
         try {
-            let {razorpay_order_id, razorpay_payment_id, razorpay_signature} = req.body
             let r_order_id = req.query.r_order_id;
             let text = razorpay_order_id + "|" + razorpay_payment_id;
             let generated_signature = crypto.createHmac('sha256',cred.razorpay_secret).update(text).digest('hex');
             if (generated_signature == razorpay_signature) {
-                res.redirect(config.frontendUrl+"#/order-summary/"+r_order_id)
+                res.redirect(redirect_url)
             } else {
-                res.redirect(config.frontendUrl+"#/order-summary/"+r_order_id)
+                res.redirect(redirect_url)
             }
         } catch(e) {
             console.log(e);
-            res.redirect(config.frontendUrl+"#/cart")
-                    
+            res.redirect(config.frontendUrl+append+"#/cart")
         }
     },
 
