@@ -74,7 +74,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 		}
 		
 		if(order_data.status.toLowerCase() == 'placed' && order_data.order_mode == "online") {
-			sms_msg = `We have received your GreenGrain Bowl order. We are on it. To check the order status visit ${encodeURIComponent(email_content.url)}`
+			sms_msg = `We have received your GreenGrain Bowl order. We are on it. To check the order status visit ${email_content.url}`
 			// sms_msg = `Thanks for your order (number ${snap.after.id} for Rs.${order_data.summary.you_pay}). We are on it. We'll notify you when your bowl(s) is ready for pick-up.`
 
 			// if(order_data.items.length > 2) {
@@ -97,7 +97,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 
 
 		} else if(order_data.status.toLowerCase() == 'placed' &&  order_data.order_mode =='kiosk' && order_data.food_status =='' && order_data.delivery_status == '') {
-			sms_msg = `We have received your GreenGrain Bowl order. We are on it. To check the order status visit ${encodeURIComponent(email_content.url)}`
+			sms_msg = `We have received your GreenGrain Bowl order. We are on it. To check the order status visit ${email_content.url}`
 			// sms_msg = `Thanks for your order (number ${snap.after.id} for Rs.${order_data.summary.you_pay}). We are on it. We'll notify you when your bowl(s) is ready for pick-up.`
 			// if(order_data.items.length > 2) {
 			// 	// sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} for ${showItem.product_name}  and ${secondItem.product_name} and ${totalItem} other bowl(s), We are on it			`
@@ -220,6 +220,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			const mailOptions = {
 				from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
 				to: order_data.shipping_address.email,
+				bcc:"viraj@ajency.in,avantih@gmail.com",
 				subject: email_subject, // email subject
 				html: email_html
 			};
@@ -233,19 +234,19 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 		}
 	
 		if(order_data.shipping_address.phone != '') {
-			let tempe ="viraj@ajency.in" 
-			const mailOptions = {
-				from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
-				to: tempe,
-				subject: "GGB SMS", // email subject
-				html: `<div>${sms_msg}<div>`
-			};
-			console.log("Email option",mailOptions)
-			await transporter.sendMail(mailOptions).then((info) => {
-				console.log("mail sent to ",order_data.shipping_address.email)
-			}).catch((e) => {
-				console.log("mail sent failed to ",e)
-			})
+			// let tempe ="viraj@ajency.in" 
+			// const mailOptions = {
+			// 	from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
+			// 	to: tempe,
+			// 	subject: "GGB SMS", // email subject
+			// 	html: `<div>${sms_msg}<div>`
+			// };
+			// console.log("Email option",mailOptions)
+			// await transporter.sendMail(mailOptions).then((info) => {
+			// 	console.log("mail sent to ",order_data.shipping_address.email)
+			// }).catch((e) => {
+			// 	console.log("mail sent failed to ",e)
+			// })
 			let msgUrlParams = {
 				params: {
 					method:"SendMessage",

@@ -464,7 +464,7 @@ let Order = {
 				order_id:ggb_order_id,
 				payment_id:id,
 				razorpay_order_id:order_id,
-				status:status,
+				status:status == 'captured'? 'placed': status,
 				order_no:'',
 				datetime: new Date().toISOString()
 			}
@@ -487,7 +487,7 @@ let Order = {
 
 					if(order_ref.data().items.length) {
 						order_ref.data().items.forEach((item) => {
-							items_airtable = items_airtable + item.product_name + '|' + item.size + '|' + item.quantity + ','
+							items_airtable = items_airtable + item.product_name + '-' + item.size + '-' + item.quantity + '\n'
 						})
 					}
 					airtableRec.items = items_airtable;
