@@ -73,10 +73,8 @@ let PaymentGateway = {
         rp_order = await PaymentGateway.getRazorpayOrder( req.query.r_order_id)
         redirect_url = config.frontendUrl+"#/order-summary/"+ req.query.r_order_id;
         if(site_mode) {
-            if(site_mode == 'kiosk') {
-                append = 'oyo/'
-                redirect_url = config.frontendUrl+"oyo/"+"#/order-details/"+rp_order.receipt
-            } 
+            append = `${site_mode}/`
+            redirect_url = config.frontendUrl+append+"#/order-details/"+rp_order.receipt
         } 
         console.log(redirect_url,site_mode)
         try {

@@ -531,7 +531,7 @@ let Order = {
 				await Order.sleep(10);
 
 				firestore.collection('user-details').doc(user_id).collection('orders').doc(razorpay_order.receipt).update({
-					status:"placed",
+					status: status == 'captured'?'placed': status,
 					token: order_token 
 				})
 
