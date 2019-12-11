@@ -262,14 +262,14 @@ let Utils = {
                               <div class="" style="clear: both; overflow: hidden;">
                                 <div class="follow-text mb-15 w-50 text-left" style="margin-bottom: 15px;width: 50%;text-align:left;float:left;">
                                     <p class="mb-5" style="margin-bottom:5px;margin-top:0;"><strong>Follow Us</strong></p>
-                                    <a href="https://www.instamojo.com/greengrainbowl" target="_blank" class="d-inline-block" style="text-decoration: none;">
+                                    <a href="https://www.instagram.com/greengrainbowl/" target="_blank" class="d-inline-block" style="text-decoration: none;">
                                       <img width="30" src="https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/insta.png"/>
                                     </a>
                                 </div>
                                 <div class="contact-text w-50 text-right" style="width:50%;text-align:right;float:left;">
                                   <p class="mb-5" style="margin-bottom:5px;margin-top:0;"><strong>Need help?</strong></p>
                                   <p class="mb-5" style="margin-bottom:5px;margin-top:0;">Email: <a class="text-green" href="mailto:avantih@gmail.com" style="color:#47a748;text-decoration: underline;">avantih@gmail.com</a></p>
-                                  <p class="mb-15" style="margin-top:0;">Mobile: <a class="text-green" href="https://api.whatsapp.com/send?phone=+919823047755" style="color: #47a748;text-decoration: underline;">9823047755</a></p>      
+                                  <p class="mb-15" style="margin-top:0;">Mobile: <a class="text-green" href="https://api.whatsapp.com/send?phone=+917770004258" style="color: #47a748;text-decoration: underline;">7770004258</a></p>      
                                 </div>     
                               </div>                         
                               <div class="text-center clearfix font-size-12" style="font-size: 12px;clear: both; overflow: hidden;text-align: center;">Copyright Green Grain Bowl LLP</div>
