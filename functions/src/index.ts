@@ -64,8 +64,18 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			
 		}
 		email_content.url = `https://greengrainbowl.com/#/order-details/${snap.after.id}`
+
+		if(order_data.order_mode == "kiosk") {
+			email_content.url = `https://greengrainbowl.com/oyo/#/order-details/${snap.after.id}`
+			email_content.address =`<div class=""><strong>Pick up from: </strong>${order_data.shipping_address.formatted_address}</div> `
+		} else {
+			email_content.address =`<div class=""><strong>Delivery Address: </strong></div>
+				${order_data.shipping_address.address}, ${order_data.shipping_address.landmark}, ${order_data.shipping_address.formatted_address}`
+		}
+		
 		if(order_data.status.toLowerCase() == 'placed' && order_data.order_mode == "online") {
-			sms_msg = `Thanks for your order (number ${snap.after.id} for Rs.${order_data.summary.you_pay}). We are on it. We'll notify you when your bowl(s) is ready for pick-up.`
+			sms_msg = `We have received your GreenGrain Bowl order. We are on it. To check the order status visit ${encodeURIComponent(email_content.url)}`
+			// sms_msg = `Thanks for your order (number ${snap.after.id} for Rs.${order_data.summary.you_pay}). We are on it. We'll notify you when your bowl(s) is ready for pick-up.`
 
 			// if(order_data.items.length > 2) {
 			// 	sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} 
@@ -87,7 +97,8 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 
 
 		} else if(order_data.status.toLowerCase() == 'placed' &&  order_data.order_mode =='kiosk' && order_data.food_status =='' && order_data.delivery_status == '') {
-			sms_msg = `Thanks for your order (number ${snap.after.id} for Rs.${order_data.summary.you_pay}). We are on it. We'll notify you when your bowl(s) is ready for pick-up.`
+			sms_msg = `We have received your GreenGrain Bowl order. We are on it. To check the order status visit ${encodeURIComponent(email_content.url)}`
+			// sms_msg = `Thanks for your order (number ${snap.after.id} for Rs.${order_data.summary.you_pay}). We are on it. We'll notify you when your bowl(s) is ready for pick-up.`
 			// if(order_data.items.length > 2) {
 			// 	// sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} for ${showItem.product_name}  and ${secondItem.product_name} and ${totalItem} other bowl(s), We are on it			`
 			// } else if(order_data.items.length == 2) {
@@ -130,13 +141,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			return null
 		}
 
-		if(order_data.order_mode == "kiosk") {
-			email_content.url = `https://greengrainbowl.com/oyo/#/order-details/${snap.after.id}`
-			email_content.address =`<div class=""><strong>Pick up from: </strong>${order_data.shipping_address.formatted_address}</div> `
-		} else {
-			email_content.address =`<div class=""><strong>Delivery Address: </strong></div>
-				${order_data.shipping_address.address}, ${order_data.shipping_address.landmark}, ${order_data.shipping_address.formatted_address}`
-		}
+	
 		
 		email_content.order_nos = order_data.order_no;
 		var dateTemp = order_data.timestamp.toDate()
@@ -254,12 +259,12 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					format:"text"
 				}
 			}	
-			// axios.get('http://enterprise.smsgupshup.com/GatewayAPI/rest', msgUrlParams).then(ress => {
-			// 	console.log(ress)
-			// })
-			// .catch(err => {
-			// 	console.log(err)
-			// })
+			axios.get('http://enterprise.smsgupshup.com/GatewayAPI/rest', msgUrlParams).then(ress => {
+				console.log(ress)
+			})
+			.catch(err => {
+				console.log(err)
+			})
 		}
 	
 	}catch(e) {
