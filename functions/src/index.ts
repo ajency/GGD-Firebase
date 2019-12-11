@@ -65,19 +65,20 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 		}
 		email_content.url = `https://greengrainbowl.com/#/order-details/${snap.after.id}`
 		if(order_data.status.toLowerCase() == 'placed' && order_data.order_mode == "online") {
+			sms_msg = `Thanks for your order (number ${snap.after.id} for Rs.${order_data.summary.you_pay}). We are on it. We'll notify you when your bowl(s) is ready for pick-up.`
 
-			if(order_data.items.length > 2) {
-				sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} 
-					for ${showItem.product_name}  and ${secondItem.product_name} and ${totalItem} other bowl(s),
-					 We are on it. Check your order at <link>`
-			} else if(order_data.items.length == 2) {
-				sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} 
-				for ${order_data.items[0].product_name} and ${order_data.items[1].product_name} bowl, We are on it. Check your order at <link>`
+			// if(order_data.items.length > 2) {
+			// 	sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} 
+			// 		for ${showItem.product_name}  and ${secondItem.product_name} and ${totalItem} other bowl(s),
+			// 		 We are on it. Check your order at <link>`
+			// } else if(order_data.items.length == 2) {
+			// 	sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} 
+			// 	for ${order_data.items[0].product_name} and ${order_data.items[1].product_name} bowl, We are on it. Check your order at <link>`
 
-			} else {
-				sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} 
-				for ${order_data.items[0].product_name}  bowl, We are on it. Check your order at <link>`
-			}
+			// } else {
+			// 	sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} 
+			// 	for ${order_data.items[0].product_name}  bowl, We are on it. Check your order at <link>`
+			// }
 
 			email_subject = `Thank you for your order at Green Grain Bowl`
 			email_content.msg = ` <p style="margin: 0; margin-bottom: 25px;">Hi <strong>${cus_name},</strong></p>
@@ -86,15 +87,15 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 
 
 		} else if(order_data.status.toLowerCase() == 'placed' &&  order_data.order_mode =='kiosk' && order_data.food_status =='' && order_data.delivery_status == '') {
+			sms_msg = `Thanks for your order (number ${snap.after.id} for Rs.${order_data.summary.you_pay}). We are on it. We'll notify you when your bowl(s) is ready for pick-up.`
+			// if(order_data.items.length > 2) {
+			// 	// sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} for ${showItem.product_name}  and ${secondItem.product_name} and ${totalItem} other bowl(s), We are on it			`
+			// } else if(order_data.items.length == 2) {
+			// 	// sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} for ${order_data.items[0].product_name} and ${order_data.items[1].product_name} bowl, We are on it.`
 
-			if(order_data.items.length > 2) {
-				sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} for ${showItem.product_name}  and ${secondItem.product_name} and ${totalItem} other bowl(s), We are on it			`
-			} else if(order_data.items.length == 2) {
-				sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} for ${order_data.items[0].product_name} and ${order_data.items[1].product_name} bowl, We are on it.`
-
-			} else {
-				sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} for ${order_data.items[0].product_name}  bowl, We are on it.`
-			}
+			// } else {
+			// 	// sms_msg = `Thank you for your order ${snap.after.id} of Rs. ${order_data.summary.you_pay} for ${order_data.items[0].product_name}  bowl, We are on it.`
+			// }
 			email_subject = `Thank you for your order at Green Grain Bowl`
 			email_content.msg = ` <p>Hi <strong>${cus_name},</strong></p>
 			<p>A lot of time and effort has gone into creating each bowl.</p>
@@ -131,7 +132,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 
 		if(order_data.order_mode == "kiosk") {
 			email_content.url = `https://greengrainbowl.com/oyo/#/order-details/${snap.after.id}`
-			email_content.address =`<div class=""><strong>Pick up from: </strong>GGB Counter</div> `
+			email_content.address =`<div class=""><strong>Pick up from: </strong>${order_data.shipping_address.formatted_address}</div> `
 		} else {
 			email_content.address =`<div class=""><strong>Delivery Address: </strong></div>
 				${order_data.shipping_address.address}, ${order_data.shipping_address.landmark}, ${order_data.shipping_address.formatted_address}`
@@ -172,6 +173,15 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			`
 			}
 		}
+		let del_fee_block = ''
+		if(order_data.order_mode == "online") {
+			del_fee_block =`<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 0; padding-bottom: 10px;">
+						<div class="w-50" style="width: 50%;float:left;">
+							<label class="font-weight-light">Delivery fee</label>
+						</div>
+						<div class="font-weight-light w-50 text-right" style="width:50%;float:left;text-align:right;">₹${order_data.summary.shipping_fee}</div>
+					</div>`
+		}
 
 		email_content.summary = `
 				<div class="summary-item pt-0" style="display: flex; justify-content: space-between; padding-top: 10px; padding-bottom: 0;">
@@ -180,12 +190,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					</div>
 				<div class="font-weight-light w-50 text-right" style="width:50%;float:left;text-align:right;">₹${order_data.summary.sale_price_total} </div>
 				</div>
-				<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 0; padding-bottom: 10px;">
-					<div class="w-50" style="width: 50%;float:left;">
-						<label class="font-weight-light">Delivery fee</label>
-					</div>
-					<div class="font-weight-light w-50 text-right" style="width:50%;float:left;text-align:right;">₹${order_data.summary.shipping_fee}</div>
-				</div>
+				${del_fee_block}
 				<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 10px; padding-bottom: 10px;">
 					<div class="w-50" style="width: 50%;float:left;">
 						<label class="font-weight-medium mb-0"><strong>Total</strong></label>
@@ -236,19 +241,19 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			}).catch((e) => {
 				console.log("mail sent failed to ",e)
 			})
-			// let msgUrlParams = {
-			// 	params: {
-			// 		method:"SendMessage",
-			// 		send_to: order_data.shipping_address.phone,
-			// 		msg: sms_msg,
-			// 		msg_type:"TEXT",
-			// 		userid:"2000189884",
-			// 		auth_scheme: "plain",
-			// 		password:"UlpEzUe5L",
-			// 		v:'1.1',
-			// 		format:"text"
-			// 	}
-			// }	
+			let msgUrlParams = {
+				params: {
+					method:"SendMessage",
+					send_to: order_data.shipping_address.phone,
+					msg: sms_msg,
+					msg_type:"TEXT",
+					userid:"2000189884",
+					auth_scheme: "plain",
+					password:"UlpEzUe5L",
+					v:'1.1',
+					format:"text"
+				}
+			}	
 			// axios.get('http://enterprise.smsgupshup.com/GatewayAPI/rest', msgUrlParams).then(ress => {
 			// 	console.log(ress)
 			// })
