@@ -528,7 +528,7 @@ let Order = {
 						return new_count;
 					});
 				})
-				Order.sleep(10);
+				await Order.sleep(10);
 
 				firestore.collection('user-details').doc(user_id).collection('orders').doc(razorpay_order.receipt).update({
 					status:"placed",
@@ -610,7 +610,6 @@ let Order = {
 						updateData["food_status"]= statusObj.id
 					// return res.sendStatus(200)
 				}
-
 				let updateStatus = await order_ref.ref.update(updateData)
 			}
 			
