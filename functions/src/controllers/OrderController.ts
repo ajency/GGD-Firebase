@@ -458,13 +458,14 @@ let Order = {
 				contact:'',
 				name:'',
 				email:'',
-				items:0,
+				items:'',
 				address:"",
 				amount:amount,
 				order_id:ggb_order_id,
 				payment_id:id,
 				razorpay_order_id:order_id,
 				status:status,
+				order_no:'',
 				datetime: new Date().toISOString()
 			}
 
@@ -480,25 +481,17 @@ let Order = {
 				timestamp : admin.firestore.FieldValue.serverTimestamp()
 			})
 			
-			let items_airtable =[]
+			let items_airtable =''
 				
 				if(order_ref.exists) {
-					airtableRec.items = order_ref.data().cart_count;
 
 					if(order_ref.data().items.length) {
 						order_ref.data().items.forEach((item) => {
-							items_airtable.push({fields: {
-								order_id	:razorpay_order.receipt,
-								name		:item.product_name,
-								variant		:item.size,
-								quantity	:item.quantity,
-								veg			:"'"+item.veg+"'",
-								mrp			:item.mrp,
-								sale_price	:item.sale_price
-
-							}})
+							items_airtable = items_airtable + item.product_name + '|' + item.size + '|' + item.quantity + ','
 						})
 					}
+					airtableRec.items = items_airtable;
+
 					if(order_ref.data().shipping_address.formatted_address)	{	
 						airtableRec.address = order_ref.data().shipping_address.formatted_address;
 					}
@@ -529,13 +522,25 @@ let Order = {
 					});
 				})
 				await Order.sleep(10);
-
+				let temp = new Date().toDateString().split(" ")
+				let sugar = temp[1].toUpperCase()+temp[2]
+				let salt = razorpay_order.receipt.slice((razorpay_order.receipt.length - 3), (razorpay_order.receipt.length))
+				let pepper = razorpay_order.receipt.slice(0, 3)
+				let tempTk = order_token
+				if(tempTk < 100) {
+					var zeroes = new Array(3+1).join("0");
+					tempTk= (zeroes + order_token).slice(-3);
+				}
+				let order_no = sugar + salt + tempTk + pepper
 				firestore.collection('user-details').doc(user_id).collection('orders').doc(razorpay_order.receipt).update({
-					status: status == 'captured'?'placed': status,
-					token: order_token 
+					status: status == 'captured'? 'placed': status,
+					token: order_token ,
+					order_no: order_no,
+					timestamp : admin.firestore.FieldValue.serverTimestamp()
 				})
-
+				airtableRec.order_no = order_no
 				if(cart_ref.data().order_id == ggb_order_id && status !="failed") {
+					let order_mode = cart_ref.data().order_mode
 					cart_ref.ref.update({
 						items:[],
 						cart_count:0,
@@ -543,23 +548,22 @@ let Order = {
 							cart_discount:0,
 							mrp_total:0,
 							sale_price_total:0,
-							shipping_fee:50,
-							you_pay:0
+							shipping_fee:(order_mode=="kiosk")? 0:50,
+							you_pay:(order_mode=="kiosk")? 0:50
 						},
 						status:'cart',
 						order_id:''
 					})
 				}
 			
-				let airres = await base('orders').create([
-					{
-						"fields": airtableRec
-					}
-				])
-				if(items_airtable.length) {
-					let items_obj = await base('items').create(items_airtable)
-					
+				if(status != "failed") {
+					let airres = await base('orders').create([
+						{
+							"fields": airtableRec
+						}
+					])
 				}
+			
 				console.log("done")
             return res.sendStatus(200);
         } catch (error) {

@@ -138,8 +138,8 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				${order_data.shipping_address.address}, ${order_data.shipping_address.landmark}, ${order_data.shipping_address.formatted_address}`
 		}
 		
-		email_content.order_nos = payment_data.order_id;
-		var dateTemp = payment_data.timestamp.toDate()
+		email_content.order_nos = order_data.order_no;
+		var dateTemp = order_data.timestamp.toDate()
 		let date = new Date(dateTemp)
 		email_content.date = date.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year: 'numeric' });
 		for(let item of  order_data.items) {
