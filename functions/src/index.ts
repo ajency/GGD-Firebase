@@ -220,7 +220,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			const mailOptions = {
 				from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
 				to: order_data.shipping_address.email,
-				bcc:"viraj@ajency.in,avantih@gmail.com",
+				bcc:"viraj@ajency.in,avanti@ajency.in",
 				subject: email_subject, // email subject
 				html: email_html
 			};
