@@ -531,7 +531,7 @@ let Order = {
 					var zeroes = new Array(3+1).join("0");
 					tempTk= (zeroes + order_token).slice(-3);
 				}
-				let order_no = sugar + salt + tempTk + pepper
+				let order_no =( sugar + salt + tempTk + pepper).toUpperCase()
 				firestore.collection('user-details').doc(user_id).collection('orders').doc(razorpay_order.receipt).update({
 					status: status == 'captured'? 'placed': status,
 					token: order_token ,
