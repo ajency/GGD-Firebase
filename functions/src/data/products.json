@@ -1,209 +1,287 @@
 {
 	"products" : {
-		"yykiWcEv48MtR2oRiWla" : {
+		"1CG6P1slxnr9TSNnPzvZ" : {
 			"active" : true,
-			"description" : "",
-			"image_urls" : ["http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/orange_barley_bowl.jpg"],
-			"title" : "Orange Barley Bowl",
+			"description" : "Barley, greens, vegetables (broccoli, baby corn, beans and carrots), and the odd nugget of fresh orange. All mixed in an orange mustard ginger dressing. Topped with toasted flax seeds.",
+			"image_urls" : ["https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/OBB-Tofu_1x.jpg"],
+			"title" : "Orange Barley Bowl (Tofu)",
 			"veg" : true,
 			"variants" : [
 				{
 					"active" : true,
-					"id" : "yykiWcEv48MtR2oRiWla-var1",
-					"mrp" : 150,
-					"sale_price" : 100,
-					"size" : "small",
-					"stock_locations" : [
-						{
-							"lat_long" : {
-								"lat" :  15.487563699999999,
-								"long" : 73.83244069999999
-							},
-							"quantity" : 10,
-							"radius" : 5000,
-							"id" : "8vwd1rQRGiw0iQeMdlU0"
-						},
-						{
-							"lat_long" : {
-								"lat" :  15.5937116,
-								"long" : 73.8142237
-							},
-							"quantity" : 0,
-							"radius" : 5000,
-							"id" : "mWfW9HDn0Z8fBpEuRg6Q"
-						}
-					]
-				},
-				{
-					"active" : true,
-					"id" : "yykiWcEv48MtR2oRiWla-var2",
-					"mrp" : 300,
-					"sale_price" : 250,
+					"id" : "1CG6P1slxnr9TSNnPzvZ-regular",
+					"mrp" : 200,
+					"sale_price" : 200,
 					"size" : "regular",
 					"stock_locations" : [
 						{
 							"lat_long" : {
-								"lat" :  15.487563699999999,
-								"long" : 73.83244069999999
+								"lat" :  15.4959,
+								"long" : 73.8348
 							},
-							"quantity" : 10,
+							"quantity" : 15,
 							"radius" : 5000,
 							"id" : "8vwd1rQRGiw0iQeMdlU0"
-						},
-						{
-							"lat_long" : {
-								"lat" :  15.5937116,
-								"long" : 73.8142237
-							},
-							"quantity" : 10,
-							"radius" : 5000,
-							"id" : "mWfW9HDn0Z8fBpEuRg6Q"
 						}
 					]
 				},
 				{
 					"active" : true,
-					"id" : "yykiWcEv48MtR2oRiWla-var3",
-					"mrp" : 500,
-					"sale_price" : 450,
-					"size" : "large",
+					"id" : "1CG6P1slxnr9TSNnPzvZ-combo",
+					"mrp" : 240,
+					"sale_price" : 240,
+					"size" : "combo",
 					"stock_locations" : [
 						{
 							"lat_long" : {
-								"lat" :  15.487563699999999,
-								"long" : 73.83244069999999
+								"lat" :  15.4959,
+								"long" : 73.8348
 							},
 							"quantity" : 10,
 							"radius" : 5000,
 							"id" : "8vwd1rQRGiw0iQeMdlU0"
-						},
-						{
-							"lat_long" : {
-								"lat" :  15.5937116,
-								"long" : 73.8142237
-							},
-							"quantity" : 0,
-							"radius" : 5000,
-							"id" : "mWfW9HDn0Z8fBpEuRg6Q"
 						}
 					]
 				}
 			]
 		},
-
-		"ReAlsVnx73KSVrYGvbsn" : {
+		"8FVGmVx4JjQZRUsxtYrL" : {
 			"active" : true,
-			"description" : "",
-			"image_urls" : ["http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/cracked-wheat-n-chickpea-bowl-chicken.jpg"],
-			"title" : "Cracked Wheat & Chickpea Bowl",
-			"veg" : true,
+			"description" : "Barley, roasted chicken, greens, vegetables (broccoli, baby corn, beans and carrots), and the odd nugget of fresh orange. All mixed in an orange mustard ginger dressing. Topped with toasted flax seeds.",
+			"image_urls" : ["https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/OBB-Chicken_1x.jpg"],
+			"title" : "Orange Barley Bowl (Chicken)",
+			"veg" : false,
 			"variants" : [
 				{
 					"active" : true,
-					"id" : "ReAlsVnx73KSVrYGvbsn-var1",
-					"mrp" : 500,
-					"sale_price" : 400,
+					"id" : "8FVGmVx4JjQZRUsxtYrL-regular",
+					"mrp" : 220,
+					"sale_price" : 220,
 					"size" : "regular",
 					"stock_locations" : [
 						{
 							"lat_long" : {
-								"lat" :  15.487563699999999,
-								"long" : 73.83244069999999
+								"lat" :  15.4959,
+								"long" : 73.8348
+							},
+							"quantity" : 15,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						}
+					]
+				},
+				{
+					"active" : true,
+					"id" : "8FVGmVx4JjQZRUsxtYrL-combo",
+					"mrp" : 260,
+					"sale_price" : 260,
+					"size" : "combo",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.4959,
+								"long" : 73.8348
+							},
+							"quantity" : 10,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						}
+					]
+				}
+			]
+		},
+		"QexP4xy4W2cMx4zORNEi" : {
+			"active" : true,
+			"description" : "Quinoa, mixed greens, apples, roasted pumpkin, beetroot and carrots. Tossed in a dijon, balsamic dressing and topped with roasted almonds, seeds and feta.",
+			"image_urls" : ["https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/QNB-Veg_1x.jpg"],
+			"title" : "Quinoa and Nuts Bowl (Veg)",
+			"veg" : true,
+			"variants" : [
+				{
+					"active" : true,
+					"id" : "QexP4xy4W2cMx4zORNEi-regular",
+					"mrp" : 200,
+					"sale_price" : 200,
+					"size" : "regular",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.4959,
+								"long" : 73.8348
+							},
+							"quantity" : 15,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						}
+					]
+				},
+				{
+					"active" : true,
+					"id" : "QexP4xy4W2cMx4zORNEi-combo",
+					"mrp" : 200,
+					"sale_price" : 200,
+					"size" : "combo",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.4959,
+								"long" : 73.8348
+							},
+							"quantity" : 10,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						}
+					]
+				}
+			]
+		},
+		"bqApKRirpEeopN3w9H3J" : {
+			"active" : true,
+			"description" : "Quinoa and balsamic chicken, mixed greens, apples, roasted pumpkin, beetroot and carrots. Tossed in a dijon, balsamic dressing and topped with roasted almonds, seeds and feta.",
+			"image_urls" : ["https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/QNB-Chicken_1x.jpg"],
+			"title" : "Quinoa and Nuts Bowl (Chicken)",
+			"veg" : false,
+			"variants" : [
+				{
+					"active" : true,
+					"id" : "bqApKRirpEeopN3w9H3J-regular",
+					"mrp" : 200,
+					"sale_price" : 200,
+					"size" : "regular",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.4959,
+								"long" : 73.8348
+							},
+							"quantity" : 15,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						}
+					]
+				},
+				{
+					"active" : true,
+					"id" : "bqApKRirpEeopN3w9H3J-combo",
+					"mrp" : 200,
+					"sale_price" : 200,
+					"size" : "combo",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.4959,
+								"long" : 73.8348
+							},
+							"quantity" : 10,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						}
+					]
+				}
+			]
+		},
+		"zhsxgRGAMaIbia75SQJr" : {
+			"active" : true,
+			"description" : "Barley, roasted chicken, greens, vegetables (broccoli, baby corn, beans and carrots), and the odd nugget of fresh orange. All mixed in an orange mustard ginger dressing. Topped with toasted flax seeds.",
+			"image_urls" : ["https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/OBB-Chicken_1x.jpg"],
+			"title" : "Quinoa and Nuts Bowl (Free Range Eggs)",
+			"veg" : false,
+			"variants" : [
+				{
+					"active" : true,
+					"id" : "zhsxgRGAMaIbia75SQJr-regular",
+					"mrp" : 320,
+					"sale_price" : 220,
+					"size" : "regular",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.4959,
+								"long" : 73.8348
 							},
 							"quantity" : 5,
 							"radius" : 5000,
 							"id" : "8vwd1rQRGiw0iQeMdlU0"
-						},
-						{
-							"lat_long" : {
-								"lat" :  15.5937116,
-								"long" : 73.8142237
-							},
-							"quantity" : 10,
-							"radius" : 5000,
-							"id" : "mWfW9HDn0Z8fBpEuRg6Q"
 						}
 					]
-				}
-			]
-		},
-
-		"moVonufnFw46emRbKy7W" : {
-			"active" : true,
-			"description" : "",
-			"image_urls" : ["http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/thai-brown-rice-bowl-panner.jpg"],
-			"title" : "Thai Brown Rice Bowl",
-			"veg" : true,
-			"variants" : [
+				},
 				{
 					"active" : true,
-					"id" : "moVonufnFw46emRbKy7W-var1",
-					"mrp" : 450,
-					"sale_price" : 400,
-					"size" : "regular",
+					"id" : "zhsxgRGAMaIbia75SQJr-combo",
+					"mrp" : 360,
+					"sale_price" : 260,
+					"size" : "combo",
 					"stock_locations" : [
 						{
 							"lat_long" : {
-								"lat" :  15.487563699999999,
-								"long" : 73.83244069999999
+								"lat" :  15.4959,
+								"long" : 73.8348
 							},
-							"quantity" : 0,
+							"quantity" : 5,
 							"radius" : 5000,
 							"id" : "8vwd1rQRGiw0iQeMdlU0"
-						},
-						{
-							"lat_long" : {
-								"lat" :  15.5937116,
-								"long" : 73.8142237
-							},
-							"quantity" : 10,
-							"radius" : 5000,
-							"id" : "mWfW9HDn0Z8fBpEuRg6Q"
 						}
 					]
 				}
 			]
 		},
-
-		"JS42fGblvs7VJ8uxXuaD" : {
+		"iAZQBNDAObu4phKqFeiO" : {
 			"active" : true,
-			"description" : "",
-			"image_urls" : ["http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/quinoa-n-nuts-bowl.jpg"],
-			"title" : "Quinoa & Nuts Bowl",
+			"description" : "Thai grilled paneer with salad vegetables and greens served with basil brown rice. The peanut-butter + coconut milk dressing, along with crunchy roasted groundnuts, bring the Thai flavors home.",
+			"image_urls" : ["https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/Thai-Bowl-Paneer_1x.jpg"],
+			"title" : "Thai Browl Rice Bowl (Paneer)",
 			"veg" : true,
 			"variants" : [
 				{
 					"active" : true,
-					"id" : "JS42fGblvs7VJ8uxXuaD-var1",
+					"id" : "iAZQBNDAObu4phKqFeiO-regular",
 					"mrp" : 200,
 					"sale_price" : 200,
-					"size" : "small",
+					"size" : "regular",
 					"stock_locations" : [
 						{
 							"lat_long" : {
-								"lat" :  15.487563699999999,
-								"long" : 73.83244069999999
+								"lat" :  15.4959,
+								"long" : 73.8348
 							},
-							"quantity" : 10,
+							"quantity" : 15,
 							"radius" : 5000,
 							"id" : "8vwd1rQRGiw0iQeMdlU0"
-						},
-						{
-							"lat_long" : {
-								"lat" :  15.5937116,
-								"long" : 73.8142237
-							},
-							"quantity" : 0,
-							"radius" : 5000,
-							"id" : "mWfW9HDn0Z8fBpEuRg6Q"
 						}
 					]
 				},
 				{
 					"active" : true,
-					"id" : "JS42fGblvs7VJ8uxXuaD-var2",
-					"mrp" : 300,
-					"sale_price" : 300,
+					"id" : "iAZQBNDAObu4phKqFeiO-combo",
+					"mrp" : 200,
+					"sale_price" : 200,
+					"size" : "combo",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.4959,
+								"long" : 73.8348
+							},
+							"quantity" : 10,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						}
+					]
+				}
+			]
+		},
+		"iy0sD3rmOe9CB3extiE7" : {
+			"active" : true,
+			"description" : "Thai grilled chicken with salad vegetables and greens served with basil brown rice. The peanut-butter + coconut milk dressing, along with crunchy roasted groundnuts, bring the Thai flavors home.",
+			"image_urls" : ["https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/Thai-Bowl-Chicken_1x.jpg"],
+			"title" : "Thai Brown Rice Bowl (Chicken)",
+			"veg" : false,
+			"variants" : [
+				{
+					"active" : true,
+					"id" : "iy0sD3rmOe9CB3extiE7-regular",
+					"mrp" : 200,
+					"sale_price" : 200,
 					"size" : "regular",
 					"stock_locations" : [
 						{
@@ -211,27 +289,18 @@
 								"lat" :  15.487563699999999,
 								"long" : 73.83244069999999
 							},
-							"quantity" : 10,
+							"quantity" : 15,
 							"radius" : 5000,
 							"id" : "8vwd1rQRGiw0iQeMdlU0"
-						},
-						{
-							"lat_long" : {
-								"lat" :  15.5937116,
-								"long" : 73.8142237
-							},
-							"quantity" : 10,
-							"radius" : 5000,
-							"id" : "mWfW9HDn0Z8fBpEuRg6Q"
 						}
 					]
 				},
 				{
 					"active" : true,
-					"id" : "JS42fGblvs7VJ8uxXuaD-var3",
-					"mrp" : 400,
-					"sale_price" : 400,
-					"size" : "large",
+					"id" : "iy0sD3rmOe9CB3extiE7-combo",
+					"mrp" : 200,
+					"sale_price" : 200,
+					"size" : "combo",
 					"stock_locations" : [
 						{
 							"lat_long" : {
@@ -241,15 +310,96 @@
 							"quantity" : 10,
 							"radius" : 5000,
 							"id" : "8vwd1rQRGiw0iQeMdlU0"
-						},
+						}
+					]
+				}
+			]
+		},
+		"uLG6xoTOYkcnpjxKoTXI" : {
+			"active" : true,
+			"description" : "Sweet and chilly paneer with rice noodles and assorted vegetables. An equally flavourful dressing and surprise chunks of fruit give this bowl a very tropical vibe, topped off with some roasted cashews.",
+			"image_urls" : ["https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/Rice-Noodle-Paneer_1x.jpg"],
+			"title" : "Rice Noodle Paneer Bowl",
+			"veg" : true,
+			"variants" : [
+				{
+					"active" : true,
+					"id" : "uLG6xoTOYkcnpjxKoTXI-regular",
+					"mrp" : 200,
+					"sale_price" : 200,
+					"size" : "regular",
+					"stock_locations" : [
 						{
 							"lat_long" : {
-								"lat" :  15.5937116,
-								"long" : 73.8142237
+								"lat" :  15.487563699999999,
+								"long" : 73.83244069999999
 							},
-							"quantity" : 0,
+							"quantity" : 15,
 							"radius" : 5000,
-							"id" : "mWfW9HDn0Z8fBpEuRg6Q"
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						}
+					]
+				},
+				{
+					"active" : true,
+					"id" : "uLG6xoTOYkcnpjxKoTXI-combo",
+					"mrp" : 200,
+					"sale_price" : 200,
+					"size" : "combo",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.487563699999999,
+								"long" : 73.83244069999999
+							},
+							"quantity" : 10,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						}
+					]
+				}
+			]
+		},
+		"yzwTvwigXncRLBNki4M9" : {
+			"active" : true,
+			"description" : "Sweet and chilly shrimps with rice noodles and assorted vegetables. An equally flavourful dressing and surprise chunks of fruit give this bowl a very tropical vibe, topped off with some roasted cashews.",
+			"image_urls" : ["https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/products/Rice-Noodle-Shrimp_1x.jpg"],
+			"title" : "Rice Noodle Shrimp Bowl",
+			"veg" : false,
+			"variants" : [
+				{
+					"active" : true,
+					"id" : "1CG6P1slxnr9TSNnPzvZ-regular",
+					"mrp" : 200,
+					"sale_price" : 200,
+					"size" : "regular",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.487563699999999,
+								"long" : 73.83244069999999
+							},
+							"quantity" : 15,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
+						}
+					]
+				},
+				{
+					"active" : true,
+					"id" : "1CG6P1slxnr9TSNnPzvZ-combo",
+					"mrp" : 200,
+					"sale_price" : 200,
+					"size" : "combo",
+					"stock_locations" : [
+						{
+							"lat_long" : {
+								"lat" :  15.487563699999999,
+								"long" : 73.83244069999999
+							},
+							"quantity" : 10,
+							"radius" : 5000,
+							"id" : "8vwd1rQRGiw0iQeMdlU0"
 						}
 					]
 				}
