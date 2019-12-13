@@ -268,7 +268,7 @@ let Utils = {
                                 </div>
                                 <div class="contact-text w-50 text-right" style="width:50%;text-align:right;float:left;">
                                   <p class="mb-5" style="margin-bottom:5px;margin-top:0;"><strong>Need help?</strong></p>
-                                  <p class="mb-5" style="margin-bottom:5px;margin-top:0;">Email: <a class="text-green" href="mailto:avantih@greengrainbowl.com" style="color:#47a748;text-decoration: underline;">avantih@greengrainbowl.com</a></p>
+                                  <p class="mb-5" style="margin-bottom:5px;margin-top:0;">Email: <a class="text-green" href="mailto:avanti@greengrainbowl.com" style="color:#47a748;text-decoration: underline;">avanti@greengrainbowl.com</a></p>
                                   <p class="mb-15" style="margin-top:0;"><a class="text-green" href="https://api.whatsapp.com/send?phone=+917770004258" style="color: #47a748;text-decoration: none;"><img width="22" height="22" src="https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/wablack.png"/></a></p>      
                                 </div>     
                               </div>                         
