@@ -425,6 +425,7 @@ let Order = {
 	},
 
 	confirmOrder: async (req:Request, res:Response) => {
+		let start:any = new Date;
         try {
 			console.log("confirmation started")
 			let {id, order_id, amount, status} = req.body.payload.payment.entity
@@ -438,7 +439,7 @@ let Order = {
 				return res.sendStatus(200)
 			}
 
-			if(payment_ref.docs[0].data().status !="draft") {
+			if(payment_ref.docs[0].data().status == "captured") {
 				console.log("recalled")
 				return res.sendStatus(200)
 			}
@@ -480,7 +481,8 @@ let Order = {
 				status:status,
 				timestamp : admin.firestore.FieldValue.serverTimestamp()
 			})
-			
+			var t:any = new Date()
+			console.log("Payment",t-start)
 			let items_airtable =''
 				
 				if(order_ref.exists) {
@@ -538,6 +540,9 @@ let Order = {
 					order_no: order_no,
 					timestamp : admin.firestore.FieldValue.serverTimestamp()
 				})
+				t = new Date
+			console.log("orders",t-start)
+
 				airtableRec.order_no = order_no
 				if(cart_ref.data().order_id == ggb_order_id && status !="failed") {
 					let order_mode = cart_ref.data().order_mode
@@ -557,11 +562,20 @@ let Order = {
 				}
 			
 				if(status != "failed") {
-					let airres = await base('orders').create([
+					console.log("air table entry", airtableRec)
+					let airres =  await base('orders').create([
 						{
 							"fields": airtableRec
 						}
-					])
+					]).then(() => {
+						console.log("Made entry in airtable")
+					}).catch((e) => {
+						console.log("Airtable entry failed ==>", e);
+						
+					})
+					t = new Date
+					console.log("airtable",t-start)
+
 				}
 			
 				console.log("done")
