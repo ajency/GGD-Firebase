@@ -546,21 +546,11 @@ let Order = {
 				airtableRec.order_no = order_no
 				if(cart_ref.data().order_id == ggb_order_id && status !="failed") {
 					let order_mode = cart_ref.data().order_mode
-					cart_ref.ref.update({
-						items:[],
-						cart_count:0,
-						summary: {
-							cart_discount:0,
-							mrp_total:0,
-							sale_price_total:0,
-							shipping_fee:(order_mode=="kiosk")? 0:50,
-							you_pay:(order_mode=="kiosk")? 0:50
-						},
-						status:'cart',
-						order_id:''
+					cart_ref.ref.set({
 					})
 				}
 			
+				cart_ref.ref.de
 				if(status != "failed") {
 					console.log("air table entry", airtableRec)
 					let airres =  await base('orders').create([
