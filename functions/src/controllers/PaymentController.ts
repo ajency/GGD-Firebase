@@ -21,7 +21,8 @@ let PaymentGateway = {
                 let amount = req.body.amount *100
                 let firestore = admin.firestore();
                 let cart_ref =  await firestore.collection('carts').doc(req.body.order_id).get()
-                let user_ref = await firestore.collection('user-details').doc(req.body.order_id)
+                let tempArr = req.body.order_id.split('-')
+                let user_ref = await firestore.collection('user-details').doc(tempArr[0])
                 let cart_data = cart_ref.data()
                 cart_data.created_at = undefined
                 cart_data.order_type = undefined
@@ -38,12 +39,12 @@ let PaymentGateway = {
                    let payment_ref = await firestore.collection('payments').add({
                         pg_order_id: data.id,
                         order_id:order_ref.id,
-                        user_id:req.body.order_id,
+                        user_id:tempArr[0],
                         status:"draft"
                     })
                     console.log("Payment id ==> ", payment_ref.id)
                     firestore.collection("user-orders-map").add({
-                        "user_id": req.body.order_id,
+                        "user_id": tempArr[0],
                         "order_id": order_ref.id
                     })
                     .then((r) => console.log("user order map created ===> "+ r.id))
