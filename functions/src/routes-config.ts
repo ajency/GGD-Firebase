@@ -9,32 +9,6 @@ import { isAuthenticated } from "./auth/authenticated";
 import Payment from './controllers/PaymentController';
 
 export function routesConfig(app: Application) {
-	app.post('/rest/v1/anonymous/cart/insert',
-		Order.addToCart
-	);
-
-	app.post('/rest/v1/anonymous/cart/delete',
-		Order.removeFromCart
-	);
-
-	app.get('/rest/v1/anonymous/cart/fetch',
-		Order.fetchCart
-	);
-	
-	app.post('/rest/v1/user/cart/insert',
-		isAuthenticated,
-		Order.addToCart
-	);
-
-	app.post('/rest/v1/user/cart/delete',
-		isAuthenticated,
-		Order.removeFromCart
-	);
-
-	app.get('/rest/v1/user/cart/fetch',
-		Order.fetchCart
-	);
-
 	app.post('/rest/v1/user/add-address',
 		isAuthenticated,
 		Address.addAddress
@@ -51,10 +25,6 @@ export function routesConfig(app: Application) {
 
 	app.get('/rest/v1/reverse-geocode',
 		misc.reverseGeoCode
-	);
-
-	app.post('/rest/v1/anonymous/cart/change-location',
-		Order.updateDeliveryLocation
 	);
 
 	app.get('/rest/v1/check-user-exist',
@@ -93,5 +63,4 @@ export function routesConfig(app: Application) {
 	app.post('/rest/v1/order/update-status', 
 		Order.updateOrderStatus
 	);
-
 }
