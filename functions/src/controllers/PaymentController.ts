@@ -33,7 +33,7 @@ let PaymentGateway = {
                 
                 let razorpay_receipt = order_ref.id;
                 
-                return await instance.orders.create({amount:amount,currency:'INR', receipt: razorpay_receipt, payment_capture:1,notes:{}})
+                return await instance.orders.create({amount:amount,currency:'INR', receipt: razorpay_receipt, payment_capture:1,notes:{businessId:req.body.business_id, mode:req.body.mode}})
                 .then(async (data) => {
                    let payment_ref = await firestore.collection('payments').add({
                         pg_order_id: data.id,
