@@ -220,7 +220,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			const mailOptions = {
 				from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
 				to: order_data.shipping_address.email,
-				bcc:"viraj@ajency.in,avanti@ajency.in",
+				bcc:"viraj@ajency.in",
 				subject: email_subject, // email subject
 				html: email_html
 			};
@@ -234,38 +234,38 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 		}
 	
 		if(order_data.shipping_address.phone != '') {
-			// let tempe ="viraj@ajency.in" 
-			// const mailOptions = {
-			// 	from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
-			// 	to: tempe,
-			// 	subject: "GGB SMS", // email subject
-			// 	html: `<div>${sms_msg}<div>`
-			// };
-			// console.log("Email option",mailOptions)
-			// await transporter.sendMail(mailOptions).then((info) => {
-			// 	console.log("mail sent to ",order_data.shipping_address.email)
-			// }).catch((e) => {
-			// 	console.log("mail sent failed to ",e)
+			let tempe ="viraj@ajency.in" 
+			const mailOptions = {
+				from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
+				to: tempe,
+				subject: "GGB SMS", // email subject
+				html: `<div>${sms_msg}<div>`
+			};
+			console.log("Email option",mailOptions)
+			await transporter.sendMail(mailOptions).then((info) => {
+				console.log("mail sent to ",order_data.shipping_address.email)
+			}).catch((e) => {
+				console.log("mail sent failed to ",e)
+			})
+			// let msgUrlParams = {
+			// 	params: {
+			// 		method:"SendMessage",
+			// 		send_to: order_data.shipping_address.phone,
+			// 		msg: sms_msg,
+			// 		msg_type:"TEXT",
+			// 		userid:"2000189884",
+			// 		auth_scheme: "plain",
+			// 		password:"UlpEzUe5L",
+			// 		v:'1.1',
+			// 		format:"text"
+			// 	}
+			// }	
+			// axios.get('http://enterprise.smsgupshup.com/GatewayAPI/rest', msgUrlParams).then(ress => {
+			// 	console.log(ress)
 			// })
-			let msgUrlParams = {
-				params: {
-					method:"SendMessage",
-					send_to: order_data.shipping_address.phone,
-					msg: sms_msg,
-					msg_type:"TEXT",
-					userid:"2000189884",
-					auth_scheme: "plain",
-					password:"UlpEzUe5L",
-					v:'1.1',
-					format:"text"
-				}
-			}	
-			axios.get('http://enterprise.smsgupshup.com/GatewayAPI/rest', msgUrlParams).then(ress => {
-				console.log(ress)
-			})
-			.catch(err => {
-				console.log(err)
-			})
+			// .catch(err => {
+			// 	console.log(err)
+			// })
 		}
 	
 	}catch(e) {
