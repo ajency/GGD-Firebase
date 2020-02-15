@@ -19,7 +19,7 @@ let misc = {
 
 	reverseGeoCode : async (req : Request, res : Response) => {
 		if(req.query.place_id){
-			let url = "https://maps.googleapis.com/maps/api/place/details/json?place_id="+ req.query.place_id +"&fields=address_component,formatted_address,geometry,types&key=" + credentials.maps_api_key;
+			let url = "https://maps.googleapis.com/maps/api/place/details/json?place_id="+ req.query.place_id +"&fields=name,address_component,formatted_address,geometry,types&key=" + credentials.maps_api_key;
 			axios.get(url)
 			  .then(function (response) {
 			    	return res.status(200).send(response.data);
@@ -31,7 +31,7 @@ let misc = {
 		}
 		else if(req.query.latlng){
 			// let url = "https://www.swiggy.com/dapi/misc/reverse-geocode?latlng=" + req.query.latlng;
-			let url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + req.query.latlng +"&key=" + credentials.maps_api_key;;
+			let url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + req.query.latlng +"&key=" + credentials.maps_api_key;
 			axios.get(url)
 			  .then(function (response) {
 			    	return res.status(200).send(response.data);

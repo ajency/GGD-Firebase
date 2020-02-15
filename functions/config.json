@@ -5,8 +5,12 @@
 	"business_id" : "zq6Rzdvcx0UrULwzeSEr",
 	"frontendUrl" : "http://greengrainbowl-com.digitaldwarve.staging.wpengine.com/",
 	"order_status": {
-		"placed":"Placed",
-		"accepted":"Accepted",
-		"rejected":"Rejected"
+		"placed"				: "Placed",
+		"rejected"				: "Rejected",
+		"accepted"				: "Food is being prepared",
+		"failed"				: "Order Failed",
+		"picked_for_delivery"	: "Picked up for delivery",
+		"delivery_failed"		: "Delivery failed",
+		"delivered"				: "Delivered"
 	}
 }
