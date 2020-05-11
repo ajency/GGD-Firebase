@@ -15,7 +15,7 @@ Airtable.configure({
 	endpointUrl: 'https://api.airtable.com',
 	apiKey: cred.airtableApiKey
 })
-const base = Airtable.base('apptpCcEN0UI8o1rm');
+const base = Airtable.base(cred.airtableBase);
 const statuses = [
 					{id: "food_is_ready",	label: "food is ready"},
 					{id: "being_prepared",	label: "being prepared"}, 
