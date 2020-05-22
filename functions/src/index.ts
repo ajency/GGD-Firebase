@@ -205,18 +205,18 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			`
 
 		email_html =  Utils.getEmailMarkup(email_content)
+		let transporter = nodemailer.createTransport({
+			port: 587,
+			host: config.aws_smtp_server,
+			secure: false,
+			auth: {
+			user:config.aws_user ,
+			pass: config.aws_pass
+			},
+			debug: true
+		});
 		if(order_data.shipping_address.email !='') {
 	
-			var transporter = nodemailer.createTransport({
-				port: 587,
-				host: config.aws_smtp_server,
-				secure: false,
-				auth: {
-				user:config.aws_user ,
-				pass: config.aws_pass
-				},
-				debug: true
-			});
 			const mailOptions = {
 				from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
 				to: order_data.shipping_address.email,
@@ -238,7 +238,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			const mailOptions = {
 				from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
 				to: tempe,
-				subject: "GGB SMS", // email subject
+				subject: `GGB SMS from ${config.mode}`, // email subject
 				html: `<div>${sms_msg}<div>`
 			};
 			console.log("Email option",mailOptions)
@@ -247,25 +247,31 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			}).catch((e) => {
 				console.log("mail sent failed to ",e)
 			})
-			// let msgUrlParams = {
-			// 	params: {
-			// 		method:"SendMessage",
-			// 		send_to: order_data.shipping_address.phone,
-			// 		msg: sms_msg,
-			// 		msg_type:"TEXT",
-			// 		userid:"2000189884",
-			// 		auth_scheme: "plain",
-			// 		password:"UlpEzUe5L",
-			// 		v:'1.1',
-			// 		format:"text"
-			// 	}
-			// }	
-			// axios.get('http://enterprise.smsgupshup.com/GatewayAPI/rest', msgUrlParams).then(ress => {
-			// 	console.log(ress)
-			// })
-			// .catch(err => {
-			// 	console.log(err)
-			// })
+			
+			if(config.mode =='prod') { 
+
+				let msgUrlParams = {
+					params: {
+						method:"SendMessage",
+						send_to: order_data.shipping_address.phone,
+						msg: sms_msg,
+						msg_type:"TEXT",
+						userid:"2000189884",
+						auth_scheme: "plain",
+						password:"UlpEzUe5L",
+						v:'1.1',
+						format:"text"
+					}
+				}	
+				axios.get('http://enterprise.smsgupshup.com/GatewayAPI/rest', msgUrlParams).then(ress => {
+					console.log(ress)
+				})
+				.catch(err => {
+					console.log(err)
+				})
+			}
+
+
 		}
 	
 	}catch(e) {
