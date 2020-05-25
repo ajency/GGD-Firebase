@@ -17,7 +17,12 @@ let User = {
 			return res.status(200).send({ success: true, message: 'User exists'});
 		}
 		else{
-			return res.status(200).send({ success: false, message: 'User does not exist'});
+			const  user_present_in_db =  await User.checkInDb(phone_number)
+			if(user_present_in_db) {
+				return res.status(200).send({ success: true, message: 'User exists'});
+			} else {
+				return res.status(200).send({ success: false, message: 'User does not exist'});
+			}
 		}
 	},
 
@@ -36,6 +41,19 @@ let User = {
 		  });
 
 		return result;
+	},
+
+	checkInDb: async (number:string): Promise<any> => {
+		const firestore = admin.firestore(); 
+		const data = await firestore.collection('user-details').where('phone', "==", number).get();
+		console.log(data.size,"checkInDb===>");
+		
+		const size = await data.size
+		if(size) {
+			return true
+		} else {
+			return false
+		}
 	},
 
 
