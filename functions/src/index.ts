@@ -271,7 +271,11 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				})
 			}
 
-
+			const addressId =  order_data.shipping_address.id
+			
+			firestore.collection('user-details').doc(payment_data.user_id).update({
+				default_address_id:addressId,
+			}).catch(e => console.log(e))
 		}
 	
 	}catch(e) {
