@@ -58,7 +58,7 @@ let User = {
 
 	updateUserDetails : async (req : Request, res: Response) => {
 		try {
-			let { phone, name, email, uid, is_verified } = req.body;
+			let { phone, name, email, uid, is_verified, default_address_id } = req.body;
 			console.log("check user details ==>", phone, name, email, uid, is_verified);
 
 			let firestore = admin.firestore();
@@ -69,7 +69,8 @@ let User = {
 				data = {
 					phone : phone ? phone : user_data.phone, 
 				  	name: name ? name : user_data.name,
-				  	email : email ? email : user_data.email,
+					email : email ? email : user_data.email,
+					default_address_id: default_address_id? default_address_id: user_data.default_address_id,
 				  	verified : is_verified
 				};
 			}
@@ -77,7 +78,8 @@ let User = {
 				data = {
 					phone : phone ? phone : '', 
 				  	name: name ? name : '',
-				  	email : email ? email : '',
+					email : email ? email : '',
+					default_address_id:  default_address_id? default_address_id:'',
 				  	verified : is_verified
 				};
 			}
