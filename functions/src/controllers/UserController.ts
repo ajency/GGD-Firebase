@@ -12,7 +12,6 @@ let User = {
 		}
 
 		let user_exist = await User.getUser("+91" + phone_number);
-		console.log("user exits ==>", user_exist);
 		if(user_exist){
 			return res.status(200).send({ success: true, message: 'User exists'});
 		}
