@@ -234,21 +234,21 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 		}
 	
 		if(order_data.shipping_address.phone != '') {
-			// let tempe ="viraj@ajency.in" 
-			// const mailOptions = {
-			// 	from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
-			// 	to: tempe,
-			// 	subject: `GGB SMS from ${config.mode}`, // email subject
-			// 	html: `<div>${sms_msg}<div>`
-			// };
-			// console.log("Email option",mailOptions)
-			// await transporter.sendMail(mailOptions).then((info) => {
-			// 	console.log("mail sent to ",order_data.shipping_address.email)
-			// }).catch((e) => {
-			// 	console.log("mail sent failed to ",e)
-			// })
+			let tempe ="viraj@ajency.in" 
+			const mailOptions = {
+				from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
+				to: tempe,
+				subject: `GGB SMS from ${config.mode}`, // email subject
+				html: `<div>${sms_msg}<div>`
+			};
+			console.log("Email option",mailOptions)
+			await transporter.sendMail(mailOptions).then((info) => {
+				console.log("mail sent to ",order_data.shipping_address.email)
+			}).catch((e) => {
+				console.log("mail sent failed to ",e)
+			})
 			
-			// if(config.mode =='prod') { 
+			if(config.mode =='prod') { 
 
 				let msgUrlParams = {
 					params: {
@@ -269,7 +269,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				.catch(err => {
 					console.log(err)
 				})
-			// }
+			}
 
 			const addressId =  order_data.shipping_address.id
 			
