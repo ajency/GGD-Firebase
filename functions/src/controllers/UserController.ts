@@ -65,14 +65,16 @@ let User = {
 			let user = await firestore.collection('user-details').doc(uid).get();
 			let data;
 			if (user.exists){
+				
 				let user_data = user.data();
 				data = {
 					phone : phone ? phone : user_data.phone, 
 				  	name: name ? name : user_data.name,
 					email : email ? email : user_data.email,
-					default_address_id: default_address_id? default_address_id: user_data.default_address_id,
+					default_address_id: user_data.default_address_id? user_data.default_address_id:'',
 				  	verified : is_verified
 				};
+				console.log('updating- user ==> ', data)
 			}
 			else{
 				data = {
@@ -82,6 +84,8 @@ let User = {
 					default_address_id:  default_address_id? default_address_id:'',
 				  	verified : is_verified
 				};
+				console.log('updating- new ==> ', data)
+
 			}
 			console.log("set user data =>", data)
 			await firestore.collection('user-details').doc(uid).set(data);
