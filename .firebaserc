@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "project-ggb"
+    "default": "project-ggb",
+    "staging": "project-ggb-dev"
   }
 }

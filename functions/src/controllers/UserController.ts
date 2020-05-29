@@ -18,6 +18,7 @@ let User = {
 		else{
 			const  user_present_in_db =  await User.checkInDb(phone_number)
 			if(user_present_in_db) {
+
 				return res.status(200).send({ success: true, message: 'User exists'});
 			} else {
 				return res.status(200).send({ success: false, message: 'User does not exist'});
@@ -59,7 +60,7 @@ let User = {
 	updateUserDetails : async (req : Request, res: Response) => {
 		try {
 			let { phone, name, email, uid, is_verified, default_address_id } = req.body;
-			console.log("check user details ==>", phone, name, email, uid, is_verified);
+			console.log("user details ==>", phone, name, email, uid, is_verified);
 
 			let firestore = admin.firestore();
 			let user = await firestore.collection('user-details').doc(uid).get();
@@ -74,9 +75,9 @@ let User = {
 					default_address_id: user_data.default_address_id? user_data.default_address_id:'',
 				  	verified : is_verified
 				};
-				console.log('updating- user ==> ', data)
+				console.info('updating- user ==> ', data)
 			}
-			else{
+			else {
 				data = {
 					phone : phone ? phone : '', 
 				  	name: name ? name : '',
@@ -84,13 +85,45 @@ let User = {
 					default_address_id:  default_address_id? default_address_id:'',
 				  	verified : is_verified
 				};
-				console.log('updating- new ==> ', data)
+				console.info('updating-ffff new ==> ', data)
+				//get 1 collection not imported
+				if(is_verified){
+
+					const readyTOMigrate = await firestore.collection('user-details').where('phone', "==", phone).where("imported", "==", "false").limit(1).get()
+					if(!readyTOMigrate.empty) {
+						console.info("readyTOMigrate");
+						const rawData = readyTOMigrate.docs[0]
+						// readyTOMigrate.forEach( async rawData => {
+							
+							try {
+								const userDetails = rawData.data()
+								console.log(userDetails,"userDetails=>");
+								delete userDetails.imported
+								data = {...data, ...userDetails,}
+								console.log(data,"data new =>");
+								await firestore.collection('user-details').doc(uid).set(data);
+								const addresses = await rawData.ref.collection('addresses').limit(1).get()
+								const address = addresses.docs[0]
+								// addresses.forEach( async address => {
+									if(address.exists) {
+										const addressData = address.data()
+										await firestore.collection('user-details').doc(uid).collection('addresses').doc().set({...addressData})
+									}
+								// })
+								await firestore.collection('user-details').doc(rawData.id).update({"imported":"true"})
+								
+							} catch (error) {
+								console.log("data migration isssue =>")
+							}
+						// })
+					}
+				}
 
 			}
+			
 			console.log("set user data =>", data)
 			await firestore.collection('user-details').doc(uid).set(data);
 			return res.status(200).send({ success: true, message: 'User details updated successfully'});
-
 		}
 		catch (err) {
 			return User.handleError(res, err)
