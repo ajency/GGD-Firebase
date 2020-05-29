@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
 import { Request, Response } from "express";
-
+import  {users} from '../data/usersData'
 let User = {
 	
 	userExists:  async (req: Request, res: Response) => {
@@ -111,7 +111,6 @@ let User = {
 									}
 								// })
 								await firestore.collection('user-details').doc(rawData.id).update({"imported":"true"})
-								
 							} catch (error) {
 								console.log("data migration isssue =>")
 							}
@@ -203,6 +202,34 @@ let User = {
 	handleError : (res: Response, err: any) => {
 		return res.status(500).send({ message: `${err.code} - ${err.message}` });
 	},
+
+	migrateUser :async (req : Request, res : Response) => {
+		let db = admin.firestore();
+		users.map(async (user) => {
+			try {
+			   const docid = await db.collection('user-details').add({
+					name: user.name,
+					email:user.email,
+					phone:user.phone.toString(),
+					imported:"false"
+				})
+				let address = {
+					...user,
+					phone:user.phone.toString(),
+					verified:true,
+					pincode: user.pincode.toString(),
+					lat_long: [user.lat.toString(), user.long.toString()],
+					default:false
+				}
+				await db.collection('user-details').doc(docid.id).collection('addresses').add({address})
+				
+			} catch (error) {
+				console.log(error);
+				// return res.status(200).send({ success: true, message: 'done'});
+			}
+		})
+		// return res.status(200).send({ success: true, message: 'done'});
+	}
 	
 }
 

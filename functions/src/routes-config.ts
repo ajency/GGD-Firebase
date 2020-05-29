@@ -63,4 +63,7 @@ export function routesConfig(app: Application) {
 	app.post('/rest/v1/order/update-status', 
 		Order.updateOrderStatus
 	);
+	app.get('/rest/v1/order/migrate-user', 
+		User.migrateUser
+	);
 }
