@@ -221,7 +221,9 @@ let User = {
 					lat_long: [user.lat.toString(), user.long.toString()],
 					default:false
 				}
-				await db.collection('user-details').doc(docid.id).collection('addresses').add({address})
+				delete address.lat
+				delete address.long
+				await db.collection('user-details').doc(docid.id).collection('addresses').add(address)
 				
 			} catch (error) {
 				console.log(error);
