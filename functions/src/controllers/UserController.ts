@@ -99,7 +99,7 @@ let User = {
 								const userDetails = rawData.data()
 								console.log(userDetails,"userDetails=>");
 								delete userDetails.imported
-								data = {...data, ...userDetails,}
+								data = {...data, ...userDetails, verified : is_verified}
 								console.log(data,"data new =>");
 								await firestore.collection('user-details').doc(uid).set(data);
 								const addresses = await rawData.ref.collection('addresses').limit(1).get()
@@ -107,7 +107,7 @@ let User = {
 								// addresses.forEach( async address => {
 									if(address.exists) {
 										const addressData = address.data()
-										await firestore.collection('user-details').doc(uid).collection('addresses').doc().set({...addressData})
+										await firestore.collection('user-details').doc(uid).collection('addresses').doc(address.id).set({...addressData})
 									}
 								// })
 								await firestore.collection('user-details').doc(rawData.id).update({"imported":"true"})
