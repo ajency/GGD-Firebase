@@ -223,8 +223,8 @@ let User = {
 				}
 				delete address.lat
 				delete address.long
-				await db.collection('user-details').doc(docid.id).collection('addresses').add(address)
-				
+				const addr_ref= await db.collection('user-details').doc(docid.id).collection('addresses').add(address)
+				await db.collection('user-details').doc(docid.id).update({default_address_id:addr_ref.id})
 			} catch (error) {
 				console.log(error);
 				// return res.status(200).send({ success: true, message: 'done'});
