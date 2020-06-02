@@ -272,10 +272,16 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			}
 
 			const addressId =  order_data.shipping_address.id
-			
-			firestore.collection('user-details').doc(payment_data.user_id).update({
-				default_address_id:addressId,
-			}).catch(e => console.log(e))
+			firestore.collection('user-details').doc(payment_data.user_id).get().then((userref) => {
+				const userData = userref.data()
+				const payload = {
+					default_address_id:addressId,
+				}
+				if(!userData.verified) {
+					payload['imported'] ="false";
+				}
+				userref.ref.update(payload).then(()=> console.log("updated userdetails with address")).catch((error)=> console.log(error));
+			}).catch((err) => console.log(err))
 		}
 	
 	}catch(e) {
