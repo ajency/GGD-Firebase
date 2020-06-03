@@ -69,8 +69,9 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			email_content.url = `https://greengrainbowl.com/oyo/#/order-details/${snap.after.id}`
 			email_content.address =`<div class=""><strong>Pick up from: </strong> Cafeteria, 5th Floor, Oyo Office, Patto</div> `
 		} else {
+			let addressLabel = order_data.shipping_address.address ? `${order_data.shipping_address.address}, ` :""
 			email_content.address =`<div class=""><strong>Delivery Address: </strong></div>
-				${order_data.shipping_address.address}, ${order_data.shipping_address.landmark}, ${order_data.shipping_address.formatted_address}`
+				${addressLabel}${order_data.shipping_address.landmark}, ${order_data.shipping_address.formatted_address}`
 		}
 		
 		if(order_data.status.toLowerCase() == 'placed' && order_data.order_mode == "online") {
