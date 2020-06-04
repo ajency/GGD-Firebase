@@ -478,14 +478,14 @@ export const users = [
     "name": "Amika Kler",
     "email": "kleramika@gmail.com",
     "phone": 9702822200,
-    "formatted_address": "3rd Floor, PCC, Panjim, Goa - 402001",
-    "city": "Mala",
-    "landmark": "Above Norberts gym",
-    "pincode": 402001,
+    "formatted_address": "H.no:-435/28, 2nd floor, Alvaro Avenue, Chogm road, Alto Porvorim, Bardez, Goa - 403521",
+    "city": "Porvorim",
+    "landmark": "Alvaro Avenue",
+    "pincode": 403521,
     "state": "Goa",
     "type": "Home",
-    "lat": 15.4876322,
-    "long": 73.8301103,
+    "lat": 15.534388,
+    "long": 73.821228,
     "verified": "true"
   },
   {
@@ -573,20 +573,6 @@ export const users = [
     "verified": "true"
   },
   {
-    "name": "Tamara Musani",
-    "email": "tmusani@gmail.com",
-    "phone": "9833673254",
-    "formatted_address": "Villa E, Villa Riviera,Nova Cidade Enclave Near Sterling Resort, Alto Porvorim Goa - 403521",
-    "city": "Alto Porvorim",
-    "landmark": "Near Sterling Resort",
-    "pincode": 403521,
-    "state": "Goa",
-    "type": "Home",
-    "lat": 15.5273646,
-    "long": 73.8247771,
-    "verified": "true"
-  },
-  {
     "name": "Rosabelle Shahani",
     "email": "rosabelles@rediffmail.com",
     "phone": 8080494170,
@@ -657,12 +643,12 @@ export const users = [
     "verified": "true"
   },
   {
-    "name": "Forest gump",
+    "name": "Wilbert",
     "email": "wilberte@gmail.com",
     "phone": 9823168254,
     "formatted_address": "Office at dempo trade center, Panaji, Goa - 403001",
     "city": "Panaji",
-    "landmark": "dempo trade center",
+    "landmark": "Dempo trade center",
     "pincode": 403001,
     "state": "Goa",
     "type": "Home",
