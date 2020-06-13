@@ -8,7 +8,7 @@ import { routesConfig } from './routes-config';
 import axios from 'axios';
 import Utils from './controllers/utils';
 
-const DAYS = { "monday": "Monday", "tue": "Tuesday", "wed": "Wednesday", "thus": "Thusday", "fri": 'Friday', 'sat': "Saturday", "sun": "Sunday" };
+const DAYS = { "monday": "Monday", "tuesday": "Tuesday", "wednesday": "Wednesday", "thusday": "Thusday", "friday": 'Friday', 'saturday': "Saturday", "sunday": "Sunday" };
 const SLOTS = { "lunch": "Lunch", "dinner": "Dinner" };
 
 let config = require('../credentials.json')
@@ -156,7 +156,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			let prod_img =''
 			if(item.product_id !='') {
 				let prod_ref = await firestore.collection('products').doc(item.product_id).get()
-				const extraContent  = item.day? ` | ${DAYS[item.day]}| ${SLOTS[item.slot]})`:''	
+				const extraContent  = item.day? ` | ${DAYS[item.day]} | ${SLOTS[item.slot]})`:''	
 				prod_img =  prod_ref.data().image_urls[0]
 				email_content.items=email_content.items+`
 				<div class="item-container flex-column">
