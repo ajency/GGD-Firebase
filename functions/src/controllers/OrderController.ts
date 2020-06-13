@@ -92,7 +92,7 @@ let Order = {
 
 					if(order_ref.data().items.length) {
 						order_ref.data().items.forEach((item) => {
-							items_airtable = items_airtable + item.product_name + '-' + item.size + '-' + item.quantity + '\n'
+							items_airtable = items_airtable + item.product_name + '-' + item.size + '-' + item.quantity + '-' + item.day + '-' + item.slot + '\n'
 						})
 					}
 					airtableRec.items = items_airtable;
