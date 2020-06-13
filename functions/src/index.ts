@@ -8,7 +8,7 @@ import { routesConfig } from './routes-config';
 import axios from 'axios';
 import Utils from './controllers/utils';
 
-const DAYS = { "monday": "Monday", "tuesday": "Tuesday", "wednesday": "Wednesday", "thusday": "Thusday", "friday": 'Friday', 'saturday': "Saturday", "sunday": "Sunday" };
+const DAYS = { "monday": "Monday", "tuesday": "Tuesday", "wednesday": "Wednesday", "thursday": "Thursday", "friday": 'Friday', 'saturday': "Saturday", "sunday": "Sunday" };
 const SLOTS = { "lunch": "Lunch", "dinner": "Dinner" };
 
 let config = require('../credentials.json')
