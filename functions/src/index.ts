@@ -7,6 +7,10 @@ import * as nodemailer from 'nodemailer';
 import { routesConfig } from './routes-config';
 import axios from 'axios';
 import Utils from './controllers/utils';
+
+const DAYS = { "monday": "Monday", "tue": "Tuesday", "wed": "Wednesday", "thus": "Thusday", "fri": 'Friday', 'sat': "Saturday", "sun": "Sunday" };
+const SLOTS = { "lunch": "Lunch", "dinner": "Dinner" };
+
 let config = require('../credentials.json')
 let serviceAccount = require('../serviceAccount.json');
 
@@ -151,7 +155,8 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 		for(let item of  order_data.items) {
 			let prod_img =''
 			if(item.product_id !='') {
-				let prod_ref = await firestore.collection('products').doc(item.product_id).get()	
+				let prod_ref = await firestore.collection('products').doc(item.product_id).get()
+				const extraContent  = item.day? ` | ${DAYS[item.day]}| ${SLOTS[item.slot]})`:''	
 				prod_img =  prod_ref.data().image_urls[0]
 				email_content.items=email_content.items+`
 				<div class="item-container flex-column">
@@ -165,7 +170,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 						</div>
 						<div class="">
 							<div class="product-size-c text-capitalize" style="font-size: 14px; line-height: 14px; margin-top: 5px;text-transform;">
-							${item.size} | Qty: ${item.quantity}
+							${item.size} | Qty: ${item.quantity}${extraContent}
 							</div>                     
 						</div>            
 					</div>
