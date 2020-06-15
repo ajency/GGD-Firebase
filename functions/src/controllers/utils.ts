@@ -222,7 +222,7 @@ let Utils = {
               <div class="email-header" style="text-align: center; padding: 15px; background: #ecf6ec;">
                 <div class="logo" style="width: 100%;">
                   <a href="https://greengrainbowl.com/" style="text-decoration: none;">
-                  <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/GGB-logo.png" style="width: 100px;
+                  <img src="http://greengrainbowl.com/assets/images/GGB-logo.png" style="width: 100px;
                   vertical-align: middle;" />
                   </a>
                 </div>                              
@@ -230,7 +230,7 @@ let Utils = {
               <div class="email-content" style="padding: 15px; padding-top: 30px; padding-bottom: 20px; padding-left: 0; padding-right: 0;">
                   <div class="" style="margin-bottom:15px;clear:both;overflow:hidden;display:flex;">
                     <div class="" style="text-align:left;padding-left:15px;width:45%;float:left;">
-                      <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/slidein/checkout.png" style="width:17px;display:inline-block;vertical-align:middle;" />
+                      <img src="http://greengrainbowl.com/assets/images/car-images/checkout.png" style="width:17px;display:inline-block;vertical-align:middle;" />
                       <span style="font-weight: 600;text-transform: uppercase;font-size: 12px;display:inline-block;vertical-align:middle;margin-left: 2px;">${email_content.label}</span>
                     </div>
                     <div class="order-number text-right" style="padding-right:15px;text-align:right;width:55%;float:left;margin-bottom:0;">
@@ -265,22 +265,22 @@ let Utils = {
                   <div class="follow-text mb-15 w-50 text-left" style="margin-bottom: 15px;width: 50%;text-align:left;float:left;">
                       <p class="mb-5" style="margin-bottom:5px;margin-top:0;"><strong>Follow Us</strong></p>
                       <a href="https://www.instagram.com/greengrainbowl/" target="_blank" class="d-inline-block" style="text-decoration: none;">
-                        <img width="30" src="https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/insta.png"/>
+                        <img width="30" src="https://greengrainbowl.com/assets/images/cart-images/insta.png"/>
                       </a>
                       <a href="https://www.facebook.com/GreenGrainBowl/" target="_blank" class="d-inline-block" style="text-decoration: none;">
-                          <img width="30" src="https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/fb.png"/>
+                          <img width="30" src="https://greengrainbowl.com/assets/images/cart-images/fb.png"/>
                         </a>
                   </div>
                   <div class="contact-text w-50 text-right" style="width:50%;text-align:right;float:left;">
                     <p class="mb-5" style="margin-bottom:5px;margin-top:0;"><strong>Need help?</strong></p>
                     <p class="mb-5" style="margin-bottom:5px;margin-top:0;">Email: <a class="text-green" href="mailto:avanti@greengrainbowl.com" style="color:#47a748;text-decoration: underline;">avanti@greengrainbowl.com</a></p>
                     <p class="mb-5" style="margin-bottom:25px;margin-top:0;"><span style="display: block">Phone number:</span> <a class="text-green" href="tel:+91 7770004258" style="color:#47a748;text-decoration: underline;">+91 7770004258</a></p>
-                    <p class="mb-15" style="margin-top:0;"><a class="text-green" href="https://api.whatsapp.com/send?phone=+917770004258" style="color: #47a748;text-decoration: none;"><img width="25" height="25" src="https://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/wablack.png"/></a></p>      
+                    <p class="mb-15" style="margin-top:0;"><a class="text-green" href="https://api.whatsapp.com/send?phone=+917770004258" style="color: #47a748;text-decoration: none;"><img width="25" height="25" src="https://greengrainbowl.com/assets/images/cart-images/wablack.png"/></a></p>      
                   </div>     
                 </div>    
                 <div class="footer-logo" style="text-align:center;margin-bottom: 20px;">
                   <a href="https://greengrainbowl.com/" style="text-decoration: none;">
-                  <img src="http://greengrainbowl.com/wp-content/themes/ajency-portfolio/images/GGB-logo.png" style="width: 70px;
+                  <img src="http://greengrainbowl.com/assets/images/GGB-logo.png" style="width: 70px;
                   vertical-align: middle;" />
                   </a>
                 </div>                     
