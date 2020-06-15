@@ -170,7 +170,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 						</div>
 						<div class="">
 							<div class="product-size-c text-capitalize" style="font-size: 14px; line-height: 14px; margin-top: 5px;text-transform;">
-							${item.size} | Qty: ${item.quantity}${extraContent}
+							Size: ${item.size} | Qty: ${item.quantity}${extraContent}
 							</div>                     
 						</div>            
 					</div>
