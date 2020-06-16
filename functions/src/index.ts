@@ -257,11 +257,11 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					html: `<div>${sms_msg}<div>`
 				};
 				console.log("Email option", mailOptions)
-				// await transporter.sendMail(mailOptions).then((info) => {
-				// 	console.log("mail sent to ", order_data.shipping_address.email)
-				// }).catch((e) => {
-				// 	console.log("mail sent failed to ", e)
-				// })
+				await transporter.sendMail(mailOptions).then((info) => {
+					console.log("mail sent to ", order_data.shipping_address.email)
+				}).catch((e) => {
+					console.log("mail sent failed to ", e)
+				})
 
 				if (config.mode == 'prod') {
 
@@ -278,12 +278,12 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 							format: "text"
 						}
 					}
-					// axios.get('http://enterprise.smsgupshup.com/GatewayAPI/rest', msgUrlParams).then(ress => {
-					// 	console.log(ress)
-					// })
-					// 	.catch(err => {
-					// 		console.log(err)
-					// 	})
+					axios.get('http://enterprise.smsgupshup.com/GatewayAPI/rest', msgUrlParams).then(ress => {
+						console.log(ress)
+					})
+						.catch(err => {
+							console.log(err)
+						})
 				}
 
 				const addressId = order_data.shipping_address.id
@@ -307,7 +307,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			})
 		}
 
-		if (!order_data.airtable_id && order_data.status == "placed") {
+		if (!order_data.airtableUpdated && order_data.status == "placed") {
 			let address = ""
 			let address_extra = ''
 			if (order_data.shipping_address.hasOwnProperty('address')) {
@@ -321,7 +321,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			let airtableRec = {
 				name: order_data.shipping_address.name,
 				contact_no: order_data.shipping_address.phone,
-				address: order_data.shipping_address,
+				address:address,
 				email: order_data.shipping_address.email,
 				order_id: snap.after.id,
 				order_no: order_data.order_no,
@@ -338,11 +338,11 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				delivery_day: '',
 				bowl_size: ''
 			}
-
+			
 			let paymentRef = await firestore.collection('payments').doc(order_data.payment_id).get()
 			const paymentData = paymentRef.data()
 			airtableRec.razor_payment_id = paymentData.pg_payment_id
-
+			
 			order_data.items.map((item) => {
 				const { product_id, product_name, slot, day, variant_id, size, quantity } = item
 				airtableRec = {
@@ -359,21 +359,24 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					"fields": airtableRec
 				})
 			})
+			console.log(airtableArray, "hereeeeeeeeeeeeeeeeeeeee");
+			
+			
 			base('order_line_items').create(airtableArray).then((res) => {
-				console.log("Made entry in airtable", )
+				console.log("Made entry in airtable", res)
 				
 			}).catch((e) => {
 				console.log("Airtable entry failed ==>", e);
 				
 			})
 	
-			// snap.after.ref.update({
-			// 	userNotified:true
-			// }).then((res) => {
-			// 	console.log("user notified");
-			// }).catch(e => {
-			// 	console.log(e)
-			// })
+			snap.after.ref.update({
+				airtableUpdated:true
+			}).then((res) => {
+				console.log("user notified");
+			}).catch(e => {
+				console.log(e)
+			})
 		}
 
 	} catch (e) {
