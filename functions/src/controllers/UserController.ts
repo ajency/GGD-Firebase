@@ -11,11 +11,11 @@ let User = {
 			return res.status(400).send({ message: 'Missing fields' });
 		}
 
-		let user_exist = await User.getUser("+91" + phone_number);
-		if(user_exist){
-			return res.status(200).send({ success: true, message: 'User exists'});
-		}
-		else{
+		// let user_exist = await User.getUser("+91" + phone_number);
+		// if(user_exist){
+		// 	return res.status(200).send({ success: true, message: 'User exists'});
+		// }
+		// else{
 			const  user_present_in_db =  await User.checkInDb(phone_number)
 			if(user_present_in_db) {
 
@@ -23,7 +23,7 @@ let User = {
 			} else {
 				return res.status(200).send({ success: false, message: 'User does not exist'});
 			}
-		}
+		// }
 	},
 
 
@@ -50,7 +50,17 @@ let User = {
 		
 		const size = await data.size
 		if(size) {
-			return true
+			let oldUser = false
+			for(let i =0; i<size; i++) {
+				console.log(i)
+				let address = await data.docs[i].ref.collection('addresses').get();
+				if(!address.empty) {
+					oldUser = true
+					break;
+				}
+			}
+			
+			return oldUser
 		} else {
 			return false
 		}
