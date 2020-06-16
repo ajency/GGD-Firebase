@@ -141,6 +141,7 @@ let Order = {
 					status: status == 'captured'? 'placed': status,
 					token: order_token ,
 					order_no: order_no,
+					payment_id:payment_ref.docs[0].id,
 					timestamp : admin.firestore.FieldValue.serverTimestamp()
 				})
 				t = new Date
