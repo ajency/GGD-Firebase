@@ -328,7 +328,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				variant_id: '',
 				product_name: '',
 				quantity:'',
-				amount: order_data.summary.you_pay,
+				amount:0,
 				delivery_slot: '',
 				delivery_day: '',
 				bowl_size: ''
@@ -339,7 +339,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			airtableRec.razor_payment_id = paymentData.pg_payment_id
 			
 			order_data.items.map((item) => {
-				const { product_id, product_name, slot, day, variant_id, size, quantity } = item
+				const { product_id, product_name, slot, day, variant_id, size, quantity, sale_price } = item
 				airtableRec = {
 					...airtableRec,
 					product_id,
@@ -348,7 +348,8 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					quantity,
 					delivery_day: day,
 					delivery_slot: slot,
-					bowl_size:size
+					bowl_size:size,
+					amount: (quantity * sale_price)
 				}
 				airtableArray.push(	{
 					"fields": airtableRec
