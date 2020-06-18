@@ -18,6 +18,7 @@ const base = Airtable.base(cred.airtableBase);
 const DAYS = { "monday": "Monday", "tuesday": "Tuesday", "wednesday": "Wednesday", "thursday": "Thursday", "friday": 'Friday', 'saturday': "Saturday", "sunday": "Sunday" };
 const SLOTS = { "lunch": "Lunch", "dinner": "Dinner" };
 
+const generalConfig = require('../config.json');
 let config = require('../credentials.json')
 let serviceAccount = require('../serviceAccount.json');
 
@@ -76,7 +77,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				secondItem = order_data.items[item_temp_arr.indexOf(item_max)]
 
 			}
-			email_content.url = `https://greengrainbowl.com/#/order-details/${snap.after.id}`
+			email_content.url = `${generalConfig.frontendUrl}/#/order-details/${snap.after.id}`
 
 			if (order_data.order_mode == "kiosk") {
 				email_content.url = `https://greengrainbowl.com/oyo/#/order-details/${snap.after.id}`
@@ -249,19 +250,19 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			}
 
 			if (order_data.shipping_address.phone != '') {
-				let tempe = "viraj@ajency.in"
-				const mailOptions = {
-					from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
-					to: tempe,
-					subject: `GGB SMS from ${config.mode}`, // email subject
-					html: `<div>${sms_msg}<div>`
-				};
-				console.log("Email option", mailOptions)
-				await transporter.sendMail(mailOptions).then((info) => {
-					console.log("mail sent to ", order_data.shipping_address.email)
-				}).catch((e) => {
-					console.log("mail sent failed to ", e)
-				})
+				// let tempe = "viraj@ajency.in"
+				// const mailOptions = {
+				// 	from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
+				// 	to: tempe,
+				// 	subject: `GGB SMS from ${config.mode}`, // email subject
+				// 	html: `<div>${sms_msg}<div>`
+				// };
+				// console.log("Email option", mailOptions)
+				// await transporter.sendMail(mailOptions).then((info) => {
+				// 	console.log("mail sent to ", order_data.shipping_address.email)
+				// }).catch((e) => {
+				// 	console.log("mail sent failed to ", e)
+				// })
 
 				if (config.mode == 'prod') {
 
@@ -279,10 +280,10 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 						}
 					}
 					axios.get('http://enterprise.smsgupshup.com/GatewayAPI/rest', msgUrlParams).then(ress => {
-						console.log(ress)
+						console.log("sms sent",ress)
 					})
 						.catch(err => {
-							console.log(err)
+							console.log("sms not sent",err)
 						})
 				}
 
@@ -298,13 +299,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					userref.ref.update(payload).then(() => console.log("updated userdetails with address dddd")).catch((error) => console.log(error));
 				}).catch((err) => console.log(err))
 			}
-			snap.after.ref.update({
-				userNotified: true
-			}).then((res) => {
-				console.log("user notified");
-			}).catch(e => {
-				console.log(e)
-			})
+		
 		}
 
 		if (!order_data.airtableUpdated && order_data.status == "placed") {
@@ -370,8 +365,12 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				
 			})
 	
+		
+		}
+		if(!order_data.airtableUpdated || !order_data.userNotified){
 			snap.after.ref.update({
-				airtableUpdated:true
+				airtableUpdated:true,
+				userNotified: true
 			}).then((res) => {
 				console.log("user notified");
 			}).catch(e => {

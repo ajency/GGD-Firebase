@@ -41,7 +41,7 @@ let Order = {
 				console.log(id, order_id, "record empty")
 				return res.sendStatus(200)
 			}
-
+			console.log("confirmation started2")
 			if(payment_ref.docs[0].data().status == "captured") {
 				console.log("recalled")
 				return res.sendStatus(200)
@@ -74,7 +74,8 @@ let Order = {
 			}
 
 				
-			
+			const ggb_payment_id = payment_ref.docs[0].id
+			console.log("Payment updated", ggb_payment_id)
 			payment_ref = payment_ref.docs[0].ref
 			 payment_ref.update({
 				order_id:razorpay_order.receipt,
@@ -85,7 +86,6 @@ let Order = {
 				timestamp : admin.firestore.FieldValue.serverTimestamp()
 			})
 			var t:any = new Date()
-			console.log("Payment",t-start)
 			let items_airtable =''
 				
 				if(order_ref.exists) {
@@ -141,7 +141,7 @@ let Order = {
 					status: status == 'captured'? 'placed': status,
 					token: order_token ,
 					order_no: order_no,
-					payment_id:payment_ref.docs[0].id,
+					payment_id:ggb_payment_id,
 					timestamp : admin.firestore.FieldValue.serverTimestamp()
 				})
 				t = new Date
