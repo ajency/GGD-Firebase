@@ -306,10 +306,12 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			let address = ""
 			let address_extra = ''
 			if (order_data.shipping_address.hasOwnProperty('address')) {
-				address_extra = order_data.shipping_address.address + ', '
+				if(order_data.shipping_address.address)
+					address_extra = order_data.shipping_address.address + ', '
 			}
 			if (order_data.shipping_address.hasOwnProperty('landmark')) {
-				address_extra = address_extra + order_data.shipping_address.landmark + ', '
+				if(order_data.shipping_address.landmark)
+					address_extra = address_extra + order_data.shipping_address.landmark + ', '
 			}
 			address = address_extra + order_data.shipping_address.formatted_address;
 			let airtableArray = []
