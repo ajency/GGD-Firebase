@@ -20,8 +20,14 @@ const Admin = {
             if (!businessData.airtable_config) {
                 res.status(500).send({ message: "No config found for airtable" });
             }
-
-            let VariantDataStructure = businessData.airtable_config.product_table_datatypes || {}
+            let ignoreList = []
+            let VariantDataStructure = {}
+            if (businessData.airtable_config.product_ignore_list) {
+                ignoreList = businessData.airtable_config.product_ignore_list
+            }
+            if (businessData.airtable_config.product_table_datatypes) {
+                VariantDataStructure = businessData.airtable_config.product_table_datatypes
+            }
             db.collection('products').where("business_id", "==", business_id).get().then((productCol) => {
                 console.log(productCol.size);
                 const productDocs = productCol.docs
@@ -80,6 +86,10 @@ const Admin = {
         } catch (error) {
             res.status(500).send("")
         }
+    },
+
+    fetchDataFromAirtable: async function (req: Request, res: Response) {
+        con
     }
 }
 export default Admin
