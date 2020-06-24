@@ -71,4 +71,8 @@ export function routesConfig(app: Application) {
 	app.get('/rest/v1/admin/get-product-csv', 
 		Admin.getProductsCSV
 	);
+
+	app.get('/rest/v1/admin/get-product-from-airtable', 
+		Admin.fetchDataFromAirtable
+	);
 }
