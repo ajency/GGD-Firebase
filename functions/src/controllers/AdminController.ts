@@ -71,8 +71,9 @@ const Admin = {
                             console.log(error);
 
                         } finally {
+                            const fielname = `Products-${businessData.name}.csv`
                             const csv = parse(productsArrayToConvert);
-                            res.setHeader('Content-disposition', 'attachment; filename=Products.csv');
+                            res.setHeader('Content-disposition', 'attachment; filename='+fielname);
                             res.set('Content-Type', 'text/csv');
                             res.status(200).send(csv);
                         }
