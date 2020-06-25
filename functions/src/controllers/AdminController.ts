@@ -121,9 +121,10 @@ const Admin = {
             }
 
             const base_id = businessData.airtable_config.base_id;
+            const airtable_name = businessData.airtable_config.products_table;
             const base = Airtable.base(base_id);
             const dataMaster = {}
-            base('product_variants').select({
+            base(airtable_name).select({
                 // Selecting the first 3 records in Grid view:
                 // view: "Grid view"
                 pageSize:10
