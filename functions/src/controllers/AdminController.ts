@@ -201,7 +201,7 @@ const Admin = {
                         console.log(e)
                     }
                 }
-                res.status(200).send({ message: "All variants has been updated" })
+                res.status(200).send("All variants has been updated")
             });
         } catch (e) {
             res.status(500).send({ message: "Something went wrong" })
