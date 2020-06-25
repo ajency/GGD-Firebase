@@ -68,11 +68,11 @@ export function routesConfig(app: Application) {
 		User.migrateUser
 	);
 
-	app.get('/rest/v1/admin/get-product-csv', 
+	app.get('/rest/v1/admin/download-product-csv', 
 		Admin.getProductsCSV
 	);
 
-	app.get('/rest/v1/admin/get-product-from-airtable', 
+	app.get('/rest/v1/admin/update-products-status', 
 		Admin.fetchDataFromAirtable
 	);
 }
