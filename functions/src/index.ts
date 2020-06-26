@@ -360,7 +360,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			console.log(airtableArray, "hereeeeeeeeeeeeeeeeeeeee");
 			
 			
-			base('order_line_items').create(airtableArray).then((res) => {
+			base('orders_by_bowl').create(airtableArray).then((res) => {
 				console.log("Made entry in airtable", res)
 				
 			}).catch((e) => {
