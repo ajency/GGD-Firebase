@@ -15,13 +15,12 @@ Airtable.configure({
 	apiKey: cred.airtableApiKey
 })
 const base = Airtable.base(cred.airtableBase);
-const DAYS = { "monday": "Monday", "tuesday": "Tuesday", "wednesday": "Wednesday", "thursday": "Thursday", "friday": 'Friday', 'saturday': "Saturday", "sunday": "Sunday" };
+const DAYS = { "sunday": "Sunday", "monday": "Monday", "tuesday": "Tuesday", "wednesday": "Wednesday", "thursday": "Thursday", "friday": 'Friday', 'saturday': "Saturday" };
 const SLOTS = { "lunch": "Lunch", "dinner": "Dinner" };
 
 const generalConfig = require('../config.json');
 let config = require('../credentials.json')
 let serviceAccount = require('../serviceAccount.json');
-
 if (process.env.X_GOOGLE_FUNCTION_IDENTITY) {
 	admin.initializeApp(functions.config().firebase);
 }
@@ -304,6 +303,11 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 		if (!order_data.airtableUpdated && order_data.status == "placed") {
 			let address = ""
 			let address_extra = ''
+			let dayArray = []
+			for (const key in DAYS) {
+				dayArray.push(key)
+			}
+			
 			if (order_data.shipping_address.hasOwnProperty('address')) {
 				if(order_data.shipping_address.address)
 					address_extra = order_data.shipping_address.address + ', '
@@ -332,13 +336,15 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				amount:0,
 				delivery_slot: '',
 				delivery_day: '',
-				bowl_size: ''
+				bowl_size: '',
+				order_delivery_date: order_data.timestamp.toDate().toDateString()
 			}
 			
 			let paymentRef = await firestore.collection('payments').doc(order_data.payment_id).get()
 			const paymentData = paymentRef.data()
 			airtableRec.razor_payment_id = paymentData.pg_payment_id
-			
+			const weekDay = order_data.timestamp.toDate().getDay();
+			const orderDate = order_data.timestamp.toDate().toISOString()
 			order_data.items.map((item) => {
 				const { product_id, product_name, slot, day, variant_id, size, quantity, sale_price } = item
 				airtableRec = {
@@ -350,8 +356,17 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					delivery_day: day,
 					delivery_slot: slot,
 					bowl_size:size,
-					amount: (quantity * sale_price)
+					amount: (quantity * sale_price),
+					order_delivery_date: order_data.timestamp.toDate().toDateString()
 				}
+				const bowlDay = dayArray.indexOf(day)
+				//0 1 2 3 4 5 
+				if(bowlDay != weekDay) {
+					let delivery_date = new Date(orderDate||new Date());
+					delivery_date.setDate(delivery_date.getDate() + (bowlDay - 1 - delivery_date.getDay() + 7) % 7 + 1);
+					airtableRec.order_delivery_date = delivery_date.toDateString()
+				}
+				
 				airtableArray.push(	{
 					"fields": airtableRec
 				})
