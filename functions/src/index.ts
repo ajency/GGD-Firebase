@@ -107,8 +107,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 
 				email_subject = `Thank you for your order at Green Grain Bowl`
 				email_content.msg = ` <p style="margin: 0; margin-bottom: 25px;">Hi <strong>${cus_name},</strong></p>
-				<p style="margin: 0; margin-bottom: 25px;">Thanks for placing an order with us.</p>
-				<p style="margin: 0; margin-bottom: 25px;">We are on it. We'll notify you when your bowl(s) is ready for pick-up.</p>`
+				<p style="margin: 0; margin-bottom: 25px;">Thanks for placing an order with us. We are on it.</p>`
 
 
 			} else if (order_data.status.toLowerCase() == 'placed' && order_data.order_mode == 'kiosk' && order_data.food_status == '' && order_data.delivery_status == '') {

@@ -26,8 +26,8 @@ const Admin = {
             }
             let ignoreList = []
             let VariantDataStructure = {}
-            if (businessData.airtable_config.product_ignore_list) {
-                ignoreList = businessData.airtable_config.product_ignore_list
+            if (businessData.airtable_config.product_csv_ignore_list) {
+                ignoreList = businessData.airtable_config.product_csv_ignore_list
             }
             if (businessData.airtable_config.product_table_datatypes) {
                 VariantDataStructure = businessData.airtable_config.product_table_datatypes
@@ -113,8 +113,8 @@ const Admin = {
             if (!businessData.airtable_config.base_id) {
                 res.status(500).send({ message: "No config found for airtable, Please contact admin for more information" });
             }
-            if (businessData.airtable_config.product_ignore_list) {
-                ignoreList = businessData.airtable_config.product_ignore_list
+            if (businessData.airtable_config.product_csv_ignore_list) {
+                ignoreList = businessData.airtable_config.product_csv_ignore_list
             }
             if (businessData.airtable_config.product_table_datatypes) {
                 VariantDataStructure = businessData.airtable_config.product_table_datatypes
