@@ -232,12 +232,15 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			if (order_data.shipping_address.email != '') {
 
 				const mailOptions = {
-					from: 'Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
+					from: 'Staging-Green Grain Bowl<no-reply@greengrainbowl.com>', // Something like: Jane Doe <janedoe@gmail.com>
 					to: order_data.shipping_address.email,
-					bcc: "ggb@ajency.in",
 					subject: email_subject, // email subject
 					html: email_html
 				};
+				if(config.mode == 'prod') {
+					mailOptions["bcc"] = "ggb@ajency.in"
+					mailOptions.from = "Green Grain Bowl<no-reply@greengrainbowl.com>"
+				}
 				console.log("Email option", mailOptions)
 				await transporter.sendMail(mailOptions).then((info) => {
 					console.log("mail sent to ", order_data.shipping_address.email)
