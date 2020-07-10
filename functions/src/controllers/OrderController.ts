@@ -159,7 +159,6 @@ let Order = {
 			airtableRec.order_no = order_no
 			if (cart_ref.data().order_id == ggb_order_id && status != "failed") {
 				let order_mode = cart_ref.data().order_mode
-				let user_id = cart_ref.data().user_id
 				cart_ref.ref.set({
 					user_id:user_id
 				})
