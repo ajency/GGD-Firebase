@@ -160,6 +160,7 @@ let Order = {
 			if (cart_ref.data().order_id == ggb_order_id && status != "failed") {
 				let order_mode = cart_ref.data().order_mode
 				cart_ref.ref.set({
+					user_id:user_id
 				})
 			}
 

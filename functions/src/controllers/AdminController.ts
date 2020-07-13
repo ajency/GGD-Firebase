@@ -206,6 +206,28 @@ const Admin = {
         } catch (e) {
             res.status(500).send({ message: "Something went wrong" })
         }
+    },
+
+    updateCartsWithUserId: async function(req: Request, res:Response) {
+        const db = admin.firestore();
+        let resp =  await  db.collection("carts").get()
+            let allDocs= resp.docs
+            let cartToUpdate = {}
+        allDocs.forEach( async (doc) => {
+            let docId = doc.id
+            let userId = docId.split("-")[0]
+            let docData = doc.data()
+            if(!docData.user_id) {
+                cartToUpdate[docId] = userId
+                console.log(userId)
+            }
+        });
+        for (const key in cartToUpdate) {
+            await db.collection("carts").doc(key).update({user_id: cartToUpdate[key]})
+        }
+        return res.status(200).send("ok")
+        
+        
     }
 }
 export default Admin
