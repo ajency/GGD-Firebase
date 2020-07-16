@@ -33,7 +33,7 @@ let misc = {
 						return res.status(200).send(new_res.data);
 					} catch (error) {
 						
-						res.status(200).send(response.data);
+					return res.status(200).send(response.data);
 					}
 			  })
 			  .catch(function (error) {
