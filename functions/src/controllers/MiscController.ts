@@ -119,8 +119,15 @@ let misc = {
 				
 			})
 			console.log(neighbourhood, locality)
-			if(nFound && lFound) {
-				resolve(neighbourhood+", "+locality);
+			let retunrAdd = ''
+			if(nFound || lFound) {
+				if(nFound) {
+					retunrAdd = neighbourhood+", "
+				}
+				if(lFound) {
+					retunrAdd = retunrAdd+locality;
+				}
+					resolve(retunrAdd)
 			} else {
 				resolve(fall_back_address)
 			}
