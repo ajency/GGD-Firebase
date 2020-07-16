@@ -119,7 +119,7 @@ let misc = {
 				
 			})
 			console.log(neighbourhood, locality)
-			if(nFound || lFound) {
+			if(nFound && lFound) {
 				resolve(neighbourhood+", "+locality);
 			} else {
 				resolve(fall_back_address)
