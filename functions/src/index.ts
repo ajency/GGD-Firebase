@@ -311,20 +311,11 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				dayArray.push(key)
 			}
 			
-			if (order_data.shipping_address.hasOwnProperty('address')) {
-				if(order_data.shipping_address.address)
-					address_extra = order_data.shipping_address.address + ', '
-			}
-			if (order_data.shipping_address.hasOwnProperty('landmark')) {
-				if(order_data.shipping_address.landmark)
-					address_extra = address_extra + order_data.shipping_address.landmark + ', '
-			}
-			address = address_extra + order_data.shipping_address.formatted_address;
 			let airtableArray = []
 			let airtableRec = {
 				name: order_data.shipping_address.name,
 				contact_no: order_data.shipping_address.phone,
-				address:address,
+				address:"",
 				email: order_data.shipping_address.email,
 				order_id: snap.after.id,
 				order_no: order_data.order_no,
@@ -340,8 +331,29 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				delivery_slot: '',
 				delivery_day: '',
 				bowl_size: '',
+				delivery_area:"",
+				delivery_address:'',
+				open_map:'',
 				order_delivery_date: order_data.timestamp.toDate().toDateString()
 			}
+			
+			if (order_data.shipping_address.hasOwnProperty('address')) {
+				if(order_data.shipping_address.address)
+					address_extra = order_data.shipping_address.address + ', '
+			}
+			if (order_data.shipping_address.hasOwnProperty('landmark')) {
+				if(order_data.shipping_address.landmark)
+					address_extra = address_extra + order_data.shipping_address.landmark + ', '
+			}
+			console.log(address_extra)
+			airtableRec.delivery_address = address_extra.substring(0, address_extra.length - 1);
+			airtableRec.delivery_area = order_data.shipping_address.formatted_address
+			if(order_data.shipping_address.lat_long) {
+				let  latLong = order_data.shipping_address.lat_long.join()
+				airtableRec.open_map = "https://www.google.com/maps/?q="+ latLong;
+			}
+			address = address_extra + order_data.shipping_address.formatted_address;
+			airtableRec.address = address
 			
 			let paymentRef = await firestore.collection('payments').doc(order_data.payment_id).get()
 			const paymentData = paymentRef.data()

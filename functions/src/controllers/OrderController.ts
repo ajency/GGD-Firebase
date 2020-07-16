@@ -70,6 +70,9 @@ let Order = {
 				razorpay_order_id: order_id,
 				status: status == 'captured' ? 'placed' : status,
 				order_no: '',
+				delivery_area:"",
+				delivery_address:'',
+				open_map:'',
 				datetime: new Date().toISOString()
 			}
 
@@ -97,7 +100,7 @@ let Order = {
 				}
 				airtableRec.items = items_airtable;
 
-				if (order_ref.data().shipping_address.formatted_address) {
+				// if (order_ref.data().shipping_address.formatted_address) {
 					let address_extra = ''
 					if (order_ref.data().shipping_address.hasOwnProperty('address')) {
 						if(order_ref.data().shipping_address.address)
@@ -107,8 +110,15 @@ let Order = {
 						if(order_ref.data().shipping_address.landmark)
 							address_extra = address_extra + order_ref.data().shipping_address.landmark + ', '
 					}
+					airtableRec.delivery_address = address_extra;
+					airtableRec.delivery_area = order_ref.data().shipping_address.formatted_address
+					if(order_ref.data().shipping_address.lat_long) {
+						let  latLong = order_ref.data().shipping_address.lat_long.join()
+						airtableRec.open_map = "https://www.google.com/maps/?q="+ latLong;
+					}
+					
 					airtableRec.address = address_extra + order_ref.data().shipping_address.formatted_address;
-				}
+				// }
 				if (user_id) {
 					let user_ref = await firestore.collection('user-details').doc(user_id).get()
 					if (user_ref.exists) {
