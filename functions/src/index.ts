@@ -85,10 +85,9 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				let latLong = order_data.shipping_address.lat_long.join()
 				let mapLink = "https://www.google.com/maps/?q="+ latLong;
 				let addressLabel = order_data.shipping_address.address ? `${order_data.shipping_address.address}, ` : ""
-				email_content.address = `<div class=""><strong>Delivery Address: </strong></div>
-					${addressLabel}${order_data.shipping_address.landmark}
-					<div class=""><strong>Delivery Area: </strong></div>
-					${order_data.shipping_address.formatted_address}  <a href="${mapLink}" style="color:#212529!important;">See on map</a></strong>
+				email_content.address = `<div class=""><strong>Delivery Address: </strong> ${addressLabel}${order_data.shipping_address.landmark}</div>
+					<div class=""><strong>Delivery Area: </strong> ${order_data.shipping_address.formatted_address}  <a href="${mapLink}" style="color:#212529!important;">See on map</a></strong></div>
+					
 				  </div>`
 			}
 
