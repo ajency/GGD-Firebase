@@ -101,6 +101,7 @@ let Cart = {
 		let user = await firestore.collection('user-details').doc(userId).get();
 		if (user.exists){
 			userObj =  user.data();
+			userObj.id = user.id
 		}
 		else{
 			validatedResponse['code'] = "USER_NOT_EXIST",
@@ -126,7 +127,7 @@ let Cart = {
 
 		// get coupon
 		if(couponCode){
-			const couponRes = await firestore.collection('coupons').where("code", "==",couponCode).get(); //query coupon @todo
+			const couponRes = await firestore.collection('coupons').where("code", "==",couponCode).where("active","==", true).get(); //query coupon @todo 
 			if(couponRes.empty) {
 				validatedResponse['code'] = "COUPON_NOT_EXIST",
 				validatedResponse['message'] = "Coupon does not exist"
@@ -184,7 +185,7 @@ let Cart = {
 	},
 
 	cartBelongsToUser: (userObj:any, cartObj) => {
-		return true
+		return userObj.id == cartObj.user_id;
 	},
 
 	reCalculate: async (req:Request, res:Response) => {
