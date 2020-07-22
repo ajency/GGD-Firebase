@@ -123,7 +123,7 @@ let Cart = {
 			validatedResponse['message'] = "Cart does not exist"
 			
 			return validatedResponse			
-		}	
+		}
 
 		// get coupon
 		if(couponCode){
@@ -192,6 +192,13 @@ let Cart = {
 		return { success: true}
 	},
 
+	updateCartCoupon: (cartObj) => {
+
+	},
+
+	calculatCouponDiscount(cartObj, couponObj) {
+		return cartObj.summary
+	},
 
 	reCalculate: async (req:Request, res:Response) => {
 
