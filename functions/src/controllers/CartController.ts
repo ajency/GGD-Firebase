@@ -218,7 +218,7 @@ let Cart = {
 			case "cart_level":
 				switch (discount_type) {
 					case "percentage":
-						newDiscount = cartObj.summary.sale_price_total / ( value * 100)
+						newDiscount = cartObj.summary.sale_price_total * ( value / 100)
 						newYouPay = cartObj.summary.sale_price_total - newDiscount + cartObj.summary.shipping_fee;
 						cartObj.summary.cart_discount = newDiscount
 						cartObj.summary.you_pay = newYouPay
@@ -254,7 +254,7 @@ let Cart = {
 
 
 			responseData = await Cart.validateCart(uid, cartId, couponCode, operation) //{ success: true, message: 'Coupon Applied successfully', data : {}}
-			
+
 
 			return res.status(200).send(responseData)
 
