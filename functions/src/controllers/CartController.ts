@@ -68,9 +68,9 @@ let Cart = {
 			data: { "cart": cartObj }
 		};
 		let couponValidCheck = await Cart.validateCoupon(userObj, cartObj, couponObj) 
-
+		let couponObjCp = JSON.parse(JSON.stringify(couponObj))
 		if(!couponValidCheck["success"]) {
-			couponObj = {}
+			couponObjCp = {}
 		}
 		let updatedCartObj = cartObj;
 
@@ -79,8 +79,8 @@ let Cart = {
 		//1.2. call validatecoupon method if coupon applied and modify cart  
 
 
-		updatedCartObj["applied_coupon"] = couponObj
-		updatedCartObj["summary"] = Cart.calculatCouponDiscount(cartObj,couponObj)
+		updatedCartObj["applied_coupon"] = couponObjCp
+		updatedCartObj["summary"] = Cart.calculatCouponDiscount(cartObj,couponObjCp)
 
 		Cart.updateCartCoupon(updatedCartObj); //update to firestore with latest cart object
 		result.data.cart = updatedCartObj
@@ -108,7 +108,7 @@ let Cart = {
 			userObj.id = userId
 		}
 		else {
-			validatedResponse['code'] = "USER_NOT_EXIST",
+			validatedResponse['code'] = "USER_NOT_EXIST";
 				validatedResponse['message'] = "User does not exist"
 
 			return validatedResponse
@@ -124,7 +124,7 @@ let Cart = {
 			validatedResponse['data']['cart'] = cartObj
 		}
 		else {
-			validatedResponse['code'] = "CART_NOT_EXIST",
+			validatedResponse['code'] = "CART_NOT_EXIST";
 				validatedResponse['message'] = "Cart does not exist"
 
 			return validatedResponse
@@ -134,7 +134,7 @@ let Cart = {
 		if (couponCode) {
 			const couponRes = await firestore.collection('coupons').where("code", "==", couponCode).where("active", "==", true).get(); //query coupon @todo 
 			if (couponRes.empty) {
-				validatedResponse['code'] = "COUPON_NOT_EXIST",
+				validatedResponse['code'] = "COUPON_NOT_EXIST";
 					validatedResponse['message'] = "Coupon does not exist"
 				return validatedResponse
 			} else {
@@ -143,7 +143,7 @@ let Cart = {
 			}
 		}
 		else {
-			validatedResponse['code'] = "COUPON_NOT_EXIST",
+			validatedResponse['code'] = "COUPON_NOT_EXIST";
 				validatedResponse['message'] = "Coupon does not exist"
 
 			return validatedResponse
@@ -177,7 +177,7 @@ let Cart = {
 
 		}
 		else {
-			validatedResponse['code'] = "CART_NOT_OF_USR",
+			validatedResponse['code'] = "CART_NOT_OF_USR";
 				validatedResponse['message'] = "Requested Cart does not belong to user"
 
 			return validatedResponse
@@ -246,17 +246,17 @@ let Cart = {
 	reCalculate: async (req: Request, res: Response) => {
 
 		try {
-			let { uid, cartId, couponCode = null, operation = null } = req.body
+			let { uid="", cartId, couponCode = null, operation = null } = req.body
 			let responseData = {}
 
 			//1. @todo fetch user from request already appended via the authenticate method and pass in method to recalculate cart
 			console.log("request details ==>", uid, cartId, couponCode, operation)
 
 
-			responseData = Cart.validateCart(uid, cartId, couponCode, operation) //{ success: true, message: 'Coupon Applied successfully', data : {}}
+			responseData = await Cart.validateCart(uid, cartId, couponCode, operation) //{ success: true, message: 'Coupon Applied successfully', data : {}}
+			
 
-
-			return res.sendStatus(200).send(responseData)
+			return res.status(200).send(responseData)
 
 		} catch (error) {
 			console.log(error)
