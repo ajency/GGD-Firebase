@@ -142,7 +142,7 @@ let Cart = {
 				couponObj = couponRef.data()
 			}
 		}
-		else {
+		else if(operation =="add") {
 			validatedResponse['code'] = "COUPON_NOT_EXIST";
 				validatedResponse['message'] = "Coupon does not exist"
 
