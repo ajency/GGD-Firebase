@@ -188,6 +188,11 @@ let Cart = {
 		return userObj.id == cartObj.user_id;
 	},
 
+	validateCoupon: (userObj, cartObj, couponObj) => {
+		return { success: true}
+	},
+
+
 	reCalculate: async (req:Request, res:Response) => {
 
 		try {
