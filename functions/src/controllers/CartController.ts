@@ -54,6 +54,7 @@ let Cart = {
 		updatedCartObj["summary"] = Cart.calculatCouponDiscount(cartObj, {})
 
 		Cart.updateCartCoupon(updatedCartObj); //update to firestore with latest cart object
+		result.success = true
 		result.data.cart = updatedCartObj
 		return result
 	},
@@ -142,7 +143,7 @@ let Cart = {
 				couponObj = couponRef.data()
 			}
 		}
-		else if(operation =="add") {
+		else if(operation =="add" && !couponCode) { //to handle request which does doesnt pass code
 			validatedResponse['code'] = "COUPON_NOT_EXIST";
 				validatedResponse['message'] = "Coupon does not exist"
 
@@ -164,7 +165,7 @@ let Cart = {
 
 				case "validate":
 					couponObj = cartObj["applied_coupon"]
-					validatedResponse = Cart.modifyCouponBasedCart(userObj, cartObj, couponObj)
+					validatedResponse = Cart.validateCoupon(userObj, cartObj, couponObj)
 					break;
 
 
