@@ -82,7 +82,7 @@ export function routesConfig(app: Application) {
 	);
 
 	app.post('/rest/v1/cart/recalculate', 
-		// isAuthenticated,
+		isAuthenticated,
 		Cart.reCalculate
 	);
 }

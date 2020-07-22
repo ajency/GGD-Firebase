@@ -48,13 +48,13 @@ let Cart = {
 			data: { "cart": cartObj }
 		};
 
-		let updatedCartObj = cartObj;
+		let updatedCartObj = JSON.parse(JSON.stringify(cartObj));
 
-		updatedCartObj["applied_coupon"] = couponObj
-		updatedCartObj["summary"] = discountSummary
+		updatedCartObj["applied_coupon"] = {}
+		updatedCartObj["summary"] = Cart.calculatCouponDiscount(cartObj, {})
 
 		Cart.updateCartCoupon(updatedCartObj); //update to firestore with latest cart object
-
+		result.data.cart = updatedCartObj
 		return result
 	},
 
@@ -208,7 +208,7 @@ let Cart = {
 	},
 
 	calculatCouponDiscount(cartObj, couponObj) {
-		const { coupon_type, discount_type, value } = couponObj
+		const { coupon_type="", discount_type ="", value = 0 } = couponObj
 		let newDiscount = 0 , newYouPay = 0;
 		switch (coupon_type) {
 			case "cart_level":
@@ -231,6 +231,9 @@ let Cart = {
 				break;
 
 			default:
+				newYouPay = cartObj.summary.sale_price_total + cartObj.summary.shipping_fee;
+				cartObj.summary.cart_discount = 0
+				cartObj.summary.you_pay = newYouPay
 				break;
 		}
 		return cartObj.summary
