@@ -7,6 +7,7 @@ import Products from "./controllers/ProductController";
 
 import { isAuthenticated } from "./auth/authenticated";
 import Payment from './controllers/PaymentController';
+import Cart from "./controllers/CartController";
 
 export function routesConfig(app: Application) {
 	app.post('/rest/v1/user/add-address',
@@ -65,5 +66,10 @@ export function routesConfig(app: Application) {
 	);
 	app.get('/rest/v1/order/migrate-user', 
 		User.migrateUser
+	);
+
+	app.post('/rest/v1/cart/recalculate', 
+		isAuthenticated,
+		Cart.reCalculate
 	);
 }
