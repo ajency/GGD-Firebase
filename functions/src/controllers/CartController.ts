@@ -190,7 +190,7 @@ let Cart = {
 	},
 
 	validateCoupon: (userObj, cartObj, couponObj) => {
-		return { success: true }
+		return { success: true, message: "Coupon applied successfully." }
 	},
 
 	updateCartCoupon: (cartObj) => {
