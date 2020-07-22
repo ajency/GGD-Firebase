@@ -60,14 +60,18 @@ let Cart = {
 
 
 	//LATESH
-	modifyCouponBasedCart: (userObj: any, cartObj: any, couponObj: any) => {
+	modifyCouponBasedCart: async (userObj: any, cartObj: any, couponObj: any) => {
 		let result = {
 			success: false,
 			code: "",
 			message: "",
 			data: { "cart": cartObj }
 		};
+		let couponValidCheck = await Cart.validateCoupon(userObj, cartObj, couponObj) 
 
+		if(!couponValidCheck["success"]) {
+			couponObj = {}
+		}
 		let updatedCartObj = cartObj;
 
 		//1. check if cart has coupon applied
@@ -76,10 +80,10 @@ let Cart = {
 
 
 		updatedCartObj["applied_coupon"] = couponObj
-		updatedCartObj["summary"] = discountSummary
+		updatedCartObj["summary"] = Cart.calculatCouponDiscount(cartObj,couponObj)
 
 		Cart.updateCartCoupon(updatedCartObj); //update to firestore with latest cart object
-
+		result.data.cart = updatedCartObj
 		return result
 	},
 
@@ -190,7 +194,7 @@ let Cart = {
 	},
 
 	validateCoupon: (userObj, cartObj, couponObj) => {
-		return { success: true, message: "Coupon applied successfully." }
+		return { success: true, message: "Coupon applied successfully.", data: { "cart": cartObj} }
 	},
 
 	updateCartCoupon: (cartObj) => {
