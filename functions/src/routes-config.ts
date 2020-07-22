@@ -7,6 +7,7 @@ import Products from "./controllers/ProductController";
 
 import { isAuthenticated } from "./auth/authenticated";
 import Payment from './controllers/PaymentController';
+import Admin from "./controllers/AdminController";
 import Cart from "./controllers/CartController";
 
 export function routesConfig(app: Application) {
@@ -66,6 +67,18 @@ export function routesConfig(app: Application) {
 	);
 	app.get('/rest/v1/order/migrate-user', 
 		User.migrateUser
+	);
+
+	app.get('/rest/v1/admin/download-product-csv', 
+		Admin.getProductsCSV
+	);
+
+	app.get('/rest/v1/admin/update-products-status', 
+		Admin.fetchDataFromAirtable
+	);
+
+	app.get('/rest/v1/admin/update-cart-with-user-id',
+		Admin.updateCartsWithUserId
 	);
 
 	app.post('/rest/v1/cart/recalculate', 
