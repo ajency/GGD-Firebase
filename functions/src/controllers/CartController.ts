@@ -85,9 +85,9 @@ let Cart = {
 
 	validateCart: async (userId:string, cartId:string, couponCode:string, operation:string) => {
 		let firestore = admin.firestore();
-		let couponObj = {};
-		let userObj = {};
-		let cartObj = {};
+		let couponObj:any = {};
+		let userObj:any = {};
+		let cartObj:any = {};
 
 		let validatedResponse:any = {
 			success: false,
@@ -127,7 +127,14 @@ let Cart = {
 		// get coupon
 		if(couponCode){
 			const couponRes = await firestore.collection('coupons').where("code", "==",couponCode).get(); //query coupon @todo
-			
+			if(couponRes.empty) {
+				validatedResponse['code'] = "COUPON_NOT_EXIST",
+				validatedResponse['message'] = "Coupon does not exist"
+				return validatedResponse	
+			} else {
+				const couponRef = couponRes.docs[0]
+				couponObj = couponRef.data() 
+			}
 		}
 		else{
 			validatedResponse['code'] = "COUPON_NOT_EXIST",
