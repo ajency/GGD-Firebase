@@ -101,7 +101,7 @@ let Cart = {
 		let user = await firestore.collection('user-details').doc(userId).get();
 		if (user.exists){
 			userObj =  user.data();
-			userObj.id = user.id
+			userObj.id = userId
 		}
 		else{
 			validatedResponse['code'] = "USER_NOT_EXIST",
@@ -113,9 +113,10 @@ let Cart = {
 		//get cart
 
 
-		let cart = await firestore.collection('cartId').doc(userId).get();
+		let cart = await firestore.collection('carts').doc(cartId).get();
 		if (cart.exists){
 			cartObj =  cart.data();
+			cartObj.cartId = cartId
 			validatedResponse['data']['cart'] = cartObj
 		}
 		else{
