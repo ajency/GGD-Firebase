@@ -70,9 +70,11 @@ let Order = {
 				razorpay_order_id: order_id,
 				status: status == 'captured' ? 'placed' : status,
 				order_no: '',
+				discount:0,
+				coupon_code:"",
 				datetime: new Date().toISOString()
 			}
-
+			
 
 			const ggb_payment_id = payment_ref.docs[0].id
 			console.log("Payment updated", ggb_payment_id)
@@ -96,7 +98,11 @@ let Order = {
 					})
 				}
 				airtableRec.items = items_airtable;
-
+				const order_data = order_ref.data();
+				if(order_data.summary.cart_discount) {
+					airtableRec.discount = order_data.summary.cart_discount
+					airtableRec.coupon_code = order_data.applied_coupon.code
+				}
 				if (order_ref.data().shipping_address.formatted_address) {
 					let address_extra = ''
 					if (order_ref.data().shipping_address.hasOwnProperty('address')) {

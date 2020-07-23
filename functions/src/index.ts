@@ -193,7 +193,24 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				}
 			}
 			let del_fee_block = ''
+			let discount_block =''
+			let coupon_code =''
 			if (order_data.order_mode == "online") {
+				if(order_data.summary.cart_discount) {
+					const code = order_data.applied_coupon.code;
+					coupon_code = `<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 0; padding-bottom: 10px;">
+							<div class="w-50" style="width: 50%;float:left;">
+								<label class="font-weight-light"><b>Coupon Code</b></label>
+							</div>
+							<div class="font-weight-light w-50 text-right" style="width:50%;text-align:right;">${code}</div>
+						</div>`
+					discount_block = `<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 0; padding-bottom: 10px;">
+							<div class="w-50" style="width: 50%;float:left;">
+								<label class="font-weight-light">Cart discount</label>
+							</div>
+							<div class="font-weight-light w-50 text-right" style="width:50%;float:left;text-align:right;">-₹${order_data.summary.cart_discount}</div>
+						</div>`
+				}
 				del_fee_block = `<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 0; padding-bottom: 10px;">
 							<div class="w-50" style="width: 50%;float:left;">
 								<label class="font-weight-light">Delivery fee</label>
@@ -204,11 +221,14 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 
 			email_content.summary = `
 					<div class="summary-item pt-0" style="display: flex; justify-content: space-between; padding-top: 10px; padding-bottom: 0;">
+
 						<div class="w-50" style="width: 50%;float:left;">
 							<label class="font-weight-light">Total Item Price</label>
 						</div>
 					<div class="font-weight-light w-50 text-right" style="width:50%;float:left;text-align:right;">₹${order_data.summary.sale_price_total} </div>
 					</div>
+					${coupon_code}
+					${discount_block}
 					${del_fee_block}
 					<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 10px; padding-bottom: 10px;">
 						<div class="w-50" style="width: 50%;float:left;">
@@ -340,6 +360,8 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				delivery_slot: '',
 				delivery_day: '',
 				bowl_size: '',
+				// coupon_code:'',
+				// discount:0,
 				order_delivery_date: order_data.timestamp.toDate().toDateString()
 			}
 			
@@ -369,6 +391,10 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					delivery_date.setDate(delivery_date.getDate() + (bowlDay - 1 - delivery_date.getDay() + 7) % 7 + 1);
 					airtableRec.order_delivery_date = delivery_date.toDateString()
 				}
+				// if(order_data.summary.cart_discount) {
+				// 	airtableRec.discount = order_data.summary.cart_discount
+				// 	airtableRec.coupon_code = order_data.applied_coupon.code
+				// }
 				
 				airtableArray.push(	{
 					"fields": airtableRec
@@ -384,10 +410,25 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				console.log("Airtable entry failed ==>", e);
 				
 			})
+			if(order_data.summary.cart_discount) {
+				const coupons_redeemed = {
+					user_id:paymentData.user_id,
+					user_phone:order_data.shipping_address.phone,
+					coupon_id:order_data.applied_coupon.id,
+					coupon_code:order_data.applied_coupon.code,
+					order_id:snap.after.id,
+					timestamp:order_data.timestamp
+				}
+				firestore.collection("coupons_redeemed").doc().set(coupons_redeemed).then(() => {
+					console.log("made entry in coupons_redeemed");
+				}).catch((e) => {
+					console.log(e)
+				})
+			}
 	
 		
 		}
-		if(!order_data.airtableUpdated || !order_data.userNotified){
+		if(!order_data.airtableUpdated || !order_data.userNotified ){
 			snap.after.ref.update({
 				airtableUpdated:true,
 				userNotified: true
