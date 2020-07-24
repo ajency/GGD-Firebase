@@ -133,7 +133,8 @@ let Cart = {
 
 		// get coupon
 		if (couponCode) {
-			const couponRes = await firestore.collection('coupons').where("code", "==", couponCode).where("active", "==", true).get(); //query coupon @todo 
+			let couponCodeTransform = couponCode.toUpperCase() // user can enter in any case, code will be converted to uppercase to query in the DB
+			const couponRes = await firestore.collection('coupons').where("code", "==", couponCodeTransform).where("active", "==", true).get(); //query coupon @todo 
 			if (couponRes.empty) {
 				validatedResponse['code'] = "COUPON_NOT_EXIST";
 					validatedResponse['message'] = "Coupon does not exist"
@@ -163,7 +164,7 @@ let Cart = {
 					validatedResponse = Cart.removeCouponFromCart(userObj, cartObj, couponObj)
 					break;
 
-				case "validate":
+				case "validate_cart":
 					couponObj = cartObj["applied_coupon"]
 					validatedResponse = Cart.validateCoupon(userObj, cartObj, couponObj)
 					break;
@@ -195,7 +196,7 @@ let Cart = {
 	},
 
 	validateCoupon: (userObj, cartObj, couponObj) => {
-		return { success: true, message: "Coupon applied successfully.", data: { "cart": cartObj} }
+		return { success: true, message: "Coupon applied succesfully.", data: { "cart": cartObj} }
 	},
 
 	updateCartCoupon: (cartObj) => {

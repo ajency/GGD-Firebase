@@ -222,12 +222,12 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			email_content.summary = `
 					<div class="summary-item pt-0" style="display: flex; justify-content: space-between; padding-top: 10px; padding-bottom: 0;">
 
+						${coupon_code}
 						<div class="w-50" style="width: 50%;float:left;">
 							<label class="font-weight-light">Total Item Price</label>
 						</div>
 					<div class="font-weight-light w-50 text-right" style="width:50%;float:left;text-align:right;">₹${order_data.summary.sale_price_total} </div>
 					</div>
-					${coupon_code}
 					${discount_block}
 					${del_fee_block}
 					<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 10px; padding-bottom: 10px;">
