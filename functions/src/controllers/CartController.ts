@@ -5,7 +5,7 @@ import couponUtil from '../utils/CouponUtil';
 
 let Cart = {
 
-	addCouponToCart: async (userObj: any, cartObj: any, couponObj: any) => {
+	addCouponToCart: async (userObj: any, cartObj: any, couponObj: any, miscData: any) => {
 		// let result = {
 		// 	success: false,
 		// 	code: "",
@@ -15,7 +15,7 @@ let Cart = {
 
 		let updatedCartObj = cartObj;
 
-		let result = couponUtil.validateCoupon(userObj, cartObj, couponObj) //NUTAN
+		let result = couponUtil.validateCoupon(userObj, cartObj, couponObj, miscData) //NUTAN
 
 
 
@@ -43,7 +43,7 @@ let Cart = {
 	},
 
 	//LATESH
-	removeCouponFromCart: (userObj: any, cartObj: any, couponObj: any) => {
+	removeCouponFromCart: (userObj: any, cartObj: any, couponObj: any, miscData: any) => {
 		let result = {
 			success: false,
 			code: "",
@@ -64,14 +64,14 @@ let Cart = {
 
 
 	//LATESH
-	modifyCouponBasedCart: async (userObj: any, cartObj: any, couponObj: any) => {
+	modifyCouponBasedCart: async (userObj: any, cartObj: any, couponObj: any, miscData: any) => {
 		let result = {
 			success: false,
 			code: "",
 			message: "",
 			data: { "cart": cartObj }
 		};
-		let couponValidCheck = await couponUtil.validateCoupon(userObj, cartObj, couponObj) 
+		let couponValidCheck = await couponUtil.validateCoupon(userObj, cartObj, couponObj, miscData) 
 		let couponObjCp = JSON.parse(JSON.stringify(couponObj))
 		if(!couponValidCheck["success"]) {
 			couponObjCp = {}
@@ -96,6 +96,7 @@ let Cart = {
 		let couponObj: any = {};
 		let userObj: any = {};
 		let cartObj: any = {};
+		let miscData : any = {"couponRedeemCount": 0};
 
 		let validatedResponse: any = {
 			success: false,
@@ -166,26 +167,36 @@ let Cart = {
 			couponObj = couponRef.data()
 		}
 
+
+		// find number of times coupon is redeemed by user
+		let couponsRedeemedRef = await firestore.collection('coupons_redeemed').where("user_phone", "==", userObj.phone).where("coupon_code", "==", couponObj.code).get();
+		if (!couponsRedeemedRef.empty){
+			miscData["couponRedeemCount"] = couponsRedeemedRef.docs[0].data().count()
+		} 
+
+
+
+
 		//if coupon is found to be active, then do the intended operation
 		switch (operation) {
 			case "add":
-				let addCouponRes = await Cart.addCouponToCart(userObj, cartObj, couponObj)
+				let addCouponRes = await Cart.addCouponToCart(userObj, cartObj, couponObj, miscData)
 				console.log(`Inside RULE ENGINE\n coupon = ${JSON.stringify(addCouponRes)}`)
 				validatedResponse = { success: true, message: "Coupon applied unsuccesfully.", data: { "cart": cartObj } }
 
 				break;
 
 			case "remove":
-				validatedResponse = Cart.removeCouponFromCart(userObj, cartObj, couponObj)
+				validatedResponse = Cart.removeCouponFromCart(userObj, cartObj, couponObj, miscData)
 				break;
 
 			case "validate_cart":				
-				validatedResponse = couponUtil.validateCoupon(userObj, cartObj, couponObj)
+				validatedResponse = couponUtil.validateCoupon(userObj, cartObj, couponObj, miscData)
 				break;
 
 
 			case "modify_cart":
-				validatedResponse = Cart.modifyCouponBasedCart(userObj, cartObj, couponObj)
+				validatedResponse = Cart.modifyCouponBasedCart(userObj, cartObj, couponObj, miscData)
 				break;
 
 		}
