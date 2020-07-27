@@ -6,34 +6,29 @@ import couponUtil from '../utils/CouponUtil';
 let Cart = {
 
 	addCouponToCart: async (userObj: any, cartObj: any, couponObj: any, miscData: any) => {
-		// let result = {
-		// 	success: false,
-		// 	code: "",
-		// 	message: "",
-		// 	data: { "cart": cartObj }
-		// };
 
 		let updatedCartObj = cartObj;
+		let result = {success:false, code: "ADD_COUPON_NOT_PROCESSED", message: "Add coupon not processed"};
 
-		let result = couponUtil.validateCoupon(userObj, cartObj, couponObj, miscData) //NUTAN
+		let couponValidCheck = await couponUtil.validateCoupon(userObj, cartObj, couponObj, miscData)
 
 
 
-		// console.log(`\n Returned response\n ${couponValidCheck}`)
+		console.log(`\n Returned response\n ${couponValidCheck}`)
 
-		// if (couponValidCheck['success'] === true) {
-		// 	let discountSummary = Cart.calculatCouponDiscount(cartObj, couponObj) //LATESH
+		if (couponValidCheck['success'] === true) {
+			let discountSummary = Cart.calculatCouponDiscount(cartObj, couponObj) //LATESH
 
-		// 	updatedCartObj["applied_coupon"] = couponObj
-		// 	updatedCartObj["summary"] = discountSummary
+			updatedCartObj["applied_coupon"] = couponObj
+			updatedCartObj["summary"] = discountSummary
 
-		// 	Cart.updateCartCoupon(cartObj); //update to firestore with latest cart object
+			Cart.updateCartCoupon(cartObj); //update to firestore with latest cart object
 
-		// 	result["success"] = couponValidCheck['success'] //true
-		// 	result["code"] = couponValidCheck['code'] //"COUPON_ADD_SUCCESS"
-		// 	result["message"] = couponValidCheck['message'] //"Coupon added successfully"
-		// 	result["data"]["cart"] = updatedCartObj
-		// }
+			result["success"] = couponValidCheck['success'] //true
+			result["code"] = couponValidCheck['code'] //"COUPON_ADD_SUCCESS"
+			result["message"] = couponValidCheck['message'] //"Coupon added successfully"
+			result["data"]["cart"] = updatedCartObj
+		}
 		// else {
 		// 	result["code"] = couponValidCheck["code"]
 		// 	result["message"] = couponValidCheck["message"]
@@ -180,10 +175,7 @@ let Cart = {
 		//if coupon is found to be active, then do the intended operation
 		switch (operation) {
 			case "add":
-				let addCouponRes = await Cart.addCouponToCart(userObj, cartObj, couponObj, miscData)
-				console.log(`Inside RULE ENGINE\n coupon = ${JSON.stringify(addCouponRes)}`)
-				validatedResponse = { success: true, message: "Coupon applied unsuccesfully.", data: { "cart": cartObj } }
-
+				validatedResponse = await Cart.addCouponToCart(userObj, cartObj, couponObj, miscData)
 				break;
 
 			case "remove":
@@ -261,13 +253,10 @@ let Cart = {
 			let { uid="", cartId, couponCode = null, operation = null } = req.body
 			let responseData = {}
 
-			responseData = await Cart.validateCart(uid, cartId, couponCode, operation) //{ success: true, message: 'Coupon Applied successfully', data : {}}
-
-
+			responseData = await Cart.validateCart(uid, cartId, couponCode, operation)
 			return res.status(200).send(responseData)
 
 		} catch (error) {
-			console.log(error)
 			return res.status(200).send({ success: false, message: 'Error in applying coupon', data: error })
 		}
 

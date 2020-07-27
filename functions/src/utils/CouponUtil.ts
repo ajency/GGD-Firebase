@@ -1,47 +1,37 @@
 // import couponRules from '../utils/couponRules';
-const { Engine } = require("json-rules-engine");
-
-/*
-  * if you need to make calls to additional tables, data stores (Redis, for example), 
-  * or call an external endpoint as part of creating the blogpost, add them to this service
-*/
-
-// let couponUtil = {
-
-//     validateCoupon: (userObj, cartObj, couponObj) => {
-        
-//         // console.log(`Inside VALIDATE COUPON\n coupon = ${JSON.stringify(couponObj, null, 4)}\n user = ${JSON.stringify(userObj, null, 4)}\n cart = ${JSON.stringify(cartObj, null, 4)}`)
-
-
-// 		// Valid from. Valid to ------------------------------ primary field
-//   	// Number of times it can be used -------------------- primary field
-// 		// Specific to a user -------------------------------- part of rule
-// 		// Applicable to all users flag - any user can use --- part of rule
-// 		// Applicable to only these users - +ve list --------- part of rule
-// 		// Applicable to all users except this  - -ve list --- part of rule
-
-
-
+const { Engine } = require("json-rules-engine")
 
 
 let couponUtil = {
 
 	validateCoupon: async (userObj, cartObj, couponObj, miscData) => {
 
-
-		/**
-		 * Define facts the engine will use to evaluate the conditions above.
-		 * Facts may also be loaded asynchronously at runtime; see the advanced example below
+		/**	
+		 * Create an Engine	
 		 */
-		let facts = couponUtil.prepareCouponFacts(userObj, cartObj, couponObj, miscData)
+		let couponRuleEngine = new Engine();
 
+		/**	
+		 * Add Rules	
+		 */
+		let event = {  // define the event to fire when the conditions evaluate truthy
+		    type: 'calculateCouponDiscount',
+		    params: {
+		      error: {
+		      	code : 'EXPIRY_INVALID',
+		      	message: "Validity of coupon has expired",
+		      	formatted_message: "<div class='msg-error'><p>Please enter valid coupon code.</p></div>"
+		      },
+		      success: {
+		      	code : 'EXPIRY_VALID',
+		      	message: "Validity of coupon has expired",
+		      	formatted_message: "<div class='msg-success'><p>Yay! coupon code applied successfully, You have availed discount of <span>₹ 100</span></p></div>"
+		      },
+		      couponObj: couponObj 
+		    }
+	  	};
 
-		//prepare rules object basis rules assigned to the coupon thati s being applied
-		let couponRuleEngine = new Engine()
-
-		const expiryRule = {
-		
-		conditions: {
+		let conditions = {
 
 			all: [
 				{
@@ -52,7 +42,7 @@ let couponUtil = {
 				{
 					fact: 'dateofApplication',
 					operator: 'lessThanInclusive',
-					value: new Date("2020-07-28T07:45:00Z").getTime()
+					value: new Date("2020-07-31T07:45:00Z").getTime()
 				},
 				{
 					fact: 'usageCount',
@@ -66,35 +56,52 @@ let couponUtil = {
 				},
 
 			]
-		  },
+		};
 
-			event: {  // define the event to fire when the conditions evaluate truthy
-			    type: 'calculateCouponDiscount',
-			    params: {
-			      error: {
-			      	code : 'EXPIRY_INVALID',
-			      	message: "Validity of coupon has expired",
-			      	formatted_message: "<div class='msg-error'><p>Please enter valid coupon code.</p></div>"
-			      },
-			      success: {
-			      	code : 'EXPIRY_VALID',
-			      	message: "Validity of coupon has expired",
-			      	formatted_message: "<div class='msg-success'><p>Yay! coupon code applied successfully, You have availed discount of <span>₹ 100</span></p></div>"
-			      }
-			    }
-		  	},
+		let rule = { conditions, event, priority:10, name:'applyCouponRule'};
+		couponRuleEngine.addRule(rule);		
 
-			priority : 1,
-			name : 'expiryRule'
-		}
 
-		couponRuleEngine.addRule(expiryRule)
 
-		// Run the engine to evaluate
-		let ruleValidation =  await couponRuleEngine.run(facts)
-		return ruleValidation
+		/**
+		 * Define facts the engine will use to evaluate the conditions above.
+		 * Facts may also be loaded asynchronously at runtime; see the advanced example below
+		 */
+		let facts = couponUtil.prepareCouponFacts(userObj, cartObj, couponObj, miscData)
+
+
+
+		/**
+		 * Run Engine
+		*/
+		couponRuleEngine.run(facts)
+		return await couponUtil.ruleEnginePromise(couponRuleEngine);
+
+
 
 			
+	},
+
+	ruleEnginePromise: async (couponRuleEngine) => {
+	    return new Promise(function(resolve, reject) {
+
+			/**
+		 	* Handling Events
+			*/
+
+	        // Do async job
+	        // subscribe to any event emitted by the engine
+			couponRuleEngine.on('success', function (event, almanac, ruleResult) {
+		    	console.log(`Inside RULE ENGINE SUCCESS\n ruleResult = ${JSON.stringify(ruleResult)}`)
+		    	resolve({event, almanac, ruleResult});
+			});
+
+			couponRuleEngine.on('failure', function (event, almanac, ruleResult) {
+		    	console.log(`Inside RULE ENGINE FAILURE\n ruleResult = ${JSON.stringify(ruleResult)}`)
+		    	reject({event, almanac, ruleResult});
+			});
+
+	    })
 	},
 
 	prepareCouponFacts: (userObj, cartObj, couponObj, miscData) => {
@@ -140,6 +147,14 @@ let couponUtil = {
 		}
 
 		return userPhone
+	},
+
+	successRuleApplied: (event, engine) => {
+		console.log('Success event:\n', event);
+	},
+
+	failureRuleApplied: (event, engine) => {
+	    console.log('Failure event:\n', event);
 	}
 
 
