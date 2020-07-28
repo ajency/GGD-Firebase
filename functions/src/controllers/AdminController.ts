@@ -2,12 +2,17 @@ import { Request, Response } from "express";
 import * as admin from 'firebase-admin';
 const { AsyncParser, parse } = require('json2csv');
 import * as Airtable from 'airtable';
+import Axios from "axios";
 const cred = require('../../credentials.json');
 Airtable.configure({
     endpointUrl: 'https://api.airtable.com',
     apiKey: cred.airtableApiKey
 })
 
+const URL = `https://api.airtable.com/v0/${cred.airtableBase}/coupon_rules`
+const HEADERS = {
+    "Authorization": `Bearer ${cred.airtableApiKey}`
+}
 const Admin = {
     getProductsCSV: async function (req: Request, res: Response) {
         const db = admin.firestore();
@@ -73,7 +78,7 @@ const Admin = {
                         } finally {
                             const fielname = `Products-${businessData.name}.csv`
                             const csv = parse(productsArrayToConvert);
-                            res.setHeader('Content-disposition', 'attachment; filename='+fielname);
+                            res.setHeader('Content-disposition', 'attachment; filename=' + fielname);
                             res.set('Content-Type', 'text/csv');
                             res.status(200).send(csv);
                         }
@@ -127,11 +132,11 @@ const Admin = {
             base(airtable_name).select({
                 // Selecting the first 3 records in Grid view:
                 // view: "Grid view"
-                pageSize:10
+                pageSize: 10
             }).eachPage(function page(records, fetchNextPage) {
                 // This function (`page`) will get called for each page of records.
                 records.forEach(async function (record) {
-                   
+
                     // console.log(record.fields)
                     // res.status(200).send(record.fields)
                     let variantData = record.fields
@@ -154,20 +159,20 @@ const Admin = {
                         }
                     }
                     // console.log(variantData);
-                    if(dataMaster[variantData["product_id"]]) {
-                        if(dataMaster[variantData["product_id"]].hasOwnProperty("variants")) {
-                            dataMaster[variantData["product_id"]]["variants"].push(variantData) 
+                    if (dataMaster[variantData["product_id"]]) {
+                        if (dataMaster[variantData["product_id"]].hasOwnProperty("variants")) {
+                            dataMaster[variantData["product_id"]]["variants"].push(variantData)
                         } else {
                             dataMaster[variantData["product_id"]]["variants"] = [];
-                            dataMaster[variantData["product_id"]]["variants"].push(variantData) 
+                            dataMaster[variantData["product_id"]]["variants"].push(variantData)
                         }
                     } else {
                         dataMaster[variantData["product_id"]] = {};
                         dataMaster[variantData["product_id"]]["variants"] = [];
-                        dataMaster[variantData["product_id"]]["variants"].push(variantData) 
+                        dataMaster[variantData["product_id"]]["variants"].push(variantData)
                     }
                     // dataMaster[variantData["product_id"]]["variants"].push(variantData) 
-                   
+
                 });
 
                 // To fetch the next page of records, call `fetchNextPage`.
@@ -179,14 +184,14 @@ const Admin = {
                 if (err) { console.error(err); return; }
                 console.log(dataMaster)
                 for (const key in dataMaster) {
-                    
+
                     try {
-                        if(key) {
-    
+                        if (key) {
+
                             const pRef = await db.collection("products").doc(key).get()
                             const pData = pRef.data()
                             let editedv = pData.variants.map((v) => {
-                                if(dataMaster[key].variants) {
+                                if (dataMaster[key].variants) {
                                     let variantTOUpdate = dataMaster[key].variants.find((variant) => v.id == variant.id)
                                     if (v.id == variantTOUpdate.id) {
                                         v.active = variantTOUpdate.active
@@ -194,8 +199,8 @@ const Admin = {
                                     return v
                                 }
                             })
-                            await db.collection("products").doc(key).update({variants:editedv})
-    
+                            await db.collection("products").doc(key).update({ variants: editedv })
+
                         }
                     } catch (e) {
                         console.log(e)
@@ -208,26 +213,285 @@ const Admin = {
         }
     },
 
-    updateCartsWithUserId: async function(req: Request, res:Response) {
+    updateCartsWithUserId: async function (req: Request, res: Response) {
         const db = admin.firestore();
-        let resp =  await  db.collection("carts").get()
-            let allDocs= resp.docs
-            let cartToUpdate = {}
-        allDocs.forEach( async (doc) => {
+        let resp = await db.collection("carts").get()
+        let allDocs = resp.docs
+        let cartToUpdate = {}
+        allDocs.forEach(async (doc) => {
             let docId = doc.id
             let userId = docId.split("-")[0]
             let docData = doc.data()
-            if(!docData.user_id) {
+            if (!docData.user_id) {
                 cartToUpdate[docId] = userId
                 console.log(userId)
             }
         });
         for (const key in cartToUpdate) {
-            await db.collection("carts").doc(key).update({user_id: cartToUpdate[key]})
+            await db.collection("carts").doc(key).update({ user_id: cartToUpdate[key] })
         }
         return res.status(200).send("ok")
-        
-        
+
+
+    },
+
+    addNewCoupons: async (req: Request, res: Response) => {
+        const db = admin.firestore();
+        try {
+            const business_id = req.query.business_id
+            if (!business_id) {
+                res.status(500).send({ message: "Please provide business id" });
+                return;
+            }
+            const businessRef = await db.collection('businesses').doc(business_id).get()
+            if (!businessRef.exists) {
+                res.status(500).send({ message: "No business registered with this id, Please contact admin for more information" });
+                return;
+            }
+            let businessData = businessRef.data()
+            if (!businessData.airtable_config) {
+                res.status(500).send({ message: "No config found for airtable, Please contact admin for more information" });
+                return;
+            }
+            const couponsToSave = {}
+            const base_id = businessData.airtable_config.base_id;
+            const base = Airtable.base(base_id);
+            base('coupons').select({
+                // Selecting the first 3 records in Grid view:
+                // view: "Grid view"
+                pageSize: 10
+            }).eachPage(function page(records, fetchNextPage) {
+                // This function (`page`) will get called for each page of records.
+                records.forEach(async function (record, index) {
+                    console.log(record.fields)
+                    // res.status(200).send(record.fields)
+                    let coupons = record.fields
+                    if (!coupons.firebase_id && coupons.code) {
+                        coupons.rules = {
+                            all: []
+                        }
+                        coupons.description = {
+                            summary: coupons.summary,
+                            criteria: coupons.criteria
+                        }
+                        coupons.success = {
+                            code: coupons.success_code,
+                            message: coupons.success_message
+                        }
+                        coupons.code = coupons.code.toUpperCase()
+                        coupons.airtable_id = record.id
+
+                        delete coupons.criteria
+                        delete coupons.succes_code
+                        delete coupons.success_message
+                        delete coupons.summary
+                        couponsToSave[index] = coupons
+                    }
+                });
+
+
+
+                // To fetch the next page of records, call `fetchNextPage`.
+                // If there are more records, `page` will get called again.
+                // If there are no more records, `done` will get called.
+                fetchNextPage();
+
+            }, async function done(err) {
+                if (err) { 
+                    console.error(err); 
+                    res.status(500).send({})
+                }
+
+                if (Object.keys(couponsToSave).length) {
+                    for (const key in couponsToSave) {
+                        if (couponsToSave.hasOwnProperty(key)) {
+
+
+                            try {
+                                if (couponsToSave[key].coupon_rules) {
+                                    const rules = couponsToSave[key].coupon_rules
+                                    for(const rulekey in rules) {
+                                        if(rules[rulekey]) {
+                                            console.log(rules[rulekey])
+                                            let resp:any = await Axios.get(URL + '/' + rules[rulekey], { headers: HEADERS })
+                                            if (resp.data.id) {
+                                                let ruleObj = {
+                                                    error: {
+                                                        message:resp.data.fields.error_message
+                                                    },
+                                                    fact:resp.data.fields.fact,
+                                                    operator: resp.data.fields.operator,
+                                                    value: resp.data.fields.value
+                                                }
+                                                switch (resp.data.fields.operator) {
+                                                    case "in":
+                                                    case "notIn":
+                                                        ruleObj.value = resp.data.fields.value.split(',')
+                                                    break;
+
+                                                     default: 
+                                                     break;
+                                                }
+                                               
+                                                couponsToSave[key].rules.all.push(ruleObj)
+                                            }
+                                        }
+                                    }
+                                }
+                                console.log(couponsToSave[key]);
+                                delete couponsToSave[key].coupon_rules
+                                await db.collection('coupons').doc().set(couponsToSave[key])
+                            } catch (error) {
+                                console.log(error)
+
+                            }
+                        }
+
+                    }
+                    res.status(200).send(couponsToSave)
+                    return;
+
+                } else {
+                    res.status(200).send(couponsToSave)
+                return;
+                    
+                }
+            });
+
+        } catch (error) {
+
+            res.status(200).send({})
+            return;
+        }
+    },
+
+    updateCoupons: async (req: Request, res: Response) => {
+        const db = admin.firestore();
+        try {
+            const business_id = req.query.business_id
+            if (!business_id) {
+                res.status(500).send({ message: "Please provide business id" });
+                return;
+            }
+            const businessRef = await db.collection('businesses').doc(business_id).get()
+            if (!businessRef.exists) {
+                res.status(500).send({ message: "No business registered with this id, Please contact admin for more information" });
+                return;
+            }
+            let businessData = businessRef.data()
+            if (!businessData.airtable_config) {
+                res.status(500).send({ message: "No config found for airtable, Please contact admin for more information" });
+                return;
+            }
+            const couponsToSave = {}
+            const base_id = businessData.airtable_config.base_id;
+            const base = Airtable.base(base_id);
+            base('coupons').select({
+                // Selecting the first 3 records in Grid view:
+                // view: "Grid view"
+                pageSize: 10
+            }).eachPage(function page(records, fetchNextPage) {
+                // This function (`page`) will get called for each page of records.
+                records.forEach(async function (record) {
+                    // res.status(200).send(record.fields)
+                    let coupons = record.fields
+                    if (coupons.firebase_id && coupons.code) {
+                        coupons.rules = {
+                            all: []
+                        }
+                        coupons.description = {
+                            summary: coupons.summary,
+                            criteria: coupons.criteria
+                        }
+                        coupons.success = {
+                            code: coupons.success_code,
+                            message: coupons.success_message
+                        }
+                        coupons.code = coupons.code.toUpperCase()
+                        coupons.airtable_id = record.id
+                        delete coupons.criteria
+                        delete coupons.succes_code
+                        delete coupons.success_message
+                        delete coupons.summary
+                        couponsToSave[coupons.firebase_id] = coupons
+                        delete coupons.firebase_id
+                    }
+                });
+
+
+
+                // To fetch the next page of records, call `fetchNextPage`.
+                // If there are more records, `page` will get called again.
+                // If there are no more records, `done` will get called.
+                fetchNextPage();
+
+            }, async function done(err) {
+                if (err) { 
+                    console.error(err); 
+                    res.status(500).send({})
+                }
+
+                if (Object.keys(couponsToSave).length) {
+                    for (const key in couponsToSave) {
+                        if (couponsToSave.hasOwnProperty(key)) {
+
+
+                            try {
+                                if (couponsToSave[key].coupon_rules) {
+                                    const rules = couponsToSave[key].coupon_rules
+                                    for(const rulekey in rules) {
+                                        if(rules[rulekey]) {
+                                            console.log(rules[rulekey])
+                                            let resp:any = await Axios.get(URL + '/' + rules[rulekey], { headers: HEADERS })
+                                            if (resp.data.id) {
+                                                let ruleObj = {
+                                                    error: {
+                                                        message:resp.data.fields.error_message
+                                                    },
+                                                    fact:resp.data.fields.fact,
+                                                    operator: resp.data.fields.operator,
+                                                    value: resp.data.fields.value
+                                                }
+                                                switch (resp.data.fields.operator) {
+                                                    case "in":
+                                                    case "notIn":
+                                                        ruleObj.value = resp.data.fields.value.split(',')
+                                                    break;
+
+                                                     default: 
+                                                     break;
+                                                }
+                                               
+                                                couponsToSave[key].rules.all.push(ruleObj)
+                                            }
+                                        }
+                                    }
+                                }
+                                console.log(couponsToSave[key]);
+                                delete couponsToSave[key].coupon_rules
+                                await db.collection('coupons').doc(key).set(couponsToSave[key])
+                            } catch (error) {
+                                console.log(error)
+
+                            }
+                        }
+
+                    }
+                    res.status(200).send(couponsToSave)
+                    return;
+
+                } else {
+                    res.status(200).send(couponsToSave)
+                return;
+                    
+                }
+            });
+
+        } catch (error) {
+
+            res.status(200).send({})
+            return;
+        }
     }
 }
 export default Admin

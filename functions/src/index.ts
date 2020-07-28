@@ -449,3 +449,26 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 
 })
 
+exports.couponsTriggers = functions.region('asia-east2').firestore.document("coupons/{couponId}").onWrite(async (snap, context) => {
+	console.log("-----------------------------------------------");
+	
+	const id = snap.after.id
+	const couponData = snap.after.data()
+	console.log(couponData,id);
+	
+	const airtableRecordId = couponData.airtable_id
+	base('coupons').update([
+		{
+			"id": airtableRecordId,
+			"fields": {
+				"firebase_id": id
+			}
+		}
+	]).then((res) => {
+		console.log(res);
+		
+	}).catch((e) => {
+		console.log(e);
+		
+	})
+});
