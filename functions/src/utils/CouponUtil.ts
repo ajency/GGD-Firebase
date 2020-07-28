@@ -66,7 +66,7 @@ let couponUtil = {
 
 			couponRuleEngine.on('failure', function (event, almanac, ruleResult) {
 				console.log("Failure reject\n")
-		    	reject(couponUtil.processRuleResult(false, ruleResult, event ));
+		    	resolve(couponUtil.processRuleResult(false, ruleResult, event ));
 			});
 
 	    })

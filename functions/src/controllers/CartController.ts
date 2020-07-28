@@ -7,51 +7,30 @@ let Cart = {
 
 	addCouponToCart: async (userObj: any, cartObj: any, couponObj: any, miscData: any) => {
 
+		let result = {
+			success: false,
+			code: "",
+			message: "",
+			data: { "cart": cartObj }
+		};
+		let couponValidCheck = await couponUtil.validateCoupon(userObj, cartObj, couponObj, miscData) 
+		let couponObjCp = JSON.parse(JSON.stringify(couponObj))
+
 		let updatedCartObj = cartObj;
-		let result = {success:false, code: "ADD_COUPON_NOT_PROCESSED", message: "Add coupon not processed"};
 
+		result["success"] = couponValidCheck["success"]
+		result["code"] = couponValidCheck["code"]
+		result["message"] = couponValidCheck["message"]		
 
-		try {
-			// Wait for the result of waitAndMaybeReject() to settle,
-			// and assign the fulfilled value to fulfilledValue:
-			const couponValidCheck = await couponUtil.validateCoupon(userObj, cartObj, couponObj, miscData);
-			console.log("inside try after await")
+		if(couponValidCheck["success"]) {
+			updatedCartObj["applied_coupon"] = couponObjCp
+			updatedCartObj["summary"] = Cart.calculatCouponDiscount(cartObj,couponObjCp)
 
-			if (couponValidCheck['success'] == true) {
-				let discountSummary = Cart.calculatCouponDiscount(cartObj, couponObj) //LATESH
-
-				updatedCartObj["applied_coupon"] = couponObj
-				updatedCartObj["summary"] = discountSummary
-
-				Cart.updateCartCoupon(cartObj); //update to firestore with latest cart object
-
-				result["success"] = couponValidCheck['success'] //true
-				result["code"] = couponValidCheck['code'] //"COUPON_ADD_SUCCESS"
-				result["message"] = couponValidCheck['message'] //"Coupon added successfully"
-				result["data"]["cart"] = updatedCartObj
-			}
-			else {
-				result["code"] = couponValidCheck["code"]
-				result["message"] = couponValidCheck["message"]
-			}
-
-			// If the result of couponUtil.validateCoupon() rejects, our code
-			// throws, and we jump to the catch block.
-			// Otherwise, this block continues to run:
-
-			console.log(`\n before return of result`)
-			return result
-		}
-		catch (e) {
-			console.log("inside catch")
-			console.log(`\n Returned response\n ${JSON.stringify(e, null, 4)}`)
-			return e;
+			Cart.updateCartCoupon(updatedCartObj); //update to firestore with latest cart object
+			result.data.cart = updatedCartObj
 		}
 
-
-		
-
-
+		return result;
 
 	},
 
@@ -192,7 +171,7 @@ let Cart = {
 		//if coupon is found to be active, then do the intended operation
 		switch (operation) {
 			case "add":
-				validatedResponse = await Cart.addCouponToCart(userObj, cartObj, couponObj, miscData)
+				validatedResponse = Cart.addCouponToCart(userObj, cartObj, couponObj, miscData)
 				break;
 
 			case "remove":
@@ -233,20 +212,20 @@ let Cart = {
 	},
 
 	calculatCouponDiscount(cartObj, couponObj) {
-		const { coupon_type="", discount_type ="", value = 0 } = couponObj
+		const { coupon_type="", discount_type ="", discount_value = 0 } = couponObj
 		let newDiscount = 0 , newYouPay = 0;
 		switch (coupon_type) {
 			case "cart_level":
 				switch (discount_type) {
 					case "percentage":
-						newDiscount = cartObj.summary.sale_price_total * ( value / 100)
+						newDiscount = cartObj.summary.sale_price_total * ( discount_value / 100)
 						newYouPay = cartObj.summary.sale_price_total - newDiscount + cartObj.summary.shipping_fee;
 						cartObj.summary.cart_discount = newDiscount
 						cartObj.summary.you_pay = newYouPay
 						break;
 					case "flat":
-						newYouPay = cartObj.summary.sale_price_total - value + cartObj.summary.shipping_fee;
-						cartObj.summary.cart_discount = value
+						newYouPay = cartObj.summary.sale_price_total - discount_value + cartObj.summary.shipping_fee;
+						cartObj.summary.cart_discount = discount_value
 						cartObj.summary.you_pay = newYouPay
 						break;
 					default:
