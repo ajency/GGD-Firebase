@@ -10,29 +10,49 @@ let Cart = {
 		let updatedCartObj = cartObj;
 		let result = {success:false, code: "ADD_COUPON_NOT_PROCESSED", message: "Add coupon not processed"};
 
-		let couponValidCheck = await couponUtil.validateCoupon(userObj, cartObj, couponObj, miscData)
 
-		console.log(`\n Returned response\n ${JSON.stringify(couponValidCheck, null, 4)}`)
+		try {
+			// Wait for the result of waitAndMaybeReject() to settle,
+			// and assign the fulfilled value to fulfilledValue:
+			const couponValidCheck = await couponUtil.validateCoupon(userObj, cartObj, couponObj, miscData);
+			console.log("inside try after await")
 
-		if (couponValidCheck['success'] === true) {
-			let discountSummary = Cart.calculatCouponDiscount(cartObj, couponObj) //LATESH
+			if (couponValidCheck['success'] == true) {
+				let discountSummary = Cart.calculatCouponDiscount(cartObj, couponObj) //LATESH
 
-			updatedCartObj["applied_coupon"] = couponObj
-			updatedCartObj["summary"] = discountSummary
+				updatedCartObj["applied_coupon"] = couponObj
+				updatedCartObj["summary"] = discountSummary
 
-			Cart.updateCartCoupon(cartObj); //update to firestore with latest cart object
+				Cart.updateCartCoupon(cartObj); //update to firestore with latest cart object
 
-			result["success"] = couponValidCheck['success'] //true
-			result["code"] = couponValidCheck['code'] //"COUPON_ADD_SUCCESS"
-			result["message"] = couponValidCheck['message'] //"Coupon added successfully"
-			result["data"]["cart"] = updatedCartObj
+				result["success"] = couponValidCheck['success'] //true
+				result["code"] = couponValidCheck['code'] //"COUPON_ADD_SUCCESS"
+				result["message"] = couponValidCheck['message'] //"Coupon added successfully"
+				result["data"]["cart"] = updatedCartObj
+			}
+			else {
+				result["code"] = couponValidCheck["code"]
+				result["message"] = couponValidCheck["message"]
+			}
+
+			// If the result of couponUtil.validateCoupon() rejects, our code
+			// throws, and we jump to the catch block.
+			// Otherwise, this block continues to run:
+
+			console.log(`\n before return of result`)
+			return result
 		}
-		// else {
-		// 	result["code"] = couponValidCheck["code"]
-		// 	result["message"] = couponValidCheck["message"]
-		// }
+		catch (e) {
+			console.log("inside catch")
+			console.log(`\n Returned response\n ${JSON.stringify(e, null, 4)}`)
+			return e;
+		}
 
-		return result
+
+		
+
+
+
 	},
 
 	//LATESH

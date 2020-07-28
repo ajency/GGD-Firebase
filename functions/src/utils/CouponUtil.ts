@@ -59,12 +59,14 @@ let couponUtil = {
 
 	        // Do async job
 	        // subscribe to any event emitted by the engine
-			couponRuleEngine.on('success', function (event, almanac, ruleResult) {		    	
+			couponRuleEngine.on('success', function (event, almanac, ruleResult) {	
+				console.log("Success resolve\n")	    	
 		    	resolve(couponUtil.processRuleResult(true, ruleResult, event ));
 			});
 
 			couponRuleEngine.on('failure', function (event, almanac, ruleResult) {
-		    	reject(couponUtil.processRuleResult(true, ruleResult, event ));
+				console.log("Failure reject\n")
+		    	reject(couponUtil.processRuleResult(false, ruleResult, event ));
 			});
 
 	    })
