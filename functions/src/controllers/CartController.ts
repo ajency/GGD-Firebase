@@ -34,7 +34,6 @@ let Cart = {
 
 	},
 
-	//LATESH
 	removeCouponFromCart: (userObj: any, cartObj: any, couponObj: any, miscData: any) => {
 		let result = {
 			success: false,
@@ -55,7 +54,6 @@ let Cart = {
 	},
 
 
-	//LATESH
 	modifyCouponBasedCart: async (userObj: any, cartObj: any, couponObj: any, miscData: any) => {
 		let result = {
 			success: false,

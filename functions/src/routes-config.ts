@@ -85,4 +85,12 @@ export function routesConfig(app: Application) {
 		isAuthenticated,
 		Cart.reCalculate
 	);
+
+	app.get("/rest/v1/admin/add-new-coupons", 
+		Admin.addNewCoupons
+	);
+
+	app.get("/rest/v1/admin/update-coupons", 
+		Admin.updateCoupons
+	);
 }
