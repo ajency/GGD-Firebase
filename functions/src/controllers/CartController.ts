@@ -12,9 +12,7 @@ let Cart = {
 
 		let couponValidCheck = await couponUtil.validateCoupon(userObj, cartObj, couponObj, miscData)
 
-
-
-		console.log(`\n Returned response\n ${couponValidCheck}`)
+		console.log(`\n Returned response\n ${JSON.stringify(couponValidCheck, null, 4)}`)
 
 		if (couponValidCheck['success'] === true) {
 			let discountSummary = Cart.calculatCouponDiscount(cartObj, couponObj) //LATESH
@@ -161,7 +159,6 @@ let Cart = {
 			const couponRef = couponRes.docs[0]
 			couponObj = couponRef.data()
 		}
-
 
 		// find number of times coupon is redeemed by user
 		let couponsRedeemedRef = await firestore.collection('coupons_redeemed').where("user_phone", "==", userObj.phone).where("coupon_code", "==", couponObj.code).get();
