@@ -214,20 +214,20 @@ let Cart = {
 	},
 
 	calculatCouponDiscount(cartObj, couponObj) {
-		const { coupon_type="", discount_type ="", value = 0 } = couponObj
+		const { coupon_type="", discount_type ="", discount_value = 0 } = couponObj
 		let newDiscount = 0 , newYouPay = 0;
 		switch (coupon_type) {
 			case "cart_level":
 				switch (discount_type) {
 					case "percentage":
-						newDiscount = cartObj.summary.sale_price_total * ( value / 100)
+						newDiscount = cartObj.summary.sale_price_total * ( discount_value / 100)
 						newYouPay = cartObj.summary.sale_price_total - newDiscount + cartObj.summary.shipping_fee;
 						cartObj.summary.cart_discount = newDiscount
 						cartObj.summary.you_pay = newYouPay
 						break;
 					case "flat":
-						newYouPay = cartObj.summary.sale_price_total - value + cartObj.summary.shipping_fee;
-						cartObj.summary.cart_discount = value
+						newYouPay = cartObj.summary.sale_price_total - discount_value + cartObj.summary.shipping_fee;
+						cartObj.summary.cart_discount = discount_value
 						cartObj.summary.you_pay = newYouPay
 						break;
 					default:
