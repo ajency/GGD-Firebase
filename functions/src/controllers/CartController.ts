@@ -29,6 +29,7 @@ let Cart = {
 		let cartObj: any = {};
 		let finalCouponCodeData: any = {};
 		let miscData : any = {"couponRedeemCount": 0};
+		let validatedCouponCode: String = "";
 
 		let validatedResponse: any = {
 			success: false,
@@ -99,20 +100,14 @@ let Cart = {
 				return validatedResponse
 			}
 			else{
-				couponCode = finalCouponCodeData['couponCode']
+				validatedCouponCode = finalCouponCodeData['couponCode']
 			}
 		}
 
 		console.log(`Final validated coupon code ${couponCode}`)
 
-
-
-
-		//validate if couponCode is still active and present
-		let couponCodeTransform = couponCode.toUpperCase() // user can enter in any case, code will be converted to uppercase to query in the DB
-
-		// const couponRes = await firestore.collection('coupons').where("code", "==", couponCodeTransform).where("active", "==", true).get(); 
-		const couponRes = await firestore.collection('coupons').where("code", "==", couponCodeTransform).get(); 
+		
+		const couponRes = await firestore.collection('coupons').where("code", "==", validatedCouponCode).get(); 
 
 		if (couponRes.empty) {
 			console.log(`Coupon does not exist\n`)
