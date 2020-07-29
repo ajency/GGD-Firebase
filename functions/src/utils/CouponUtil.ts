@@ -84,10 +84,10 @@ let couponUtil = {
 		switch (success) {
 			case true:	
 
-				processedRuleResult["success"] = true,
-				processedRuleResult["code"] = event.params.couponObj.success.code,
-				processedRuleResult["message"] = event.params.couponObj.success.message,
-				processedRuleResult["formatted_message"] = event.params.couponObj.success.formatted_message
+				processedRuleResult["success"] = true;
+				processedRuleResult["code"] = event.params.couponObj.success.code;
+				processedRuleResult["message"] = event.params.couponObj.success.message;
+				processedRuleResult["formatted_message"] = event.params.couponObj.success.formatted_message;
 				console.log(`Inside RULE ENGINE SUCCESS\n ruleResult = ${JSON.stringify(processedRuleResult)}`)
 				return processedRuleResult
 
@@ -110,10 +110,10 @@ let couponUtil = {
 						return failedConditionFacts.includes(ruleObj.fact); 
 					});
 				
-				processedRuleResult["success"] = false,
-				processedRuleResult["code"] = failedRuleList[0]['fact'],
-				processedRuleResult["message"] = failedRuleList[0]['error']['message'],
-				processedRuleResult["formatted_message"] = failedRuleList[0]['error']['formatted_message']
+				processedRuleResult["success"] = false;
+				processedRuleResult["code"] = failedRuleList[0]['fact'];
+				processedRuleResult["message"] = failedRuleList[0]['error']['message'];
+				processedRuleResult["formatted_message"] = failedRuleList[0]['error']['formatted_message'];
 
 				return processedRuleResult			
 
