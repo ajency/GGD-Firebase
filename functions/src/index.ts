@@ -197,6 +197,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			let coupon_code =''
 			if (order_data.order_mode == "online") {
 				if(order_data.summary.cart_discount) {
+					const labelDiscount = order_data.applied_coupon.coupon_category_label || "Cart Discount"
 					const code = order_data.applied_coupon.code;
 					coupon_code = `<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 0; padding-bottom: 10px;">
 							<div class="w-50" style="width: 50%;float:left;">
@@ -206,7 +207,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 						</div>`
 					discount_block = `<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 0; padding-bottom: 10px;">
 							<div class="w-50" style="width: 50%;float:left;">
-								<label class="font-weight-light">Cart discount</label>
+								<label class="font-weight-light">${labelDiscount}</label>
 							</div>
 							<div class="font-weight-light w-50 text-right" style="width:50%;float:left;text-align:right;">-₹${order_data.summary.cart_discount}</div>
 						</div>`
