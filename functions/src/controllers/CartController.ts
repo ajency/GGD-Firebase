@@ -104,7 +104,7 @@ let Cart = {
 			}
 		}
 
-		console.log(`Final validated coupon code ${couponCode}`)
+		console.log(`Final validated coupon code ${validatedCouponCode}`)
 
 		
 		const couponRes = await firestore.collection('coupons').where("code", "==", validatedCouponCode).get(); 
