@@ -455,7 +455,12 @@ exports.couponsTriggers = functions.region('asia-east2').firestore.document("cou
 	const id = snap.after.id
 	const couponData = snap.after.data()
 	console.log(couponData,id);
-	
+	snap.after.ref.update({id: id}).then((res) => {
+		console.log(res)
+	}).catch(e => {
+		console.log(e);
+		
+	})
 	const airtableRecordId = couponData.airtable_id
 	base('coupons').update([
 		{
