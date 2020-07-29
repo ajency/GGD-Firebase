@@ -3,6 +3,8 @@ import * as admin from 'firebase-admin';
 const { AsyncParser, parse } = require('json2csv');
 import * as Airtable from 'airtable';
 import Axios from "axios";
+const { _ } = require("underscore")
+
 const cred = require('../../credentials.json');
 Airtable.configure({
     endpointUrl: 'https://api.airtable.com',
@@ -13,6 +15,20 @@ const URL = `https://api.airtable.com/v0/${cred.airtableBase}/coupon_rules`
 const HEADERS = {
     "Authorization": `Bearer ${cred.airtableApiKey}`
 }
+
+const MANDATORY_COUPON_FIELDS = [ 
+                    "code",
+                    "business_id",
+                    "title", 
+                    "summary", 
+                    "criteria", 
+                    "coupon_type", 
+                    "discount_type", 
+                    "discount_value", 
+                    "coupon_category", 
+                    "active",
+                    "coupon_rules"
+                ]
 const Admin = {
     getProductsCSV: async function (req: Request, res: Response) {
         const db = admin.firestore();
@@ -254,6 +270,7 @@ const Admin = {
                 return;
             }
             const couponsToSave = {}
+            const responseToUser = []
             const base_id = businessData.airtable_config.base_id;
             const base = Airtable.base(base_id);
             base('coupons').select({
@@ -266,7 +283,10 @@ const Admin = {
                     console.log(record.fields)
                     // res.status(200).send(record.fields)
                     let coupons = record.fields
-                    if (!coupons.firebase_id && coupons.code) {
+                    const allKey = Object.keys(coupons)
+                    console.log(allKey)
+                    const checkDifference =  _.difference(MANDATORY_COUPON_FIELDS,allKey)
+                    if (!coupons.firebase_id && !checkDifference.length) {
                         coupons.rules = {
                             all: []
                         }
@@ -275,8 +295,8 @@ const Admin = {
                             criteria: coupons.criteria
                         }
                         coupons.success = {
-                            code: coupons.success_code,
-                            message: coupons.success_message
+                            code: coupons.success_code || "VALID_COUPON",
+                            message: coupons.success_message || "Coupon is valid and can be applied"
                         }
                         coupons.code = coupons.code.toUpperCase()
                         coupons.airtable_id = record.id
@@ -286,6 +306,9 @@ const Admin = {
                         delete coupons.success_message
                         delete coupons.summary
                         couponsToSave[index] = coupons
+                    } else {
+                        if(checkDifference.length)
+                            responseToUser.push(`Coupon:${coupons.code} id:${record.id} can not be created some fields are empty `)
                     }
                 });
 
@@ -300,6 +323,7 @@ const Admin = {
                 if (err) { 
                     console.error(err); 
                     res.status(500).send({})
+                    return
                 }
 
                 if (Object.keys(couponsToSave).length) {
@@ -341,6 +365,7 @@ const Admin = {
                                 console.log(couponsToSave[key]);
                                 delete couponsToSave[key].coupon_rules
                                 await db.collection('coupons').doc().set(couponsToSave[key])
+                                responseToUser.push(`Coupon ${couponsToSave[key].code} created`)
                             } catch (error) {
                                 console.log(error)
 
@@ -348,11 +373,11 @@ const Admin = {
                         }
 
                     }
-                    res.status(200).send(couponsToSave)
+                    res.status(200).send(responseToUser)
                     return;
 
                 } else {
-                    res.status(200).send(couponsToSave)
+                    res.status(200).send(responseToUser)
                 return;
                     
                 }
@@ -384,6 +409,7 @@ const Admin = {
                 return;
             }
             const couponsToSave = {}
+            const responseToUser = []
             const base_id = businessData.airtable_config.base_id;
             const base = Airtable.base(base_id);
             base('coupons').select({
@@ -395,7 +421,10 @@ const Admin = {
                 records.forEach(async function (record) {
                     // res.status(200).send(record.fields)
                     let coupons = record.fields
-                    if (coupons.firebase_id && coupons.code) {
+                    const allKey = Object.keys(coupons)
+                    console.log(allKey)
+                    const checkDifference =  _.difference(MANDATORY_COUPON_FIELDS,allKey)
+                    if (coupons.firebase_id && !checkDifference.length) {
                         coupons.rules = {
                             all: []
                         }
@@ -404,8 +433,8 @@ const Admin = {
                             criteria: coupons.criteria
                         }
                         coupons.success = {
-                            code: coupons.success_code,
-                            message: coupons.success_message
+                            code: coupons.success_code || "VALID_COUPON",
+                            message: coupons.success_message || "Coupon is valid and can be applied"
                         }
                         coupons.code = coupons.code.toUpperCase()
                         coupons.airtable_id = record.id
@@ -415,6 +444,9 @@ const Admin = {
                         delete coupons.summary
                         couponsToSave[coupons.firebase_id] = coupons
                         delete coupons.firebase_id
+                    } else {
+                        if(checkDifference.length)
+                            responseToUser.push(`Coupon:${coupons.code} id:${record.id} can not be updated fields are empty`)
                     }
                 });
 
@@ -470,6 +502,7 @@ const Admin = {
                                 console.log(couponsToSave[key]);
                                 delete couponsToSave[key].coupon_rules
                                 await db.collection('coupons').doc(key).set(couponsToSave[key])
+                                responseToUser.push(`Coupon ${couponsToSave[key].code} updated`)
                             } catch (error) {
                                 console.log(error)
 
