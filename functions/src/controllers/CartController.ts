@@ -249,7 +249,7 @@ let Cart = {
 			case "referral":
 				switch (discount_type) {
 					case "percentage":
-						newDiscount = cartObj.summary.sale_price_total * ( discount_value / 100)
+						newDiscount = Math.round(cartObj.summary.sale_price_total * ( discount_value / 100))
 						newYouPay = cartObj.summary.sale_price_total - newDiscount + cartObj.summary.shipping_fee;
 						cartObj.summary.cart_discount = newDiscount
 						cartObj.summary.you_pay = newYouPay
