@@ -29,6 +29,12 @@ const MANDATORY_COUPON_FIELDS = [
                     "active",
                     "coupon_rules"
                 ]
+const MANDATORY_RULES_FIELDS = [
+    "fact",
+    "operator",
+    "error_message",
+    "value"
+]
 const Admin = {
     getProductsCSV: async function (req: Request, res: Response) {
         const db = admin.firestore();
@@ -338,7 +344,9 @@ const Admin = {
                                         if(rules[rulekey]) {
                                             console.log(rules[rulekey])
                                             let resp:any = await Axios.get(URL + '/' + rules[rulekey], { headers: HEADERS })
-                                            if (resp.data.id) {
+                                            const rulesFields = Object.keys(resp.data.fields)
+                                            const checkDifference =  _.difference(MANDATORY_RULES_FIELDS,rulesFields)
+                                            if (!checkDifference.length) {
                                                 let ruleObj = {
                                                     error: {
                                                         message:resp.data.fields.error_message
@@ -358,6 +366,9 @@ const Admin = {
                                                 }
                                                
                                                 couponsToSave[key].rules.all.push(ruleObj)
+                                            } else {
+                                                responseToUser.push(`Coupon:${couponsToSave[key].code} can not be created some rules fields are empty `);
+                                                break;
                                             }
                                         }
                                     }
@@ -475,7 +486,9 @@ const Admin = {
                                         if(rules[rulekey]) {
                                             console.log(rules[rulekey])
                                             let resp:any = await Axios.get(URL + '/' + rules[rulekey], { headers: HEADERS })
-                                            if (resp.data.id) {
+                                            const rulesFields = Object.keys(resp.data.fields)
+                                            const checkDifference =  _.difference(MANDATORY_RULES_FIELDS,rulesFields)
+                                            if (!checkDifference.length) {
                                                 let ruleObj = {
                                                     error: {
                                                         message:resp.data.fields.error_message
@@ -495,6 +508,12 @@ const Admin = {
                                                 }
                                                
                                                 couponsToSave[key].rules.all.push(ruleObj)
+                                            }  else {
+                                                responseToUser.push(`Coupon:${couponsToSave[key].code} can not be update some rules fields are empty `);
+                                                res.status(200).send(responseToUser)
+                                                return;
+                                                break;
+
                                             }
                                         }
                                     }
