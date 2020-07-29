@@ -24,6 +24,7 @@
     "firestore-export-import": "^0.3.0",
     "fs-extra": "^9.0.1",
     "geolocation-utils": "^1.2.2",
+    "json-rules-engine": "^5.0.3",
     "json2csv": "^5.0.1",
     "nodemailer": "^6.3.1",
     "nodemailer-smtp-transport": "^2.7.4",

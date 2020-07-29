@@ -1,91 +1,25 @@
 import * as admin from 'firebase-admin';
 import { Request, Response } from "express";
-const config = require('../../config.json');
-const cred = require('../../credentials.json');
+import couponUtil from '../utils/CouponUtil';
+const { _ } = require("underscore");
 
 
 let Cart = {
 
-	addCouponToCart: async (userObj: any, cartObj: any, couponObj: any) => {
-		let result = {
-			success: false,
-			code: "",
-			message: "",
-			data: { "cart": cartObj }
-		};
+	reCalculate: async (req: Request, res: Response) => {
 
-		let updatedCartObj = cartObj;
+		try {
+			let { uid="", cartId, couponCode = null, operation = null } = req.body
+			console.log(`Request body ${JSON.stringify(req.body)}`)
+			let responseData = {}
 
-		let couponValidCheck = await Cart.validateCoupon(userObj, cartObj, couponObj) //NUTAN
+			responseData = await Cart.validateCart(uid, cartId, couponCode, operation)
+			return res.status(200).send(responseData)
 
-		if (couponValidCheck['success'] === true) {
-			let discountSummary = Cart.calculatCouponDiscount(cartObj, couponObj) //LATESH
-
-			updatedCartObj["applied_coupon"] = couponObj
-			updatedCartObj["summary"] = discountSummary
-
-			Cart.updateCartCoupon(cartObj); //update to firestore with latest cart object
-
-			result["success"] = true
-			result["code"] = "COUPON_ADD_SUCCESS"
-			result["message"] = "Coupon added successfully"
-			result["data"]["cart"] = updatedCartObj
-		}
-		else {
-			result["code"] = couponValidCheck["code"]
-			result["message"] = couponValidCheck["message"]
+		} catch (error) {
+			return res.status(200).send({ success: false, message: 'Error in applying coupon', data: error })
 		}
 
-		return result
-	},
-
-	//LATESH
-	removeCouponFromCart: (userObj: any, cartObj: any, couponObj: any) => {
-		let result = {
-			success: false,
-			code: "",
-			message: "",
-			data: { "cart": cartObj }
-		};
-
-		let updatedCartObj = JSON.parse(JSON.stringify(cartObj));
-
-		updatedCartObj["applied_coupon"] = {}
-		updatedCartObj["summary"] = Cart.calculatCouponDiscount(cartObj, {})
-
-		Cart.updateCartCoupon(updatedCartObj); //update to firestore with latest cart object
-		result.success = true
-		result.data.cart = updatedCartObj
-		return result
-	},
-
-
-	//LATESH
-	modifyCouponBasedCart: async (userObj: any, cartObj: any, couponObj: any) => {
-		let result = {
-			success: false,
-			code: "",
-			message: "",
-			data: { "cart": cartObj }
-		};
-		let couponValidCheck = await Cart.validateCoupon(userObj, cartObj, couponObj) 
-		let couponObjCp = JSON.parse(JSON.stringify(couponObj))
-		if(!couponValidCheck["success"]) {
-			couponObjCp = {}
-		}
-		let updatedCartObj = cartObj;
-
-		//1. check if cart has coupon applied
-
-		//1.2. call validatecoupon method if coupon applied and modify cart  
-
-
-		updatedCartObj["applied_coupon"] = couponObjCp
-		updatedCartObj["summary"] = Cart.calculatCouponDiscount(cartObj,couponObjCp)
-
-		Cart.updateCartCoupon(updatedCartObj); //update to firestore with latest cart object
-		result.data.cart = updatedCartObj
-		return result
 	},
 
 	validateCart: async (userId: string, cartId: string, couponCode: string, operation: string) => {
@@ -93,6 +27,8 @@ let Cart = {
 		let couponObj: any = {};
 		let userObj: any = {};
 		let cartObj: any = {};
+		let finalCouponCodeData: any = {};
+		let miscData : any = {"couponRedeemCount": 0};
 
 		let validatedResponse: any = {
 			success: false,
@@ -104,99 +40,196 @@ let Cart = {
 
 		//get user
 		let user = await firestore.collection('user-details').doc(userId).get();
+		
 		if (user.exists) {
 			userObj = user.data();
+			console.log(`User details exists ${JSON.stringify(userObj)}`)
 			userObj.id = userId
 		}
 		else {
 			validatedResponse['code'] = "USER_NOT_EXIST";
-				validatedResponse['message'] = "User does not exist"
+			validatedResponse['message'] = "User does not exist"
 
 			return validatedResponse
 		}
 
 		//get cart
-
-
 		let cart = await firestore.collection('carts').doc(cartId).get();
+
 		if (cart.exists) {
 			cartObj = cart.data();
+			console.log(`Cart exists\n ${JSON.stringify(cartObj)}`)
+			if(!cartObj.created_at){
+				console.log(`Active Cart does not exist\n`)
+				validatedResponse['code'] = "ACTIVE_CART_NOT_EXIST";
+				validatedResponse['message'] = "Cart is not active";
+				validatedResponse['data']['cart'] = cartObj;
+
+				return validatedResponse
+			}
 			cartObj.cartId = cartId
 			validatedResponse['data']['cart'] = cartObj
 		}
 		else {
+			console.log(`Cart does not exist\n`)
 			validatedResponse['code'] = "CART_NOT_EXIST";
-				validatedResponse['message'] = "Cart does not exist"
+			validatedResponse['message'] = "Cart does not exist"
 
 			return validatedResponse
 		}
 
-		// get coupon
-		if (couponCode) {
-			let couponCodeTransform = couponCode.toUpperCase() // user can enter in any case, code will be converted to uppercase to query in the DB
-			const couponRes = await firestore.collection('coupons').where("code", "==", couponCodeTransform).where("active", "==", true).get(); //query coupon @todo 
-			if (couponRes.empty) {
-				validatedResponse['code'] = "COUPON_NOT_EXIST";
-					validatedResponse['message'] = "Coupon does not exist"
-				return validatedResponse
-			} else {
-				const couponRef = couponRes.docs[0]
-				couponObj = couponRef.data()
-			}
-		}
-		else if(operation =="add" && !couponCode) { //to handle request which does doesnt pass code
-			validatedResponse['code'] = "COUPON_NOT_EXIST";
-				validatedResponse['message'] = "Coupon does not exist"
-
-			return validatedResponse
-		}
-
-
-		//if cart belongs to user then only proceed to add/remove/modify coupon based cart
-		if (Cart.cartBelongsToUser(userObj, cartObj)) {
-
-			switch (operation) {
-				case "add":
-					validatedResponse = Cart.addCouponToCart(userObj, cartObj, couponObj)
-					break;
-
-				case "remove":
-					validatedResponse = Cart.removeCouponFromCart(userObj, cartObj, couponObj)
-					break;
-
-				case "validate_cart":
-					couponObj = cartObj["applied_coupon"]
-					validatedResponse = Cart.validateCoupon(userObj, cartObj, couponObj)
-					break;
-
-
-				case "modify_cart":
-					couponObj = cartObj["applied_coupon"]
-					validatedResponse = Cart.modifyCouponBasedCart(userObj, cartObj, couponObj)
-					break;
-
-			}
-
-		}
-		else {
+		if (!Cart.cartBelongsToUser(userObj, cartObj)){
 			validatedResponse['code'] = "CART_NOT_OF_USR";
-				validatedResponse['message'] = "Requested Cart does not belong to user"
+			validatedResponse['message'] = "Requested Cart does not belong to user"
 
 			return validatedResponse
 		}
 
+		finalCouponCodeData = couponUtil.validateCouponCode(userObj, cartObj, operation, couponCode)
 
+		if(!finalCouponCodeData["success"]){
+			validatedResponse['code'] = finalCouponCodeData['code']
+			validatedResponse['message'] = finalCouponCodeData['message']
+			return validatedResponse		
+		}else{
+			if(!finalCouponCodeData["couponCode"]){
+				validatedResponse['success'] = finalCouponCodeData['success']
+				validatedResponse['code'] = finalCouponCodeData['code']
+				validatedResponse['message'] = finalCouponCodeData['message']
+				return validatedResponse
+			}
+			else{
+				couponCode = finalCouponCodeData['couponCode']
+			}
+		}
+
+		console.log(`Final validated coupon code ${couponCode}`)
+
+
+
+
+		//validate if couponCode is still active and present
+		let couponCodeTransform = couponCode.toUpperCase() // user can enter in any case, code will be converted to uppercase to query in the DB
+
+		// const couponRes = await firestore.collection('coupons').where("code", "==", couponCodeTransform).where("active", "==", true).get(); 
+		const couponRes = await firestore.collection('coupons').where("code", "==", couponCodeTransform).get(); 
+
+		if (couponRes.empty) {
+			console.log(`Coupon does not exist\n`)
+			validatedResponse['code'] = "COUPON_NOT_EXIST";
+			validatedResponse['message'] = "Coupon does not exist"
+			return validatedResponse
+		} else {
+			const couponRef = couponRes.docs[0]
+			couponObj = couponRef.data()
+			console.log(`Coupon exists \n ${JSON.stringify(couponObj)}`)
+		}
+
+		// find number of times coupon is redeemed by user
+		let couponsRedeemedRef = await firestore.collection('coupons_redeemed').where("user_phone", "==", userObj.phone).where("coupon_code", "==", couponObj.code).get();
+		
+		try{
+			if (!couponsRedeemedRef.empty){
+				miscData["couponRedeemCount"] = couponsRedeemedRef.size
+				console.log(`Coupon redeemed count \n ${JSON.stringify(miscData["couponRedeemCount"])}`)
+			}
+		}
+		catch(e){
+			console.log(e)
+		}
+
+
+
+
+
+		//if coupon is found to be active, then do the intended operation
+		switch (operation) {
+			case "add":
+				validatedResponse = Cart.addModifyCouponBasedCart(userObj, cartObj, couponObj, miscData)
+				break;
+
+			case "remove":
+				validatedResponse = Cart.removeCouponFromCart(userObj, cartObj, couponObj, miscData)
+				break;
+
+			case "validate_cart":				
+				validatedResponse = couponUtil.validateCoupon(userObj, cartObj, couponObj, miscData)
+				break;
+
+
+			case "modify_cart":
+				validatedResponse = Cart.addModifyCouponBasedCart(userObj, cartObj, couponObj, miscData)
+				break;
+
+		}
 
 
 		return validatedResponse
+	},	
+
+
+	addModifyCouponBasedCart: async (userObj: any, cartObj: any, couponObj: any, miscData: any) => {
+
+		let result = {
+			success: false,
+			code: "",
+			message: "",
+			data: { "cart": cartObj }
+		};
+
+
+		let couponValidCheck = await couponUtil.validateCoupon(userObj, cartObj, couponObj, miscData) 
+		let couponObjCp = JSON.parse(JSON.stringify(couponObj))
+
+		let updatedCartObj = cartObj;
+
+		result["success"] = couponValidCheck["success"]
+		result["code"] = couponValidCheck["code"]
+		result["message"] = couponValidCheck["message"]		
+
+		if(couponValidCheck["success"]) {
+			updatedCartObj["applied_coupon"] = couponObjCp
+			updatedCartObj["summary"] = Cart.calculatCouponDiscount(cartObj,couponObjCp)
+
+			Cart.updateCartCoupon(updatedCartObj); //update to firestore with latest cart object
+			result.data.cart = updatedCartObj
+		}else{
+			updatedCartObj["applied_coupon"] = {}
+			updatedCartObj["summary"] = Cart.calculatCouponDiscount(cartObj, {})
+			Cart.updateCartCoupon(updatedCartObj)
+			result.data.cart = updatedCartObj
+		}
+
+		return result;
+
 	},
+
+	removeCouponFromCart: (userObj: any, cartObj: any, couponObj: any, miscData: any) => {
+		let result = {
+			success: false,
+			code: "COUPON_REMOVE_NOT_PROCESSED",
+			message: "Coupon removal not processed",
+			data: { "cart": cartObj }
+		};
+
+		let updatedCartObj = JSON.parse(JSON.stringify(cartObj));
+
+		updatedCartObj["applied_coupon"] = {}
+		updatedCartObj["summary"] = Cart.calculatCouponDiscount(cartObj, {})
+
+		Cart.updateCartCoupon(updatedCartObj); //update to firestore with latest cart object
+		result.success = true
+		result.data.cart = updatedCartObj
+		result.code = "REMOVE_COUPON_SUCCESS"
+		result.message = "Coupon removed successfully"			
+		return result
+	},
+
+
+
 
 	cartBelongsToUser: (userObj: any, cartObj) => {
 		return userObj.id == cartObj.user_id;
-	},
-
-	validateCoupon: (userObj, cartObj, couponObj) => {
-		return { success: true, message: "Coupon applied succesfully.", data: { "cart": cartObj} }
 	},
 
 	updateCartCoupon: (cartObj) => {
@@ -245,27 +278,7 @@ let Cart = {
 		return cartObj.summary
 	},
 
-	reCalculate: async (req: Request, res: Response) => {
 
-		try {
-			let { uid="", cartId, couponCode = null, operation = null } = req.body
-			let responseData = {}
-
-			//1. @todo fetch user from request already appended via the authenticate method and pass in method to recalculate cart
-			console.log("request details ==>", uid, cartId, couponCode, operation)
-
-
-			responseData = await Cart.validateCart(uid, cartId, couponCode, operation) //{ success: true, message: 'Coupon Applied successfully', data : {}}
-
-
-			return res.status(200).send(responseData)
-
-		} catch (error) {
-			console.log(error)
-			return res.status(200).send({ success: false, message: 'Error in applying coupon', data: error })
-		}
-
-	}
 }
 
 export default Cart;
