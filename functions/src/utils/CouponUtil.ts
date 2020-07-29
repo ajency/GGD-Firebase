@@ -54,7 +54,7 @@ let couponUtil = {
 	    return new Promise(function(resolve, reject) {
 
 			/**
-		 	* Handling Events
+		 	* Handling Rule Events
 			*/
 
 	        // Do async job
@@ -127,10 +127,95 @@ let couponUtil = {
 
 	},
 
+
+	validateCouponCode: (userObj, cartObj, operation, couponCode) => {
+
+		let validatedResponse: any = {
+			success: false,
+			code: "COUPON_EMPTY_CHECK_PENDING",
+			message: "Input coupon not checked for empty validation",
+			couponCode: couponCode
+		};
+
+		//extract coupon code to be used
+		switch (operation) {
+			case "add":
+				if(couponCode){
+					validatedResponse.code = "ADD_COUPON_CODE_NOT_EMPTY"
+					validatedResponse.message = "Coupon code is not empty."
+					
+					validatedResponse.couponCode = couponCode.toUpperCase()
+					validatedResponse.success = true
+				}
+				else{
+					validatedResponse.code = "ADD_COUPON_CODE_EMPTY"
+					validatedResponse.message = "Coupon is empty. Please pass a coupon to add"
+				}
+				break;
+
+			case "remove":
+				if(couponCode){
+					validatedResponse.code = "REMOVE_COUPON_CODE_NOT_EMPTY"
+					validatedResponse.message = "Coupon code is not empty."
+
+					validatedResponse.couponCode = couponCode.toUpperCase()
+					validatedResponse.success = true
+				}
+				else{
+					if(_.isEmpty(cartObj["applied_coupon"])){
+						validatedResponse.code = "REMOVE_COUPON_CODE_EMPTY"
+						validatedResponse.message = "Coupon code is empty. Cannot remove empty coupon"
+					}else{
+						if(cartObj["applied_coupon"]["code"]){
+							validatedResponse.code = "ADD_COUPON_CODE_NOT_EMPTY"
+							validatedResponse.message = "Coupon code is not empty."
+					
+							validatedResponse.couponCode = cartObj["applied_coupon"]["code"]
+							validatedResponse.success = true
+						}
+						else{
+							validatedResponse.code = "REMOVE_COUPON_CODE_EMPTY"
+							validatedResponse.message = "Coupon code is empty. Cannot remove empty coupon"							
+						}
+					}
+
+				}
+				break;
+
+			default:
+
+				if(_.isEmpty(cartObj["applied_coupon"])){
+					validatedResponse.code = "EMPTY_COUPON_AGAINST_CART"
+					validatedResponse.message = "Valid Cart. No coupon associated to it"
+					
+					validatedResponse.couponCode = ""
+					validatedResponse.success = true
+				}else{
+					if(cartObj["applied_coupon"]["code"]){
+						validatedResponse.code = "COUPON_CODE_NOT_EMPTY"
+						validatedResponse.message = "Coupon code is not empty."
+				
+						validatedResponse.couponCode = (cartObj["applied_coupon"]["code"]).toUpperCase()
+						validatedResponse.success = true
+					}
+					else{
+						validatedResponse.code = "EMPTY_COUPON_AGAINST_CART"
+						validatedResponse.message = "Valid Cart. No coupon associated to it"							
+					}
+				}			
+
+		}
+
+		return validatedResponse
+
+
+	},
+
 	prepareCouponFacts: (userObj, cartObj, couponObj, miscData) => {
 
 		// Any time a new rule is added, the new attribute/fact and the way to fetch it must be defined here
 		let couponFacts = {
+			COUPON_INACTIVE : couponUtil.isCouponActive(userObj, cartObj, couponObj, miscData), //default rule in any coupon
 			VALID_FROM : couponUtil.getDateOfApplication(userObj, cartObj, couponObj, miscData),  
 			VALID_TO : couponUtil.getDateOfApplication(userObj, cartObj, couponObj, miscData),  
 			USAGE_LIMIT : couponUtil.getUsageCount(userObj, cartObj, couponObj, miscData),  
@@ -144,6 +229,16 @@ let couponUtil = {
 		return couponFacts
 
 
+	},
+
+	isCouponActive: (userObj, cartObj, couponObj, miscData) => {
+
+		if(couponObj.active){
+			return "true"
+		}
+		else{
+			return "false"
+		}
 	},
 
 	getDateOfApplication: (userObj, cartObj, couponObj, miscData) => {
@@ -171,14 +266,6 @@ let couponUtil = {
 		}
 
 		return userPhone
-	},
-
-	successRuleApplied: (event, engine) => {
-		console.log('Success event:\n', event);
-	},
-
-	failureRuleApplied: (event, engine) => {
-	    console.log('Failure event:\n', event);
 	}
 
 
