@@ -140,7 +140,7 @@ let Cart = {
 		//if coupon is found to be active, then do the intended operation
 		switch (operation) {
 			case "add":
-				validatedResponse = Cart.addModifyCouponBasedCart(userObj, cartObj, couponObj, miscData)
+				validatedResponse = Cart.addModifyCouponBasedCart(userObj, cartObj, couponObj, miscData, operation)
 				break;
 
 			case "remove":
@@ -153,7 +153,7 @@ let Cart = {
 
 
 			case "modify_cart":
-				validatedResponse = Cart.addModifyCouponBasedCart(userObj, cartObj, couponObj, miscData)
+				validatedResponse = Cart.addModifyCouponBasedCart(userObj, cartObj, couponObj, miscData, operation)
 				break;
 
 		}
@@ -163,7 +163,7 @@ let Cart = {
 	},	
 
 
-	addModifyCouponBasedCart: async (userObj: any, cartObj: any, couponObj: any, miscData: any) => {
+	addModifyCouponBasedCart: async (userObj: any, cartObj: any, couponObj: any, miscData: any, operation:string) => {
 
 		let result = {
 			success: false,
@@ -180,17 +180,17 @@ let Cart = {
 
 		result["success"] = couponValidCheck["success"]
 		result["code"] = couponValidCheck["code"]
-		result["message"] = couponValidCheck["message"]		
-
+		result["message"] = couponValidCheck["message"]	
 		if(couponValidCheck["success"]) {
 			updatedCartObj["applied_coupon"] = couponObjCp
 			updatedCartObj["summary"] = couponUtil.calculatCouponDiscount(cartObj,couponObjCp)
-
+			result["formatted_message"] = couponUtil.getFormattedMessage(operation,updatedCartObj, "success",couponValidCheck["message"] )
 			Cart.updateCartCoupon(updatedCartObj); //update to firestore with latest cart object
 			result.data.cart = updatedCartObj
 		}else{
 			updatedCartObj["applied_coupon"] = {}
 			updatedCartObj["summary"] = couponUtil.calculatCouponDiscount(cartObj, {})
+			result["formatted_message"] = couponUtil.getFormattedMessage(operation,updatedCartObj, "error",couponValidCheck["message"] )
 			Cart.updateCartCoupon(updatedCartObj)
 			result.data.cart = updatedCartObj
 		}
