@@ -510,11 +510,11 @@ const Admin = {
                         }
 
                     }
-                    res.status(200).send(couponsToSave)
+                    res.status(200).send(responseToUser)
                     return;
 
                 } else {
-                    res.status(200).send(couponsToSave)
+                    res.status(200).send(responseToUser)
                 return;
                     
                 }
