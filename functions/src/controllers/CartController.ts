@@ -251,6 +251,7 @@ let Cart = {
 		let newDiscount = 0 , newYouPay = 0;
 		switch (coupon_type) {
 			case "cart_level":
+			case "refferal":
 				switch (discount_type) {
 					case "percentage":
 						newDiscount = cartObj.summary.sale_price_total * ( discount_value / 100)
