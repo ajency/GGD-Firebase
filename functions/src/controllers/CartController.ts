@@ -184,13 +184,13 @@ let Cart = {
 
 		if(couponValidCheck["success"]) {
 			updatedCartObj["applied_coupon"] = couponObjCp
-			updatedCartObj["summary"] = Cart.calculatCouponDiscount(cartObj,couponObjCp)
+			updatedCartObj["summary"] = couponUtil.calculatCouponDiscount(cartObj,couponObjCp)
 
 			Cart.updateCartCoupon(updatedCartObj); //update to firestore with latest cart object
 			result.data.cart = updatedCartObj
 		}else{
 			updatedCartObj["applied_coupon"] = {}
-			updatedCartObj["summary"] = Cart.calculatCouponDiscount(cartObj, {})
+			updatedCartObj["summary"] = couponUtil.calculatCouponDiscount(cartObj, {})
 			Cart.updateCartCoupon(updatedCartObj)
 			result.data.cart = updatedCartObj
 		}
@@ -210,7 +210,7 @@ let Cart = {
 		let updatedCartObj = JSON.parse(JSON.stringify(cartObj));
 
 		updatedCartObj["applied_coupon"] = {}
-		updatedCartObj["summary"] = Cart.calculatCouponDiscount(cartObj, {})
+		updatedCartObj["summary"] = couponUtil.calculatCouponDiscount(cartObj, {})
 
 		Cart.updateCartCoupon(updatedCartObj); //update to firestore with latest cart object
 		result.success = true
@@ -239,39 +239,6 @@ let Cart = {
 			
 		})
 		
-	},
-
-	calculatCouponDiscount(cartObj, couponObj) {
-		const { coupon_type="", discount_type ="", discount_value = 0 } = couponObj
-		let newDiscount = 0 , newYouPay = 0;
-		switch (coupon_type) {
-			case "cart_level":
-			case "referral":
-				switch (discount_type) {
-					case "percentage":
-						newDiscount = Math.round(cartObj.summary.sale_price_total * ( discount_value / 100))
-						newYouPay = cartObj.summary.sale_price_total - newDiscount + cartObj.summary.shipping_fee;
-						cartObj.summary.cart_discount = newDiscount
-						cartObj.summary.you_pay = newYouPay
-						break;
-					case "flat":
-						newYouPay = cartObj.summary.sale_price_total - discount_value + cartObj.summary.shipping_fee;
-						cartObj.summary.cart_discount = discount_value
-						cartObj.summary.you_pay = newYouPay
-						break;
-					default:
-						break;
-				}
-
-				break;
-
-			default:
-				newYouPay = cartObj.summary.sale_price_total + cartObj.summary.shipping_fee;
-				cartObj.summary.cart_discount = 0
-				cartObj.summary.you_pay = newYouPay
-				break;
-		}
-		return cartObj.summary
 	},
 
 
