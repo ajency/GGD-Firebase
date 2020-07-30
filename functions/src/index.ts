@@ -431,6 +431,8 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				.where("user_id","==",paymentData.user_id )
 				.where("coupons_code","==",order_data.applied_coupon.code)
 				.orderBy('timestamp').get().then(res =>{
+					console.log(res.empty);
+					
 					if(!res.empty){
 						res.docs[0].ref.update({order_id:snap.after.id}).then( result => {
 							console.log("logged order id");
