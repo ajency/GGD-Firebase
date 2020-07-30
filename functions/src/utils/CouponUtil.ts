@@ -272,7 +272,6 @@ let couponUtil = {
 		let newDiscount = 0, newYouPay = 0;
 		switch (coupon_type) {
 			case "cart_level":
-			case "referral":
 				switch (discount_type) {
 					case "percentage":
 						newDiscount = Math.round(cartObj.summary.sale_price_total * (discount_value / 100))
