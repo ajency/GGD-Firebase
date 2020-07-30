@@ -425,6 +425,18 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				}).catch((e) => {
 					console.log(e)
 				})
+
+				firestore.collection("coupon_rules_log").where("operation","==","validate_cart").where("user_id","==",paymentData.user_id ).orderBy('timestamp').get().then(res =>{
+					if(!res.empty){
+						res.docs[0].ref.update({order_id:snap.after.id}).then( res => {
+							console.log("logged order id");
+							
+						}).catch((e) => {
+							console.log("loggin error");
+							
+						})
+					}
+				})
 			}
 	
 		
