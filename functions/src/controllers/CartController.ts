@@ -86,7 +86,7 @@ let Cart = {
 			return validatedResponse
 		}
 
-		finalCouponCodeData = couponUtil.validateCouponCode(userObj, cartObj, operation, couponCode, operation)
+		finalCouponCodeData = couponUtil.validateCouponCode(userObj, cartObj, operation, couponCode)
 
 		if(!finalCouponCodeData["success"]){
 			validatedResponse['code'] = finalCouponCodeData['code']
