@@ -1,10 +1,10 @@
 const { Engine } = require("json-rules-engine")
 const { _ } = require("underscore")
-
+import * as admin from 'firebase-admin';
 
 let couponUtil = {
 
-	validateCoupon: async (userObj, cartObj, couponObj, miscData) => {
+	validateCoupon: async (userObj, cartObj, couponObj, miscData, operation="") => {
 
 		/**	
 		 * Create an Engine	
@@ -21,7 +21,8 @@ let couponUtil = {
 				userObj: userObj,
 				cartObj: cartObj,
 				couponObj: couponObj,
-				miscData: miscData
+				miscData: miscData,
+				operation
 
 			}
 		};
@@ -65,6 +66,7 @@ let couponUtil = {
 
 			couponRuleEngine.on('failure', function (event, almanac, ruleResult) {
 				console.log("Failure reject\n")
+				couponUtil.logCouponActivity(event.params.userObj, event.params.cartObj, event.params.couponObj, event.params.miscData, event.params.operation, "failure")
 				resolve(couponUtil.processRuleResult(false, ruleResult, event));
 			});
 
@@ -320,6 +322,29 @@ let couponUtil = {
 		}
 		
 		return msg
+	},
+
+	logCouponActivity: (userObj:any = {}, cartObj:any = {}, couponObj:any = {}, miscData:any = {}, operation:string = "", status:string) => {
+		const db = admin.firestore()
+		let couponActivity = {
+			user_id: userObj.id,
+			user_phone: userObj.phone,
+			operation,
+			coupon_code:couponObj.code,
+			couponobj:couponObj,
+			cartObj:cartObj,
+			misc_obj:miscData,
+			status,
+			timestamp:admin.firestore.FieldValue.serverTimestamp()
+		}
+
+		db.collection("coupon_rules_log").doc().set(couponActivity).then(() => {
+			console.log("log updated");
+		}).catch((e) => {
+			console.log("log entry failed");
+			
+		})
+		return 
 	}
 
 

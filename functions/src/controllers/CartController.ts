@@ -86,7 +86,7 @@ let Cart = {
 			return validatedResponse
 		}
 
-		finalCouponCodeData = couponUtil.validateCouponCode(userObj, cartObj, operation, couponCode)
+		finalCouponCodeData = couponUtil.validateCouponCode(userObj, cartObj, operation, couponCode, operation)
 
 		if(!finalCouponCodeData["success"]){
 			validatedResponse['code'] = finalCouponCodeData['code']
@@ -148,7 +148,7 @@ let Cart = {
 				break;
 
 			case "validate_cart":				
-				validatedResponse = couponUtil.validateCoupon(userObj, cartObj, couponObj, miscData)
+				validatedResponse = couponUtil.validateCoupon(userObj, cartObj, couponObj, miscData, operation)
 				break;
 
 
@@ -173,7 +173,7 @@ let Cart = {
 		};
 
 
-		let couponValidCheck = await couponUtil.validateCoupon(userObj, cartObj, couponObj, miscData) 
+		let couponValidCheck = await couponUtil.validateCoupon(userObj, cartObj, couponObj, miscData, operation) 
 		let couponObjCp = JSON.parse(JSON.stringify(couponObj))
 
 		let updatedCartObj = cartObj;
