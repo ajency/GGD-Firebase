@@ -281,7 +281,7 @@ const Admin = {
             const base = Airtable.base(base_id);
             base('coupons').select({
                 // Selecting the first 3 records in Grid view:
-                // view: "Grid view"
+                view: "Create or Update Coupons",
                 pageSize: 10
             }).eachPage(function page(records, fetchNextPage) {
                 // This function (`page`) will get called for each page of records.
@@ -435,7 +435,7 @@ const Admin = {
             const base = Airtable.base(base_id);
             base('coupons').select({
                 // Selecting the first 3 records in Grid view:
-                // view: "Grid view"
+                view: "Create or Update Coupons",
                 pageSize: 10
             }).eachPage(function page(records, fetchNextPage) {
                 // This function (`page`) will get called for each page of records.
