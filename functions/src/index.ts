@@ -426,7 +426,11 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					console.log(e)
 				})
 
-				firestore.collection("coupon_rules_log").where("operation","==","validate_cart").where("user_id","==",paymentData.user_id ).orderBy('timestamp').get().then(res =>{
+				firestore.collection("coupon_rules_log")
+				.where("operation","==","validate_cart")
+				.where("user_id","==",paymentData.user_id )
+				.where("coupons_code","==",order_data.applied_coupon.code)
+				.orderBy('timestamp').get().then(res =>{
 					if(!res.empty){
 						res.docs[0].ref.update({order_id:snap.after.id}).then( result => {
 							console.log("logged order id");
