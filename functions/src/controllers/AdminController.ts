@@ -360,9 +360,19 @@ const Admin = {
                                                     case "notIn":
                                                         ruleObj.value = resp.data.fields.value.split(',')
                                                     break;
+                                                    default: 
+                                                    break;
+                                                }
 
-                                                     default: 
-                                                     break;
+                                                switch (resp.data.fields.fact) {
+                                                    case "VALID_FROM":
+                                                    case "VALID_TO":
+                                                        ruleObj.value = new Date(resp.data.fields.value).getTime()
+                                                    break;
+                                                        
+                                                
+                                                    default:
+                                                        break;
                                                 }
                                                
                                                 couponsToSave[key].rules.all.push(ruleObj)
@@ -433,7 +443,6 @@ const Admin = {
                     // res.status(200).send(record.fields)
                     let coupons = record.fields
                     const allKey = Object.keys(coupons)
-                    console.log(allKey)
                     const checkDifference =  _.difference(MANDATORY_COUPON_FIELDS,allKey)
                     if (coupons.firebase_id && !checkDifference.length) {
                         coupons.rules = {
@@ -484,7 +493,6 @@ const Admin = {
                                     const rules = couponsToSave[key].coupon_rules
                                     for(const rulekey in rules) {
                                         if(rules[rulekey]) {
-                                            console.log(rules[rulekey])
                                             let resp:any = await Axios.get(URL + '/' + rules[rulekey], { headers: HEADERS })
                                             const rulesFields = Object.keys(resp.data.fields)
                                             const checkDifference =  _.difference(MANDATORY_RULES_FIELDS,rulesFields)
@@ -497,14 +505,28 @@ const Admin = {
                                                     operator: resp.data.fields.operator,
                                                     value: resp.data.fields.value
                                                 }
+                                                console.log(resp.data.fields.operator);
+
                                                 switch (resp.data.fields.operator) {
+                                                    
                                                     case "in":
                                                     case "notIn":
                                                         ruleObj.value = resp.data.fields.value.split(',')
                                                     break;
-
+                                            
                                                      default: 
                                                      break;
+                                                }
+
+                                                switch (resp.data.fields.fact) {
+                                                    case "VALID_FROM":
+                                                    case "VALID_TO":
+                                                        ruleObj.value = new Date(resp.data.fields.value).getTime()
+                                                    break;
+                                                        
+                                                
+                                                    default:
+                                                        break;
                                                 }
                                                
                                                 couponsToSave[key].rules.all.push(ruleObj)
@@ -518,7 +540,6 @@ const Admin = {
                                         }
                                     }
                                 }
-                                console.log(couponsToSave[key]);
                                 delete couponsToSave[key].coupon_rules
                                 await db.collection('coupons').doc(key).set(couponsToSave[key])
                                 responseToUser.push(`Coupon ${couponsToSave[key].code} updated`)
