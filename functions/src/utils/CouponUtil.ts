@@ -61,6 +61,7 @@ let couponUtil = {
 			// subscribe to any event emitted by the engine
 			couponRuleEngine.on('success', function (event, almanac, ruleResult) {
 				console.log("Success resolve\n")
+				couponUtil.logCouponActivity(event.params.userObj, event.params.cartObj, event.params.couponObj, event.params.miscData, event.params.operation, "success")
 				resolve(couponUtil.processRuleResult(true, ruleResult, event));
 			});
 
