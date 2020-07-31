@@ -1,6 +1,7 @@
 const { Engine } = require("json-rules-engine")
 const { _ } = require("underscore")
 import * as admin from 'firebase-admin';
+import * as errorJson from './coupon-messages.json';
 
 let couponUtil = {
 
@@ -143,41 +144,41 @@ let couponUtil = {
 		switch (operation) {
 			case "add":
 				if (couponCode) {
-					validatedResponse.code = "ADD_COUPON_CODE_NOT_EMPTY"
-					validatedResponse.message = "Coupon code is not empty."
+					validatedResponse.code = errorJson["ADD_COUPON_CODE_NOT_EMPTY"].code
+					validatedResponse.message = errorJson["ADD_COUPON_CODE_NOT_EMPTY"].message
 
 					validatedResponse.couponCode = couponCode.toUpperCase()
 					validatedResponse.success = true
 				}
 				else {
-					validatedResponse.code = "ADD_COUPON_CODE_EMPTY"
-					validatedResponse.message = "Coupon is empty. Please pass a coupon to add"
+					validatedResponse.code = errorJson["ADD_COUPON_CODE_EMPTY"].code
+					validatedResponse.message = errorJson["ADD_COUPON_CODE_EMPTY"].message
 				}
 				break;
 
 			case "remove":
 				if (couponCode) {
-					validatedResponse.code = "REMOVE_COUPON_CODE_NOT_EMPTY"
-					validatedResponse.message = "Coupon code is not empty."
+					validatedResponse.code = errorJson["REMOVE_COUPON_CODE_NOT_EMPTY"].code
+					validatedResponse.message = errorJson["REMOVE_COUPON_CODE_NOT_EMPTY"].message
 
 					validatedResponse.couponCode = couponCode.toUpperCase()
 					validatedResponse.success = true
 				}
 				else {
 					if (_.isEmpty(cartObj["applied_coupon"])) {
-						validatedResponse.code = "REMOVE_COUPON_CODE_EMPTY"
-						validatedResponse.message = "Coupon code is empty. Cannot remove empty coupon"
+						validatedResponse.code = errorJson["REMOVE_COUPON_CODE_EMPTY"].code
+						validatedResponse.message =  errorJson["REMOVE_COUPON_CODE_EMPTY"].message
 					} else {
 						if (cartObj["applied_coupon"]["code"]) {
-							validatedResponse.code = "ADD_COUPON_CODE_NOT_EMPTY"
-							validatedResponse.message = "Coupon code is not empty."
+							validatedResponse.code = errorJson["ADD_COUPON_CODE_NOT_EMPTY"].code
+							validatedResponse.message =  errorJson["ADD_COUPON_CODE_NOT_EMPTY"].message
 
 							validatedResponse.couponCode = cartObj["applied_coupon"]["code"]
 							validatedResponse.success = true
 						}
 						else {
-							validatedResponse.code = "REMOVE_COUPON_CODE_EMPTY"
-							validatedResponse.message = "Coupon code is empty. Cannot remove empty coupon"
+							validatedResponse.code = errorJson["REMOVE_COUPON_CODE_EMPTY"].code
+							validatedResponse.message = errorJson["REMOVE_COUPON_CODE_EMPTY"].message
 						}
 					}
 
@@ -187,22 +188,22 @@ let couponUtil = {
 			default:
 
 				if (_.isEmpty(cartObj["applied_coupon"])) {
-					validatedResponse.code = "EMPTY_COUPON_AGAINST_CART"
-					validatedResponse.message = "Valid Cart. No coupon associated to it"
+					validatedResponse.code = errorJson["EMPTY_COUPON_AGAINST_CART"].code
+					validatedResponse.message = errorJson["EMPTY_COUPON_AGAINST_CART"].message
 
 					validatedResponse.couponCode = ""
 					validatedResponse.success = true
 				} else {
 					if (cartObj["applied_coupon"]["code"]) {
-						validatedResponse.code = "COUPON_CODE_NOT_EMPTY"
-						validatedResponse.message = "Coupon code is not empty."
+						validatedResponse.code = errorJson["COUPON_CODE_NOT_EMPTY"].code
+						validatedResponse.message =  errorJson["COUPON_CODE_NOT_EMPTY"].message
 
 						validatedResponse.couponCode = (cartObj["applied_coupon"]["code"]).toUpperCase()
 						validatedResponse.success = true
 					}
 					else {
-						validatedResponse.code = "EMPTY_COUPON_AGAINST_CART"
-						validatedResponse.message = "Valid Cart. No coupon associated to it"
+						validatedResponse.code = errorJson["EMPTY_COUPON_AGAINST_CART"].code
+						validatedResponse.message = errorJson["EMPTY_COUPON_AGAINST_CART"].message
 					}
 				}
 
@@ -354,39 +355,3 @@ let couponUtil = {
 
 
 export default couponUtil;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

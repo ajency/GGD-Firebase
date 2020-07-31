@@ -1,6 +1,7 @@
 import * as admin from 'firebase-admin';
 import { Request, Response } from "express";
 import couponUtil from '../utils/CouponUtil';
+import * as errorJson from '../utils/coupon-messages.json';
 const { _ } = require("underscore");
 
 
@@ -33,8 +34,8 @@ let Cart = {
 
 		let validatedResponse: any = {
 			success: false,
-			code: "CART_NOT_VALIDATED",
-			message: "Cart not Validated",
+			code: errorJson["CART_NOT_VALIDATED"].code,
+			message: errorJson["CART_NOT_VALIDATED"].message,
 			data: { "cart": {} }
 		};
 
@@ -48,8 +49,8 @@ let Cart = {
 			userObj.id = userId
 		}
 		else {
-			validatedResponse['code'] = "USER_NOT_EXIST";
-			validatedResponse['message'] = "User does not exist"
+			validatedResponse['code'] = errorJson["USER_NOT_EXIST"].code;
+			validatedResponse['message'] = errorJson["USER_NOT_EXIST"].message
 
 			return validatedResponse
 		}
@@ -62,8 +63,8 @@ let Cart = {
 			console.log(`Cart exists\n ${JSON.stringify(cartObj)}`)
 			if(!cartObj.created_at){
 				console.log(`Active Cart does not exist\n`)
-				validatedResponse['code'] = "ACTIVE_CART_NOT_EXIST";
-				validatedResponse['message'] = "Cart is not active";
+				validatedResponse['code'] = errorJson["ACTIVE_CART_NOT_EXIST"].code;
+				validatedResponse['message'] = errorJson["ACTIVE_CART_NOT_EXIST"].message;
 				validatedResponse['data']['cart'] = cartObj;
 
 				return validatedResponse
@@ -73,15 +74,15 @@ let Cart = {
 		}
 		else {
 			console.log(`Cart does not exist\n`)
-			validatedResponse['code'] = "CART_NOT_EXIST";
-			validatedResponse['message'] = "Cart does not exist"
+			validatedResponse['code'] = errorJson["CART_NOT_EXIST"].code;
+			validatedResponse['message'] = errorJson["CART_NOT_EXIST"].message
 
 			return validatedResponse
 		}
 
 		if (!Cart.cartBelongsToUser(userObj, cartObj)){
-			validatedResponse['code'] = "CART_NOT_OF_USR";
-			validatedResponse['message'] = "Requested Cart does not belong to user"
+			validatedResponse['code'] = errorJson["CART_NOT_OF_USR"].code;
+			validatedResponse['message'] = errorJson["CART_NOT_OF_USR"].message
 
 			return validatedResponse
 		}
@@ -111,8 +112,8 @@ let Cart = {
 
 		if (couponRes.empty) {
 			console.log(`Coupon does not exist\n`)
-			validatedResponse['code'] = "COUPON_NOT_EXIST";
-			validatedResponse['message'] = "Coupon does not exist"
+			validatedResponse['code'] = errorJson["COUPON_NOT_EXIST"].code;
+			validatedResponse['message'] = errorJson["COUPON_NOT_EXIST"].message
 			return validatedResponse
 		} else {
 			const couponRef = couponRes.docs[0]
