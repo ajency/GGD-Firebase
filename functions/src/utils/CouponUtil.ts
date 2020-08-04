@@ -223,7 +223,8 @@ let couponUtil = {
 			VALID_TO: couponUtil.getDateOfApplication(userObj, cartObj, couponObj, miscData),
 			USAGE_LIMIT: couponUtil.getUsageCount(userObj, cartObj, couponObj, miscData),
 			EXCLUDE_USER_PHONES: couponUtil.getUserPhone(userObj, cartObj, couponObj, miscData),
-			INCLUDE_USER_PHONES: couponUtil.getUserPhone(userObj, cartObj, couponObj, miscData)
+			INCLUDE_USER_PHONES: couponUtil.getUserPhone(userObj, cartObj, couponObj, miscData),
+			TOTAL_ORDER:couponUtil.getTotalUserOrderCount(userObj, cartObj, couponObj, miscData)
 
 		}
 
@@ -269,6 +270,9 @@ let couponUtil = {
 		}
 
 		return userPhone
+	},
+	getTotalUserOrderCount:(userObj, cartObj, couponObj, miscData) => {
+		return miscData.orderCount || 0
 	},
 
 	calculatCouponDiscount(cartObj, couponObj) {
