@@ -62,13 +62,13 @@ let couponUtil = {
 			// subscribe to any event emitted by the engine
 			couponRuleEngine.on('success', function (event, almanac, ruleResult) {
 				console.log("Success resolve\n")
-				couponUtil.logCouponActivity(event.params.userObj, event.params.cartObj, event.params.couponObj, event.params.miscData, event.params.operation, "success")
+				couponUtil.logCouponActivity(event.params.userObj, event.params.cartObj, event.params.couponObj, event.params.miscData, event.params.operation,ruleResult, "success")
 				resolve(couponUtil.processRuleResult(true, ruleResult, event));
 			});
 
 			couponRuleEngine.on('failure', function (event, almanac, ruleResult) {
 				console.log("Failure reject\n")
-				couponUtil.logCouponActivity(event.params.userObj, event.params.cartObj, event.params.couponObj, event.params.miscData, event.params.operation, "failure")
+				couponUtil.logCouponActivity(event.params.userObj, event.params.cartObj, event.params.couponObj, event.params.miscData, event.params.operation,ruleResult, "failure")
 				resolve(couponUtil.processRuleResult(false, ruleResult, event));
 			});
 
@@ -326,7 +326,7 @@ let couponUtil = {
 		return msg
 	},
 
-	logCouponActivity: (userObj:any = {}, cartObj:any = {}, couponObj:any = {}, miscData:any = {}, operation:string = "", status:string) => {
+	logCouponActivity: (userObj:any = {}, cartObj:any = {}, couponObj:any = {}, miscData:any = {}, operation:string = "",ruleResult={}, status:string) => {
 		const db = admin.firestore()
 		let couponActivity = {
 			user_id: userObj.id,
@@ -337,6 +337,7 @@ let couponUtil = {
 			cartObj:cartObj,
 			misc_obj:miscData,
 			status,
+			ruleResult,
 			timestamp:admin.firestore.FieldValue.serverTimestamp()
 		}
 
