@@ -334,7 +334,7 @@ let couponUtil = {
 		if (ruleResult.conditions.any) {
 			anyFailedConditions = _.where(ruleResult.conditions.any);
 		}
-		let finalResult = _.map(allFailedConditions.concat(anyFailedConditions),(cond:any) => {return { ...cond } }));
+		let finalResult = _.map(allFailedConditions.concat(anyFailedConditions),(cond:any) => {return { ...cond } });
 		
 		const db = admin.firestore()
 		let couponActivity = {
