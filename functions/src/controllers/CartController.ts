@@ -122,21 +122,12 @@ let Cart = {
 		}
 
 		// find number of times coupon is redeemed by user
-		let couponsRedeemedRef = await firestore.collection('coupons_redeemed').where("user_phone", "==", userObj.phone).where("coupon_code", "==", couponObj.code).get();
+	
+		miscData = await Cart.getMiscData(cartObj,couponObj,userObj)
+
+
+		console.log("here ====>",miscData);
 		
-		try{
-			if (!couponsRedeemedRef.empty){
-				miscData["couponRedeemCount"] = couponsRedeemedRef.size
-				console.log(`Coupon redeemed count \n ${JSON.stringify(miscData["couponRedeemCount"])}`)
-			}
-		}
-		catch(e){
-			console.log(e)
-		}
-
-
-
-
 
 		//if coupon is found to be active, then do the intended operation
 		switch (operation) {
@@ -241,6 +232,52 @@ let Cart = {
 		})
 		
 	},
+
+	getMiscData: (cartObj, couponObj, userObj) => {
+		return new Promise(async (resolve,reject)=> {
+			let fact =""
+			let miscData = {}
+			let allFailedConditions =[], anyFailedConditions=[]
+			let firestore = admin.firestore()
+			if (couponObj.rules.all) {
+				allFailedConditions = _.where(couponObj.rules.all);
+			}
+			if (couponObj.rules.any) {
+				anyFailedConditions = _.where(couponObj.rules.any);
+			}
+
+			let rulesFact = _.pluck(allFailedConditions.concat(anyFailedConditions), 'fact')
+			
+			for (const key in rulesFact) {
+				
+				switch (rulesFact[key]) {
+					case "USAGE_LIMIT":
+						console.log(rulesFact[key]);
+						let couponsRedeemedRef = await firestore.collection('coupons_redeemed').where("user_phone", "==", userObj.phone).where("coupon_code", "==", couponObj.code).get();
+				
+						try{
+							if (!couponsRedeemedRef.empty){
+								miscData["couponRedeemCount"] = couponsRedeemedRef.size
+								console.log(`Coupon redeemed count \n ${JSON.stringify(miscData["couponRedeemCount"])}`)
+							}
+						}
+						catch(e){
+							console.log(e)
+						}
+					break;
+					case "TOTAL_ORDER":
+						let ordersRef = await firestore.collection("user-details").doc(userObj.id).collection("orders").where("status","==","placed").get()
+						miscData["totalOrderCount"] = ordersRef.size
+					break;
+					default:
+						break;
+				}
+			}
+			console.log(miscData);
+			
+			resolve(miscData)
+		})
+	}
 
 
 }

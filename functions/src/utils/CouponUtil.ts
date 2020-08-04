@@ -272,7 +272,7 @@ let couponUtil = {
 		return userPhone
 	},
 	getTotalUserOrderCount:(userObj, cartObj, couponObj, miscData) => {
-		return miscData.orderCount || 0
+		return miscData.totalOrderCount || 0
 	},
 
 	calculatCouponDiscount(cartObj, couponObj) {
