@@ -336,6 +336,8 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				variant_id: '',
 				product_name: '',
 				quantity:'',
+				mrp:0,
+				sale_price:0,
 				amount:0,
 				delivery_slot: '',
 				delivery_day: '',
@@ -349,7 +351,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			const weekDay = order_data.timestamp.toDate().getDay();
 			const orderDate = order_data.timestamp.toDate().toISOString()
 			order_data.items.map((item) => {
-				const { product_id, product_name, slot, day, variant_id, size, quantity, sale_price } = item
+				const { product_id, product_name, slot, day, variant_id, size, quantity, sale_price, mrp } = item
 				airtableRec = {
 					...airtableRec,
 					product_id,
@@ -359,6 +361,8 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					delivery_day: day,
 					delivery_slot: slot,
 					bowl_size:size,
+					mrp,
+					sale_price,
 					amount: (quantity * sale_price),
 					order_delivery_date: order_data.timestamp.toDate().toDateString()
 				}
