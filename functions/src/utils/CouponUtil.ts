@@ -326,7 +326,16 @@ let couponUtil = {
 		return msg
 	},
 
-	logCouponActivity: (userObj:any = {}, cartObj:any = {}, couponObj:any = {}, miscData:any = {}, operation:string = "",ruleResult={}, status:string) => {
+	logCouponActivity: (userObj:any = {}, cartObj:any = {}, couponObj:any = {}, miscData:any = {}, operation:string = "",ruleResult:any={}, status:string) => {
+		let allFailedConditions = [], anyFailedConditions=[];
+		if (ruleResult.conditions.all) {
+			allFailedConditions = _.where(ruleResult.conditions.all);
+		}
+		if (ruleResult.conditions.any) {
+			anyFailedConditions = _.where(ruleResult.conditions.any);
+		}
+		let finalResult = _.map(allFailedConditions.concat(anyFailedConditions),(cond:any) => {return { ...cond } }));
+		
 		const db = admin.firestore()
 		let couponActivity = {
 			user_id: userObj.id,
@@ -337,7 +346,7 @@ let couponUtil = {
 			cartObj:cartObj,
 			misc_obj:miscData,
 			status,
-			ruleResult,
+			ruleResult:finalResult,
 			timestamp:admin.firestore.FieldValue.serverTimestamp()
 		}
 

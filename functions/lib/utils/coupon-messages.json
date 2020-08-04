@@ -1,0 +1,78 @@
+{
+    "COUPON_EMPTY_CHECK_PENDING": {
+        "code": "COUPON_EMPTY_CHECK_PENDING",
+        "message": "Input coupon not checked for empty validation"
+    },
+    "ADD_COUPON_CODE_NOT_EMPTY": {
+        "code": "ADD_COUPON_CODE_NOT_EMPTY",
+        "message": "Coupon code is not empty."
+    },
+    "ADD_COUPON_CODE_EMPTY": {
+        "code": "ADD_COUPON_CODE_EMPTY",
+        "message": "Coupon is empty. Please pass a coupon to add"
+    },
+    "REMOVE_COUPON_CODE_NOT_EMPTY": {
+        "code": "REMOVE_COUPON_CODE_NOT_EMPTY",
+        "message": "Coupon code is not empty."
+    },
+    "REMOVE_COUPON_CODE_EMPTY": {
+        "code": "REMOVE_COUPON_CODE_EMPTY",
+        "message": "Coupon code is empty. Cannot remove empty coupon"
+    },
+    "EMPTY_COUPON_AGAINST_CART": {
+        "code": "EMPTY_COUPON_AGAINST_CART",
+        "message": "Valid Cart. No coupon associated to it"
+    },
+    "COUPON_CODE_NOT_EMPTY": {
+        "code": "COUPON_CODE_NOT_EMPTY",
+        "message": "Coupon code is not empty."
+    },
+    "VALID_FROM": {
+        "code": "VALID_FROM",
+        "message": "Coupon is expired."
+    },
+    "VALID_TO": {
+        "code": "VALID_TO",
+        "message": "Coupon is expired."
+    },
+    "USAGE_LIMIT": {
+        "code": "USAGE_LIMIT",
+        "message": "You have already used this coupon maximum number of times."
+    },
+    "INCLUDE_USER_PHONES": {
+        "code": "INCLUDE_USER_PHONES",
+        "message": "This coupon is not applicable to you"
+    },
+    "COUPON_INACTIVE": {
+        "code": "COUPON_INACTIVE ",
+        "message": "Coupon no longer active"
+    },
+    "COUPON_NOT_EXIST": {
+        "code": "COUPON_NOT_EXIST",
+        "message": "Coupon does not exist."
+    },
+    "CART_NOT_VALIDATED": {
+        "code": "CART_NOT_VALIDATED",
+        "message": "Cart not Validated"
+    },
+    "USER_NOT_EXIST": {
+        "code": "USER_NOT_EXIST",
+        "message": "User does not exist"
+    },
+    "ACTIVE_CART_NOT_EXIST": {
+        "code": "ACTIVE_CART_NOT_EXIST",
+        "message": "Cart is not active"
+    },
+    "CART_NOT_EXIST": {
+        "code": "CART_NOT_EXIST",
+        "message": "Cart does not exist"
+    },
+    "CART_NOT_OF_USR": {
+        "code": "CART_NOT_OF_USR",
+        "message": "Requested Cart does not belong to user"
+    },
+    "CART_NOT_EXIST": {
+        "code": "",
+        "message": ""
+    }
+}
