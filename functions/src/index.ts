@@ -168,7 +168,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					prod_img = prod_ref.data().image_urls[0]
 					let mrp =""
 					if(item.mrp != item.sale_price) {
-					mrp =`<span style="color: #878787; text-decoration: line-through; margin-left: 8px;">₹ ${item.mrp} </span>`
+					mrp =`<span style="color: #878787; text-decoration: line-through; margin-left: 8px; margin-top: 2px;">₹ ${item.mrp} </span>`
 					} 
 					email_content.items = email_content.items + `
 					<div class="item-container flex-column">
