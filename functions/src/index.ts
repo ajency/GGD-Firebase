@@ -183,8 +183,9 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 							</div>            
 						</div>
 						<div class="d-flex align-items-center" style="display: flex;">                            
-							<div class="product-price font-weight-light text-right pl-3" style="text-align: right;">
-								₹${item.sale_price}
+							<div class="product-price font-weight-light text-right pl-3" style="text-align: right;display: flex;">
+								<span style="font-size: 18px; font-weight: 500">₹${item.sale_price}</span>
+								{item.mrp != item.sale_price &&<span style="color: #878787; text-decoration: line-through; margin-left: 8px;">₹${item.mrp}</span>}
 							</div>
 						</div>
 					</div>
