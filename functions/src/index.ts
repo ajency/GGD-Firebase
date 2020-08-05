@@ -238,7 +238,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					html: email_html
 				};
 				if(config.mode == 'prod') {
-					mailOptions["bcc"] = "ggb@ajency.in"
+					mailOptions["bcc"] = "ggb@ajency.in, avanti@greengrainbowl.com"
 					mailOptions.from = "Green Grain Bowl<no-reply@greengrainbowl.com>"
 				}
 				console.log("Email option", mailOptions)
