@@ -166,6 +166,10 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					let prod_ref = await firestore.collection('products').doc(item.product_id).get()
 					const extraContent = item.day ? ` | ${DAYS[item.day]} | ${SLOTS[item.slot]}` : ''
 					prod_img = prod_ref.data().image_urls[0]
+					let mrp =""
+					if(item.mrp != item.sale_price) {
+					mrp =`<span style="color: #878787; text-decoration: line-through; margin-left: 8px;">₹ ${item.mrp} </span>`
+					} 
 					email_content.items = email_content.items + `
 					<div class="item-container flex-column">
 						<div class="d-flex mb-4" style="margin-bottom: 1.5rem!important;display:flex;">
@@ -185,7 +189,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 						<div class="d-flex align-items-center" style="display: flex;">                            
 							<div class="product-price font-weight-light text-right pl-3" style="text-align: right;display: flex;">
 								<span style="font-size: 18px; font-weight: 500">₹${item.sale_price}</span>
-								{item.mrp != item.sale_price &&<span style="color: #878787; text-decoration: line-through; margin-left: 8px;">₹${item.mrp}</span>}
+								${mrp}
 							</div>
 						</div>
 					</div>
