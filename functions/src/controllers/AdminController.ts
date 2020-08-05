@@ -385,6 +385,18 @@ const Admin = {
                                 }
                                 console.log(couponsToSave[key]);
                                 delete couponsToSave[key].coupon_rules
+                                let facts = _.pluck(couponsToSave[key].rules.all,"fact")
+                                if(!facts.includes("COUPON_INACTIVE")) {
+                                    let ruleObj = {
+                                        error: {
+                                            message:"Coupon is no longer active."
+                                        },
+                                        fact:"COUPON_INACTIVE",
+                                        operator: "equal",
+                                        value: "true"
+                                    }
+                                    couponsToSave[key].rules.all.push(ruleObj)
+                                }
                                 await db.collection('coupons').doc().set(couponsToSave[key])
                                 responseToUser.push(`Coupon ${couponsToSave[key].code} created`)
                             } catch (error) {
@@ -528,7 +540,6 @@ const Admin = {
                                                     default:
                                                         break;
                                                 }
-                                               
                                                 couponsToSave[key].rules.all.push(ruleObj)
                                             }  else {
                                                 responseToUser.push(`Coupon:${couponsToSave[key].code} can not be update some rules fields are empty `);
@@ -541,6 +552,20 @@ const Admin = {
                                     }
                                 }
                                 delete couponsToSave[key].coupon_rules
+                                let facts = _.pluck(couponsToSave[key].rules.all,"fact")
+                                console.log(facts);
+                                
+                                if(!facts.includes("COUPON_INACTIVE")) {
+                                    let ruleObj = {
+                                        error: {
+                                            message:"Coupon is no longer active."
+                                        },
+                                        fact:"COUPON_INACTIVE",
+                                        operator: "equal",
+                                        value: "true"
+                                    }
+                                    couponsToSave[key].rules.all.push(ruleObj)
+                                }
                                 await db.collection('coupons').doc(key).set(couponsToSave[key])
                                 responseToUser.push(`Coupon ${couponsToSave[key].code} updated`)
                             } catch (error) {
