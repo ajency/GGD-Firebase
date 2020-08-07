@@ -170,6 +170,10 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					let prod_ref = await firestore.collection('products').doc(item.product_id).get()
 					const extraContent = item.day ? ` | ${DAYS[item.day]} | ${SLOTS[item.slot]}` : ''
 					prod_img = prod_ref.data().image_urls[0]
+					let mrp =""
+					if(item.mrp != item.sale_price) {
+					mrp =`<span style="color: #878787; text-decoration: line-through; margin-left: 8px; margin-top: 2px;">₹ ${item.mrp} </span>`
+					} 
 					email_content.items = email_content.items + `
 					<div class="item-container flex-column">
 						<div class="d-flex mb-4" style="margin-bottom: 1.5rem!important;display:flex;">
@@ -186,9 +190,10 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 								</div>                     
 							</div>            
 						</div>
-						<div class="d-flex align-items-center" style="display: flex;">                            
-							<div class="product-price font-weight-light text-right pl-3" style="text-align: right;">
-								₹${item.sale_price}
+						<div class="d-flex align-items-center" style="display: flex; align-items: baseline; width: 26%; justify-content: flex-end;">                            
+							<div class="product-price font-weight-light text-right pl-3" style="text-align: right; display: flex; align-items: baseline;">
+								<span style="font-size: 16px; font-weight: 500">₹${item.sale_price}</span>
+								${mrp}
 							</div>
 						</div>
 					</div>
@@ -242,7 +247,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					html: email_html
 				};
 				if(config.mode == 'prod') {
-					mailOptions["bcc"] = "ggb@ajency.in"
+					mailOptions["bcc"] = "ggb@ajency.in, avanti@greengrainbowl.com"
 					mailOptions.from = "Green Grain Bowl<no-reply@greengrainbowl.com>"
 				}
 				console.log("Email option", mailOptions)
@@ -331,6 +336,8 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				variant_id: '',
 				product_name: '',
 				quantity:'',
+				mrp:0,
+				sale_price:0,
 				amount:0,
 				delivery_slot: '',
 				delivery_day: '',
@@ -365,7 +372,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			const weekDay = order_data.timestamp.toDate().getDay();
 			const orderDate = order_data.timestamp.toDate().toISOString()
 			order_data.items.map((item) => {
-				const { product_id, product_name, slot, day, variant_id, size, quantity, sale_price } = item
+				const { product_id, product_name, slot, day, variant_id, size, quantity, sale_price, mrp } = item
 				airtableRec = {
 					...airtableRec,
 					product_id,
@@ -375,6 +382,8 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					delivery_day: day,
 					delivery_slot: slot,
 					bowl_size:size,
+					mrp,
+					sale_price,
 					amount: (quantity * sale_price),
 					order_delivery_date: order_data.timestamp.toDate().toDateString()
 				}
