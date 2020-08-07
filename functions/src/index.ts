@@ -82,9 +82,13 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				email_content.url = `https://greengrainbowl.com/oyo/#/order-details/${snap.after.id}`
 				email_content.address = `<div class=""><strong>Pick up from: </strong> Cafeteria, 5th Floor, Oyo Office, Patto</div> `
 			} else {
+				let latLong = order_data.shipping_address.lat_long.join()
+				let mapLink = "https://www.google.com/maps/?q="+ latLong;
 				let addressLabel = order_data.shipping_address.address ? `${order_data.shipping_address.address}, ` : ""
-				email_content.address = `<div class=""><strong>Delivery Address: </strong></div>
-					${addressLabel}${order_data.shipping_address.landmark}, ${order_data.shipping_address.formatted_address}`
+				email_content.address = `<div class=""><strong>Delivery Address: </strong> <span style="text-transform:capitalize">${addressLabel}${order_data.shipping_address.landmark}</span></div>
+					<div class=""><strong>Delivery Area: </strong> ${order_data.shipping_address.formatted_address}  <a href="${mapLink}" style="color:#212529!important;">See on map</a></strong></div>
+					
+				  </div>`
 			}
 
 			if (order_data.status.toLowerCase() == 'placed' && order_data.order_mode == "online") {
@@ -166,6 +170,10 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					let prod_ref = await firestore.collection('products').doc(item.product_id).get()
 					const extraContent = item.day ? ` | ${DAYS[item.day]} | ${SLOTS[item.slot]}` : ''
 					prod_img = prod_ref.data().image_urls[0]
+					let mrp =""
+					if(item.mrp != item.sale_price) {
+					mrp =`<span style="color: #878787; text-decoration: line-through; margin-left: 8px; margin-top: 2px;">₹ ${item.mrp} </span>`
+					} 
 					email_content.items = email_content.items + `
 					<div class="item-container flex-column">
 						<div class="d-flex mb-4" style="margin-bottom: 1.5rem!important;display:flex;">
@@ -182,9 +190,10 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 								</div>                     
 							</div>            
 						</div>
-						<div class="d-flex align-items-center" style="display: flex;">                            
-							<div class="product-price font-weight-light text-right pl-3" style="text-align: right;">
-								₹${item.sale_price}
+						<div class="d-flex align-items-center" style="display: flex; align-items: baseline; width: 26%; justify-content: flex-end;">                            
+							<div class="product-price font-weight-light text-right pl-3" style="text-align: right; display: flex; align-items: baseline;">
+								<span style="font-size: 16px; font-weight: 500">₹${item.sale_price}</span>
+								${mrp}
 							</div>
 						</div>
 					</div>
@@ -238,7 +247,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					html: email_html
 				};
 				if(config.mode == 'prod') {
-					mailOptions["bcc"] = "ggb@ajency.in"
+					mailOptions["bcc"] = "ggb@ajency.in, avanti@greengrainbowl.com"
 					mailOptions.from = "Green Grain Bowl<no-reply@greengrainbowl.com>"
 				}
 				console.log("Email option", mailOptions)
@@ -311,20 +320,11 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				dayArray.push(key)
 			}
 			
-			if (order_data.shipping_address.hasOwnProperty('address')) {
-				if(order_data.shipping_address.address)
-					address_extra = order_data.shipping_address.address + ', '
-			}
-			if (order_data.shipping_address.hasOwnProperty('landmark')) {
-				if(order_data.shipping_address.landmark)
-					address_extra = address_extra + order_data.shipping_address.landmark + ', '
-			}
-			address = address_extra + order_data.shipping_address.formatted_address;
 			let airtableArray = []
 			let airtableRec = {
 				name: order_data.shipping_address.name,
 				contact_no: order_data.shipping_address.phone,
-				address:address,
+				address:"",
 				email: order_data.shipping_address.email,
 				order_id: snap.after.id,
 				order_no: order_data.order_no,
@@ -336,12 +336,35 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				variant_id: '',
 				product_name: '',
 				quantity:'',
+				mrp:0,
+				sale_price:0,
 				amount:0,
 				delivery_slot: '',
 				delivery_day: '',
 				bowl_size: '',
+				delivery_area:"",
+				delivery_address:'',
+				open_map:'',
 				order_delivery_date: order_data.timestamp.toDate().toDateString()
 			}
+			
+			if (order_data.shipping_address.hasOwnProperty('address')) {
+				if(order_data.shipping_address.address)
+					address_extra = order_data.shipping_address.address + ', '
+			}
+			if (order_data.shipping_address.hasOwnProperty('landmark')) {
+				if(order_data.shipping_address.landmark)
+					address_extra = address_extra + order_data.shipping_address.landmark + ', '
+			}
+			console.log(address_extra)
+			airtableRec.delivery_address = address_extra.substring(0, address_extra.length - 1);
+			airtableRec.delivery_area = order_data.shipping_address.formatted_address
+			if(order_data.shipping_address.lat_long) {
+				let  latLong = order_data.shipping_address.lat_long.join()
+				airtableRec.open_map = "https://www.google.com/maps/?q="+ latLong;
+			}
+			address = address_extra + order_data.shipping_address.formatted_address;
+			airtableRec.address = address
 			
 			let paymentRef = await firestore.collection('payments').doc(order_data.payment_id).get()
 			const paymentData = paymentRef.data()
@@ -349,7 +372,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			const weekDay = order_data.timestamp.toDate().getDay();
 			const orderDate = order_data.timestamp.toDate().toISOString()
 			order_data.items.map((item) => {
-				const { product_id, product_name, slot, day, variant_id, size, quantity, sale_price } = item
+				const { product_id, product_name, slot, day, variant_id, size, quantity, sale_price, mrp } = item
 				airtableRec = {
 					...airtableRec,
 					product_id,
@@ -359,6 +382,8 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					delivery_day: day,
 					delivery_slot: slot,
 					bowl_size:size,
+					mrp,
+					sale_price,
 					amount: (quantity * sale_price),
 					order_delivery_date: order_data.timestamp.toDate().toDateString()
 				}
