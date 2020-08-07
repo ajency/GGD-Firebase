@@ -82,9 +82,13 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				email_content.url = `https://greengrainbowl.com/oyo/#/order-details/${snap.after.id}`
 				email_content.address = `<div class=""><strong>Pick up from: </strong> Cafeteria, 5th Floor, Oyo Office, Patto</div> `
 			} else {
+				let latLong = order_data.shipping_address.lat_long.join()
+				let mapLink = "https://www.google.com/maps/?q="+ latLong;
 				let addressLabel = order_data.shipping_address.address ? `${order_data.shipping_address.address}, ` : ""
-				email_content.address = `<div class=""><strong>Delivery Address: </strong></div>
-					${addressLabel}${order_data.shipping_address.landmark}, ${order_data.shipping_address.formatted_address}`
+				email_content.address = `<div class=""><strong>Delivery Address: </strong> ${addressLabel}${order_data.shipping_address.landmark}</div>
+					<div class=""><strong>Delivery Area: </strong> ${order_data.shipping_address.formatted_address}  <a href="${mapLink}" style="color:#212529!important;">See on map</a></strong></div>
+					
+				  </div>`
 			}
 
 			if (order_data.status.toLowerCase() == 'placed' && order_data.order_mode == "online") {
@@ -311,20 +315,11 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				dayArray.push(key)
 			}
 			
-			if (order_data.shipping_address.hasOwnProperty('address')) {
-				if(order_data.shipping_address.address)
-					address_extra = order_data.shipping_address.address + ', '
-			}
-			if (order_data.shipping_address.hasOwnProperty('landmark')) {
-				if(order_data.shipping_address.landmark)
-					address_extra = address_extra + order_data.shipping_address.landmark + ', '
-			}
-			address = address_extra + order_data.shipping_address.formatted_address;
 			let airtableArray = []
 			let airtableRec = {
 				name: order_data.shipping_address.name,
 				contact_no: order_data.shipping_address.phone,
-				address:address,
+				address:"",
 				email: order_data.shipping_address.email,
 				order_id: snap.after.id,
 				order_no: order_data.order_no,
@@ -340,8 +335,29 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				delivery_slot: '',
 				delivery_day: '',
 				bowl_size: '',
+				delivery_area:"",
+				delivery_address:'',
+				open_map:'',
 				order_delivery_date: order_data.timestamp.toDate().toDateString()
 			}
+			
+			if (order_data.shipping_address.hasOwnProperty('address')) {
+				if(order_data.shipping_address.address)
+					address_extra = order_data.shipping_address.address + ', '
+			}
+			if (order_data.shipping_address.hasOwnProperty('landmark')) {
+				if(order_data.shipping_address.landmark)
+					address_extra = address_extra + order_data.shipping_address.landmark + ', '
+			}
+			console.log(address_extra)
+			airtableRec.delivery_address = address_extra.substring(0, address_extra.length - 1);
+			airtableRec.delivery_area = order_data.shipping_address.formatted_address
+			if(order_data.shipping_address.lat_long) {
+				let  latLong = order_data.shipping_address.lat_long.join()
+				airtableRec.open_map = "https://www.google.com/maps/?q="+ latLong;
+			}
+			address = address_extra + order_data.shipping_address.formatted_address;
+			airtableRec.address = address
 			
 			let paymentRef = await firestore.collection('payments').doc(order_data.payment_id).get()
 			const paymentData = paymentRef.data()
