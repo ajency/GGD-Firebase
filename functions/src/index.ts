@@ -42,9 +42,11 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 	try {
 		let order_data = snap.after.data();
 		let prev_order_data = snap.before.data();
+		console.log("prev_order_data--->",prev_order_data.status);
+		
 		let firestore = admin.firestore();
 		if (!order_data.userNotified) {
-
+			console.log("in email and sms block")
 			let sms_msg = '', email_subject = '', email_html = '';
 			let email_content = {
 				name: '',
@@ -59,6 +61,8 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			};
 			let payment_ref = await firestore.collection('payments').where("order_id", "==", snap.after.id).get()
 			let payment_data = payment_ref.docs[0].data()
+			console.log("fetched payments details");
+			
 			let pay_details = JSON.parse(payment_data.other_details)
 
 			let cus_name = order_data.shipping_address.name.trim().split(" ")[0]
@@ -247,7 +251,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					html: email_html
 				};
 				if(config.mode == 'prod') {
-					mailOptions["bcc"] = "ggb@ajency.in, avanti@greengrainbowl.com"
+					mailOptions["bcc"] = "ggb@ajency.in, avanti@greengrainbowl.com, latesh@ajency.in"
 					mailOptions.from = "Green Grain Bowl<no-reply@greengrainbowl.com>"
 				}
 				console.log("Email option", mailOptions)
