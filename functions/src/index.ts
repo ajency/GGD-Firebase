@@ -90,9 +90,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				let mapLink = "https://www.google.com/maps/?q="+ latLong;
 				let addressLabel = order_data.shipping_address.address ? `${order_data.shipping_address.address}, ` : ""
 				email_content.address = `<div class=""><strong>Delivery Address: </strong> <span style="text-transform:capitalize">${addressLabel}${order_data.shipping_address.landmark}</span></div>
-					<div class=""><strong>Delivery Area: </strong> ${order_data.shipping_address.formatted_address}  <a href="${mapLink}" style="color:#212529!important;">See on map</a></div>
-					
-				  </div>`
+					<div class=""><strong>Delivery Area: </strong> ${order_data.shipping_address.formatted_address}  <a href="${mapLink}" style="color:#212529!important;">See on map</a></div>`
 			}
 
 			if (order_data.status.toLowerCase() == 'placed' && order_data.order_mode == "online") {
