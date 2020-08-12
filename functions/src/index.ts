@@ -42,7 +42,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 	try {
 		let order_data = snap.after.data();
 		let prev_order_data = snap.before.data();
-		console.log("prev_order_data--->", prev_order_data.status);
+		// console.log("prev_order_data--->", prev_order_data.status);
 
 		let firestore = admin.firestore();
 		if (!order_data.userNotified && order_data.status != "draft") {
