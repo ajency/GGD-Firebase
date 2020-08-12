@@ -327,7 +327,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			let airtableArray = []
 			let airtableRecOrders = {
 				name: order_data.shipping_address.name,
-				contact_no: order_data.shipping_address.phone,
+				contact: order_data.shipping_address.phone,
 				email: order_data.shipping_address.email,
 				items: '',
 				address: "",
