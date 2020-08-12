@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import * as admin from 'firebase-admin';
 const { AsyncParser, parse } = require('json2csv');
 import * as Airtable from 'airtable';
-import { extractInstanceAndPath } from "firebase-functions/lib/providers/database";
 import e = require("express");
 const { _ } = require("underscore")
 const cred = require('../../credentials.json');
