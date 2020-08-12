@@ -325,6 +325,8 @@ const Admin = {
                 console.log(Object.keys(dataMaster).length);
                 const userStore = {}
                 for (let ex_order_id in dataMaster) {
+                    console.log("processing order",ex_order_id);
+                    
                     let name,email = ""
                     let orderObj = {
                         airtableUpdated: false,
@@ -451,7 +453,7 @@ const Admin = {
                         paymentObj.user_id = userObj.id
                     } catch (error) {
                         console.log(error);
-                        res.status(500).send({ error })
+                        return res.status(500).send({ error })
                     }
                     Admin.saveOrdersUnderUser(orderObj, paymentObj, userStore[orderObj.shipping_address.phone])
                     ordermaster.push(orderObj)
