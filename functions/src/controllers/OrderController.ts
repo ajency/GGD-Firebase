@@ -56,25 +56,25 @@ let Order = {
 			let cart_id = user_id + '-' + razorpay_order.notes.businessId + '-' + razorpay_order.notes.mode;
 
 			let cart_ref = await firestore.collection('carts').doc(cart_id).get()
-			let order_ref = await firestore.collection('user-details').doc(user_id).collection('orders').doc(ggb_order_id).get()
+			// let order_ref = await firestore.collection('user-details').doc(user_id).collection('orders').doc(ggb_order_id).get()
 
-			let airtableRec = {
-				contact: '',
-				name: '',
-				email: '',
-				items: '',
-				address: "",
-				amount: amount,
-				order_id: ggb_order_id,
-				payment_id: id,
-				razorpay_order_id: order_id,
-				status: status == 'captured' ? 'placed' : status,
-				order_no: '',
-				delivery_area:"",
-				delivery_address:'',
-				open_map:'',
-				datetime: new Date().toISOString()
-			}
+			// let airtableRec = {
+			// 	contact: '',
+			// 	name: '',
+			// 	email: '',
+			// 	items: '',
+			// 	address: "",
+			// 	amount: amount,
+			// 	order_id: ggb_order_id,
+			// 	payment_id: id,
+			// 	razorpay_order_id: order_id,
+			// 	status: status == 'captured' ? 'placed' : status,
+			// 	order_no: '',
+			// 	delivery_area:"",
+			// 	delivery_address:'',
+			// 	open_map:'',
+			// 	datetime: new Date().toISOString()
+			// }
 
 
 			const ggb_payment_id = payment_ref.docs[0].id
@@ -91,43 +91,43 @@ let Order = {
 			var t: any = new Date()
 			let items_airtable = ''
 
-			if (order_ref.exists) {
+			// if (order_ref.exists) {
 
-				if (order_ref.data().items.length) {
-					order_ref.data().items.forEach((item) => {
-						items_airtable = items_airtable + item.product_name + '-' + item.size + '-' + item.quantity + '-' + item.day + '-' + item.slot + '\n'
-					})
-				}
-				airtableRec.items = items_airtable;
+				// if (order_ref.data().items.length) {
+				// 	order_ref.data().items.forEach((item) => {
+				// 		items_airtable = items_airtable + item.product_name + '-' + item.size + '-' + item.quantity + '-' + item.day + '-' + item.slot + '\n'
+				// 	})
+				// }
+				// airtableRec.items = items_airtable;
 
 				// if (order_ref.data().shipping_address.formatted_address) {
-					let address_extra = ''
-					if (order_ref.data().shipping_address.hasOwnProperty('address')) {
-						if(order_ref.data().shipping_address.address)
-							address_extra = order_ref.data().shipping_address.address + ', '
-					}
-					if (order_ref.data().shipping_address.hasOwnProperty('landmark')) {
-						if(order_ref.data().shipping_address.landmark)
-							address_extra = address_extra + order_ref.data().shipping_address.landmark + ', '
-					}
-					airtableRec.delivery_address = address_extra;
-					airtableRec.delivery_area = order_ref.data().shipping_address.formatted_address
-					if(order_ref.data().shipping_address.lat_long) {
-						let  latLong = order_ref.data().shipping_address.lat_long.join()
-						airtableRec.open_map = "https://www.google.com/maps/?q="+ latLong;
-					}
+					// let address_extra = ''
+					// if (order_ref.data().shipping_address.hasOwnProperty('address')) {
+					// 	if(order_ref.data().shipping_address.address)
+					// 		address_extra = order_ref.data().shipping_address.address + ', '
+					// }
+					// if (order_ref.data().shipping_address.hasOwnProperty('landmark')) {
+					// 	if(order_ref.data().shipping_address.landmark)
+					// 		address_extra = address_extra + order_ref.data().shipping_address.landmark + ', '
+					// }
+					// airtableRec.delivery_address = address_extra;
+					// airtableRec.delivery_area = order_ref.data().shipping_address.formatted_address
+					// if(order_ref.data().shipping_address.lat_long) {
+					// 	let  latLong = order_ref.data().shipping_address.lat_long.join()
+					// 	airtableRec.open_map = "https://www.google.com/maps/?q="+ latLong;
+					// }
 					
-					airtableRec.address = address_extra + order_ref.data().shipping_address.formatted_address;
+					// airtableRec.address = address_extra + order_ref.data().shipping_address.formatted_address;
 				// }
-				if (user_id) {
-					let user_ref = await firestore.collection('user-details').doc(user_id).get()
-					if (user_ref.exists) {
-						airtableRec.name = user_ref.data().name
-						airtableRec.email = user_ref.data().email
-						airtableRec.contact = user_ref.data().phone
-					}
-				}
-			}
+				// if (user_id) {
+				// 	let user_ref = await firestore.collection('user-details').doc(user_id).get()
+				// 	if (user_ref.exists) {
+				// 		airtableRec.name = user_ref.data().name
+				// 		airtableRec.email = user_ref.data().email
+				// 		airtableRec.contact = user_ref.data().phone
+				// 	}
+				// }
+			// }
 
 			let tokens = firestore.collection("tokens").doc(new Date().toDateString());
 
@@ -166,7 +166,7 @@ let Order = {
 			t = new Date
 			console.log("orders", t - start)
 
-			airtableRec.order_no = order_no
+			// airtableRec.order_no = order_no
 			if (cart_ref.data().order_id == ggb_order_id && status != "failed") {
 				let order_mode = cart_ref.data().order_mode
 				cart_ref.ref.set({
@@ -174,23 +174,23 @@ let Order = {
 				})
 			}
 
-			cart_ref.ref.de
-			if (status != "failed") {
-				console.log("air table entry", airtableRec)
-				let airres = await base('orders').create([
-					{
-						"fields": airtableRec
-					}
-				]).then(() => {
-					console.log("Made entry in airtable")
-				}).catch((e) => {
-					console.log("Airtable entry failed ==>", e);
+			// cart_ref.ref.de
+			// if (status != "failed") {
+			// 	console.log("air table entry", airtableRec)
+			// 	let airres = await base('orders').create([
+			// 		{
+			// 			"fields": airtableRec
+			// 		}
+			// 	]).then(() => {
+			// 		console.log("Made entry in airtable")
+			// 	}).catch((e) => {
+			// 		console.log("Airtable entry failed ==>", e);
 
-				})
-				t = new Date
-				console.log("airtable", t - start)
+			// 	})
+			// 	t = new Date
+			// 	console.log("airtable", t - start)
 
-			}
+			// }
 
 			console.log("done")
 			return res.sendStatus(200);
