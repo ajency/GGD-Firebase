@@ -284,6 +284,7 @@ const Admin = {
 
                     if (!checkDifference.length) {
                         const orderObj = record.fields
+                        orderObj.airtableId = record.id
                         if (dataMaster[orderObj.order_id]) {
                             dataMaster[orderObj.order_id].push(orderObj)
                         } else {
@@ -329,6 +330,7 @@ const Admin = {
                     
                     let name,email = ""
                     let orderObj = {
+                        airtableIds:[],
                         airtableUpdated: false,
                         userNotified: true,
                         externalOrderType: "",
@@ -384,7 +386,7 @@ const Admin = {
                         
                         for (const index in dataMaster[ex_order_id]) {
                             orderObj.cart_count = orderObj.cart_count + (dataMaster[ex_order_id][index].quantity * 1)
-
+                            orderObj.airtableIds.push(dataMaster[ex_order_id][index].airtableId)
                             mrp_total = mrp_total + (dataMaster[ex_order_id][index].mrp * dataMaster[ex_order_id][index].quantity);
                             sale_price_total = sale_price_total + (dataMaster[ex_order_id][index].sale_price * dataMaster[ex_order_id][index].quantity);
                             if (!firebase_order_id) {
@@ -458,7 +460,6 @@ const Admin = {
                     Admin.saveOrdersUnderUser(orderObj, paymentObj, userStore[orderObj.shipping_address.phone])
                     ordermaster.push(orderObj)
                 }
-
 
                 res.status(200).send({ ordermaster:ordermaster[0] })
             });

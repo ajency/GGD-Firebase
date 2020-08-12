@@ -38,14 +38,14 @@ app.use(cors({ origin: true }));
 routesConfig(app)
 export const api = functions.region('asia-east2').https.onRequest(app);
 
-exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("user-details/{userDetailsId}/orders/{paymentId}").onUpdate(async (snap, context) => {
+exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("user-details/{userDetailsId}/orders/{paymentId}").onWrite(async (snap, context) => {
 	try {
 		let order_data = snap.after.data();
 		let prev_order_data = snap.before.data();
 		console.log("prev_order_data--->", prev_order_data.status);
 
 		let firestore = admin.firestore();
-		if (!order_data.userNotified) {
+		if (!order_data.userNotified && order_data.status != "draft") {
 			console.log("in email and sms block")
 			let sms_msg = '', email_subject = '', email_html = '';
 			let email_content = {
@@ -446,6 +446,19 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				console.log(error);				
 			})
 
+			if(order_data.order_mode == "manual" && !order_data.airtableUpdated) {
+				if(order_data.airtableIds.length) {
+					const fieldsToUpdate = []
+					for (const key in order_data.airtableIds) {
+						fieldsToUpdate.push({id: order_data.airtableIds[key], fields:{ "processed": true}})
+					}
+					base('external_order').update(fieldsToUpdate).then(() => {
+						console.log("external_order updated");
+					}).catch(error => {
+						console.log(error);
+					})
+				}
+			}
 		}
 		if (!order_data.airtableUpdated || !order_data.userNotified) {
 			snap.after.ref.update({
