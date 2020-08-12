@@ -146,16 +146,8 @@ let Order = {
 				});
 			})
 			await Order.sleep(10);
-			let temp = new Date().toDateString().split(" ")
-			let sugar = temp[1].toUpperCase() + temp[2]
-			let salt = razorpay_order.receipt.slice((razorpay_order.receipt.length - 3), (razorpay_order.receipt.length))
-			let pepper = razorpay_order.receipt.slice(0, 3)
-			let tempTk = order_token
-			if (tempTk < 100) {
-				var zeroes = new Array(3 + 1).join("0");
-				tempTk = (zeroes + order_token).slice(-3);
-			}
-			let order_no = (sugar + salt + tempTk + pepper).toUpperCase()
+			
+			let order_no =  Order.getOrderNos(razorpay_order.receipt, order_token)
 			firestore.collection('user-details').doc(user_id).collection('orders').doc(razorpay_order.receipt).update({
 				status: status == 'captured' ? 'placed' : status,
 				token: order_token,
@@ -254,6 +246,18 @@ let Order = {
 	},
 	sleep(ms) {
 		return new Promise(resolve => setTimeout(resolve, ms));
+	},
+	getOrderNos: (receipt,order_token) => {
+		let temp = new Date().toDateString().split(" ")
+		let sugar = temp[1].toUpperCase() + temp[2]
+		let salt = receipt.slice((receipt.length - 3), (receipt.length))
+		let pepper = receipt.slice(0, 3)
+		let tempTk = order_token
+		if (tempTk < 100) {
+			var zeroes = new Array(3 + 1).join("0");
+			tempTk = (zeroes + order_token).slice(-3);
+		}
+		return (sugar + salt + tempTk + pepper).toUpperCase()
 	}
 }
 

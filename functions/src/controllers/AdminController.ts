@@ -3,6 +3,7 @@ import * as admin from 'firebase-admin';
 const { AsyncParser, parse } = require('json2csv');
 import * as Airtable from 'airtable';
 import e = require("express");
+import Order from "./OrderController";
 const { _ } = require("underscore")
 const cred = require('../../credentials.json');
 Airtable.configure({
@@ -325,7 +326,7 @@ const Admin = {
                 for (let ex_order_id in dataMaster) {
                     let name,email = ""
                     const orderObj = {
-                        airtableUpdated: true,
+                        airtableUpdated: false,
                         userNotified: true,
                         externalOrderType: "",
                         externalOrderId: "",
@@ -354,7 +355,7 @@ const Admin = {
                             shipping_fee: 0,
                             you_pay: 0
                         },
-                        timestamp: "",
+                        timestamp: new Date(),
                         token: 0,
                         user_id: ""
                     }
@@ -362,7 +363,7 @@ const Admin = {
                         order_id: "",
                         order_details:"",
                         status:"captured",
-                        timestamp:"",
+                        timestamp:new Date(),
                         user_id:""
                     }
                     try {
@@ -372,22 +373,26 @@ const Admin = {
                         if (!phone_number) {
                             let phoneNos = _.pluck(dataMaster[ex_order_id], "phone");
                             phoneNos = _.uniq(phoneNos)
-                            console.log(phoneNos);
                             
                             phone_number = phoneNos[0].replace("+91", "");
                         }
                         orderObj.shipping_address.phone = phone_number;
                         let mrp_total = 0, sale_price_total = 0, cart_discount = 0, delivery_fee = 0;
+                        
                         for (const index in dataMaster[ex_order_id]) {
+                            orderObj.cart_count = orderObj.cart_count + (dataMaster[ex_order_id][index].quantity * 1)
+
                             mrp_total = mrp_total + (dataMaster[ex_order_id][index].mrp * dataMaster[ex_order_id][index].quantity);
                             sale_price_total = sale_price_total + (dataMaster[ex_order_id][index].sale_price * dataMaster[ex_order_id][index].quantity);
                             if (!firebase_order_id) {
                                 firebase_order_id = dataMaster[ex_order_id][index].external_order_type + '_' + dataMaster[ex_order_id][index].order_id;
                                 orderObj.order_id = paymentObj.order_id = firebase_order_id    
                                 orderObj.payment_id = "payment_"+dataMaster[ex_order_id][index].external_order_type + '_' + dataMaster[ex_order_id][index].order_id
+                                orderObj.externalOrderId = dataMaster[ex_order_id][index].order_id
+                                orderObj.externalOrderType = dataMaster[ex_order_id][index].external_order_type 
                             }
                             if (!orderObj.timestamp) {
-                                orderObj.timestamp = paymentObj.timestamp = dataMaster[ex_order_id][index].order_date
+                                orderObj.timestamp = paymentObj.timestamp = new Date(dataMaster[ex_order_id][index].order_date)
                             }
 
                             if (!paymentObj.order_details) {
@@ -401,7 +406,7 @@ const Admin = {
                             if(!email) {
                                 email = dataMaster[ex_order_id][index].email
                             }
-
+                            
                             const product = productMaster[dataMaster[ex_order_id][index].product_id]
 
                             const variant = product.variants.find((v => v.id == dataMaster[ex_order_id][index].variant_id))
@@ -437,7 +442,7 @@ const Admin = {
                         orderObj.shipping_address.name = userObj.name || ""
                         orderObj.shipping_address.email = userObj.email || ""
                         orderObj.user_id = userObj.id
-
+                        orderObj.order_no = Order.getOrderNos(orderObj.payment_id, 0)
                         // create Payment object
                         paymentObj.user_id = userObj.id
                     } catch (error) {
