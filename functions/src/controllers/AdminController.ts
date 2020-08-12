@@ -278,7 +278,7 @@ const Admin = {
 
                 records.forEach(async function (record) {
                     let recordFieldKeys = Object.keys(record.fields)
-                    const checkDifference = _.difference(recordFieldKeys, EXTERNAL_ORDERS_MANDATORY_FIELDS)
+                    const checkDifference = _.difference(EXTERNAL_ORDERS_MANDATORY_FIELDS,recordFieldKeys)
 
                     if (!checkDifference.length) {
                         const orderObj = record.fields
