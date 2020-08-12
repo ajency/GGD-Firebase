@@ -452,7 +452,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					for (const key in order_data.airtableIds) {
 						fieldsToUpdate.push({id: order_data.airtableIds[key], fields:{ "processed": true}})
 					}
-					base('external_order').update(fieldsToUpdate).then(() => {
+					base('external_orders').update(fieldsToUpdate).then(() => {
 						console.log("external_order updated");
 					}).catch(error => {
 						console.log(error);
