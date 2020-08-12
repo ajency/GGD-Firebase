@@ -395,7 +395,7 @@ const Admin = {
 
                             const product = productMaster[dataMaster[ex_order_id][index].product_id]
 
-                            const variant = product.variants.find((variant => variant.id == dataMaster[ex_order_id][index].variant_id))
+                            const variant = product.variants.find((v => v.id == dataMaster[ex_order_id][index].variant_id))
                             const item = {
                                 day: variant.day,
                                 description: product.description,
@@ -511,12 +511,12 @@ const Admin = {
         .collection('orders')
         .doc(orderObj.order_id)
         .set(orderObj).then(res => {
-            admin.firestore().collection('payments').doc(orderObj.payment_id).set(paymentObj).then((res) => {
+            admin.firestore().collection('payments').doc(orderObj.payment_id).set(paymentObj).then((result) => {
                 console.log("added payment");
             }).catch(error => {
                 console.log(error);
             })
-            admin.firestore().collection('user-orders-map').doc().set({user_id:userObj.id, order_id: orderObj.order_id}).then((res) => {
+            admin.firestore().collection('user-orders-map').doc().set({user_id:userObj.id, order_id: orderObj.order_id}).then((result) => {
                 console.log("added payment");
             }).catch(error => {
                 console.log(error);
