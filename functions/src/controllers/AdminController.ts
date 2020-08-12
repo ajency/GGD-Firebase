@@ -397,7 +397,8 @@ const Admin = {
                             }
 
                             if (!paymentObj.order_details) {
-                                paymentObj.order_details = `{method:${dataMaster[ex_order_id][index].payment_mode}}`
+                                const paymentMode =dataMaster[ex_order_id][index].payment_mode
+                                paymentObj.order_details = `{method:${paymentMode.toLowerCase()}}`
                             }
 
                             if(!name) {
@@ -443,9 +444,10 @@ const Admin = {
                         orderObj.shipping_address.name = userObj.name || ""
                         orderObj.shipping_address.email = userObj.email || ""
                         orderObj.user_id = userObj.id
-                        orderObj.order_no = Order.getOrderNos(orderObj.payment_id, 0)
-                        // create Payment object
+                        
+                        orderObj.order_no = Order.getOrderNos(orderObj.payment_id, 0) //return order no
                         orderObj = PaymentGateway.getOrdersObj(orderObj);
+                        // create Payment object
                         paymentObj.user_id = userObj.id
                     } catch (error) {
                         console.log(error);
