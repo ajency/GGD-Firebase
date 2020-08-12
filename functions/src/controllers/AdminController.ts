@@ -98,12 +98,12 @@ const Admin = {
                     res.status(500).send({ message: `There are no products mapped to provided business id, Please contact admin for more information` })
 
                 }
-            }).catch(e => {
+            }).catch(error => {
 
-                res.status(500).send(e)
+                res.status(500).send({error})
             })
         } catch (error) {
-            res.status(500).send("")
+            res.status(500).send({error})
         }
     },
 
