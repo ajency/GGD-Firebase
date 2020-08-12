@@ -432,25 +432,19 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			console.log(airtableArray, "hereeeeeeeeeeeeeeeeeeeee");
 
 
-			base('orders_by_bowl').create(airtableArray).then((res) => {
-				console.log("Made entry in order _by bowls airtable", res)
+			const orderAirtable = base('orders_by_bowl').create(airtableArray);
 
-			}).catch((e) => {
-				console.log("Airtable entry failed ==>", e);
-
-			})
-
-			base('orders').create([
+			const orderbyBowlsAirtable = base('orders').create([
 				{
 					"fields": airtableRecOrders
 				}
-			]).then(() => {
-				console.log("Made entry in airtable orders")
-			}).catch((e) => {
-				console.log("Airtable entry failed ==>", e);
-
+			]);
+			Promise.all([orderAirtable,orderbyBowlsAirtable]).then(results => {
+				console.log("entry made in airtable");
+				
+			}).catch(error => {
+				console.log(error);				
 			})
-
 
 		}
 		if (!order_data.airtableUpdated || !order_data.userNotified) {
