@@ -461,7 +461,7 @@ const Admin = {
                     ordermaster.push(orderObj)
                 }
 
-                return res.status(200).send({ ordermaster:ordermaster[0] })
+                return res.status(200).send({ message: "Upload is in progress please check airtable." })
             });
         } catch (e) {
             res.status(500).send({ message: "Something went wrong" })
