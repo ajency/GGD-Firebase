@@ -19,7 +19,9 @@ const EXTERNAL_ORDERS_MANDATORY_FIELDS = [
     "payment_mode",
     "mrp",
     "sale_price",
-    "quantity"
+    "quantity",
+    "name",
+    "email",
 ]
 const Admin = {
     getProductsCSV: async function (req: Request, res: Response) {
@@ -321,6 +323,7 @@ const Admin = {
                 console.log(Object.keys(dataMaster).length);
                 const userStore = {}
                 for (let ex_order_id in dataMaster) {
+                    let name,email = ""
                     const orderObj = {
                         airtableUpdated: true,
                         userNotified: true,
@@ -391,6 +394,13 @@ const Admin = {
                                 paymentObj.order_details = `{method:${dataMaster[ex_order_id][index].payment_mode}}`
                             }
 
+                            if(!name) {
+                                name = dataMaster[ex_order_id][index].name
+                            }
+
+                            if(!email) {
+                                email = dataMaster[ex_order_id][index].email
+                            }
 
                             const product = productMaster[dataMaster[ex_order_id][index].product_id]
 
@@ -420,11 +430,12 @@ const Admin = {
                             userObj = userStore[phone_number]
                         } else {
                             const newPhone = "+91"+phone_number
-                            userObj = await Admin.getUser(newPhone)
+                            const payload = {phone:newPhone,name,email}
+                            userObj = await Admin.getUser(payload)
                             userStore[phone_number] = userObj
                         }
-                        orderObj.shipping_address.name = userObj.name
-                        orderObj.shipping_address.email = userObj.email
+                        orderObj.shipping_address.name = userObj.name || ""
+                        orderObj.shipping_address.email = userObj.email || ""
                         orderObj.user_id = userObj.id
 
                         // create Payment object
@@ -445,12 +456,12 @@ const Admin = {
         }
     },
 
-    getUser: (phone) => {
+    getUser: (payload) => {
         console.log("checkInDb===>");
         return new Promise(async (resolve, reject) => {
 
             const firestore = admin.firestore();
-            const userDocs = await firestore.collection('user-details').where('phone', "==", phone.replace("+91","")).get();
+            const userDocs = await firestore.collection('user-details').where('phone', "==", payload.phone.replace("+91","")).get();
             const size = userDocs.size
             
             if (size) {
@@ -471,7 +482,7 @@ const Admin = {
             } else {
                 try {
                     
-                    let newUser  = await Admin.createVerifiedUser(phone)
+                    let newUser  = await Admin.createVerifiedUser(payload)
                     resolve(newUser)
                 } catch (error) {
                     reject(false)
@@ -479,23 +490,25 @@ const Admin = {
             }
         })
     },
-    createVerifiedUser: function (phone) {
-        console.log("create user", phone);
+    createVerifiedUser: function (payload) {
+        console.log("create user", payload.phone);
         
         return new Promise(async (resolve, reject) => {
             try {
                 const newUser = await admin.auth().createUser({
-                    phoneNumber: phone
+                    phoneNumber: payload.phone
                 })
 
                 await admin.firestore().collection("user-details").doc(newUser.uid).set({
                     verified: true,
-                    phone: phone.replace("+91", "")
+                    ...payload,
+                    phone: payload.phone.replace("+91", "")
                 })
                 resolve({
                     id: newUser.uid,
                     verified: true,
-                    phone: phone.replace("+91", "")
+                    ...payload,
+                    phone: payload.phone.replace("+91", "")
                 })
             } catch (error) {
                 console.log(error);
