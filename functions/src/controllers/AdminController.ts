@@ -307,7 +307,7 @@ const Admin = {
                 fetchNextPage();
 
             }, async function done(err) {
-                if (err) { console.error(err); return; }
+                if (err) { console.error(err); return res.status(500).send({ err }) }
                 for (const productId in productMaster) {
                     console.log(productId);
 
@@ -461,7 +461,7 @@ const Admin = {
                     ordermaster.push(orderObj)
                 }
 
-                res.status(200).send({ ordermaster:ordermaster[0] })
+                return res.status(200).send({ ordermaster:ordermaster[0] })
             });
         } catch (e) {
             res.status(500).send({ message: "Something went wrong" })
