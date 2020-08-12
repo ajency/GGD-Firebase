@@ -534,7 +534,7 @@ const Admin = {
         admin.firestore().collection('user-details').doc(userObj.id)
         .collection('orders')
         .doc(orderObj.order_id)
-        .set(orderObj).then(res => {
+        .create(orderObj).then(res => {
             admin.firestore().collection('payments').doc(orderObj.payment_id).set(paymentObj).then((result) => {
                 console.log("added payment");
             }).catch(error => {
@@ -546,7 +546,7 @@ const Admin = {
                 console.log(error);
             })
         }).catch(error => {
-            console.log(error);
+            console.log("order already exists");
             
         })
         return true
