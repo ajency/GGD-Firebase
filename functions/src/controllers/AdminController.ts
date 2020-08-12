@@ -4,6 +4,7 @@ const { AsyncParser, parse } = require('json2csv');
 import * as Airtable from 'airtable';
 import e = require("express");
 import Order from "./OrderController";
+import PaymentGateway from "./PaymentController";
 const { _ } = require("underscore")
 const cred = require('../../credentials.json');
 Airtable.configure({
@@ -325,7 +326,7 @@ const Admin = {
                 const userStore = {}
                 for (let ex_order_id in dataMaster) {
                     let name,email = ""
-                    const orderObj = {
+                    let orderObj = {
                         airtableUpdated: false,
                         userNotified: true,
                         externalOrderType: "",
@@ -444,6 +445,7 @@ const Admin = {
                         orderObj.user_id = userObj.id
                         orderObj.order_no = Order.getOrderNos(orderObj.payment_id, 0)
                         // create Payment object
+                        orderObj = PaymentGateway.getOrdersObj(orderObj);
                         paymentObj.user_id = userObj.id
                     } catch (error) {
                         console.log(error);
