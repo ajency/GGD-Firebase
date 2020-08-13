@@ -367,7 +367,7 @@ const Admin = {
                     }
                     const paymentObj = {
                         order_id: "",
-                        order_details:"",
+                        other_details:"",
                         status:"captured",
                         timestamp:new Date(),
                         user_id:""
@@ -401,9 +401,9 @@ const Admin = {
                                 orderObj.timestamp = paymentObj.timestamp = new Date(dataMaster[ex_order_id][index].order_date)
                             }
 
-                            if (!paymentObj.order_details) {
+                            if (!paymentObj.other_details) {
                                 const paymentMode =dataMaster[ex_order_id][index].payment_mode
-                                paymentObj.order_details = `{"method":"${paymentMode.toLowerCase()}"}`
+                                paymentObj.other_details = `{"method":"${paymentMode.toLowerCase()}"}`
                             }
 
                             if(!name) {
