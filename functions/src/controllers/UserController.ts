@@ -53,8 +53,9 @@ let User = {
 			let oldUser = false
 			for(let i =0; i<size; i++) {
 				console.log(i)
-				let address = await data.docs[i].ref.collection('addresses').get();
-				if(!address.empty) {
+				let address = await data.docs[i].ref.collection('address').get();
+				let orders = await data.docs[i].ref.collection('orders').get();
+				if(!address.empty || !orders.empty) {
 					oldUser = true
 					break;
 				}
