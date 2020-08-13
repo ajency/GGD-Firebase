@@ -403,7 +403,7 @@ const Admin = {
 
                             if (!paymentObj.order_details) {
                                 const paymentMode =dataMaster[ex_order_id][index].payment_mode
-                                paymentObj.order_details = `{method:${paymentMode.toLowerCase()}}`
+                                paymentObj.order_details = `{"method":"${paymentMode.toLowerCase()}"}`
                             }
 
                             if(!name) {
