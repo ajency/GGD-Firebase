@@ -274,7 +274,8 @@ const Admin = {
             const productMaster = {}
             base("external_orders").select({
                 view: "Orders To Upload",
-                pageSize: 5
+                filterByFormula:'AND(processed = FALSE())',
+                maxRecords: 100
             }).eachPage(function page(records, fetchNextPage) {
                 console.log(records.length);
 
