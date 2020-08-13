@@ -42,7 +42,6 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 	try {
 		let order_data = snap.after.data();
 		let prev_order_data = snap.before.data();
-		// console.log("prev_order_data--->", prev_order_data.status);
 
 		let firestore = admin.firestore();
 		if (!order_data.userNotified && order_data.status != "draft") {
@@ -61,7 +60,6 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			};
 			let payment_ref = await firestore.collection('payments').where("order_id", "==", snap.after.id).get()
 			let payment_data = payment_ref.docs[0].data()
-			console.log("fetched payments details");
 
 			let pay_details = JSON.parse(payment_data.other_details)
 
@@ -462,7 +460,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				}
 			}
 		}
-		if (!order_data.airtableUpdated || !order_data.userNotified) {
+		if ((!order_data.airtableUpdated || !order_data.userNotified) && order_data.status != "draft" ) {
 			snap.after.ref.update({
 				airtableUpdated: true,
 				userNotified: true
