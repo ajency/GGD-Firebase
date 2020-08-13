@@ -450,7 +450,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				if(order_data.airtableIds.length) {
 					const fieldsToUpdate = []
 					for (const key in order_data.airtableIds) {
-						fieldsToUpdate.push({id: order_data.airtableIds[key], fields:{ "processed": true}})
+						fieldsToUpdate.push({id: order_data.airtableIds[key], fields:{ "processed": true, "firebase_id": snap.after.id}})
 					}
 					base('external_orders').update(fieldsToUpdate).then(() => {
 						console.log("external_order updated");
