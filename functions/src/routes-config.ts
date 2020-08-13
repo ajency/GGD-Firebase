@@ -79,4 +79,8 @@ export function routesConfig(app: Application) {
 	app.get('/rest/v1/admin/update-cart-with-user-id',
 		Admin.updateCartsWithUserId
 	);
+
+	app.get('/rest/v1/admin/create-orders',
+		Admin.createOrders
+	);
 }
