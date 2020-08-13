@@ -490,7 +490,7 @@ const Admin = {
                 if (userObj) {
                     resolve(userObj)
                 } else {
-                    resolve({id: userDocs.docs[0].id, ...userDocs[0].data()} )
+                    resolve({id: userDocs.docs[0].id, ...userDocs.docs[0].data()} )
                 }
             } else {
                 try {
