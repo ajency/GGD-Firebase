@@ -84,7 +84,7 @@ export function routesConfig(app: Application) {
 		Admin.createOrders
 	);
 
-	app.post('/rest/v1/admin/get-all-products',
+	app.get('/rest/v1/admin/get-all-products',
 		Products.fetchProducts
 	)
 }
