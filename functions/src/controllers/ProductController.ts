@@ -52,35 +52,30 @@ let Products = {
 				products:[]
 			}
 		}
-		// return new Promise(async (resolve,reject) => {
 		try {
 			const products = await db.collection('products').get();	
 			if(products.empty) {
 				result.code = "NO_PRODUCT_FOUND";
 				result.message = "Sold out"
 				result.success = false
-				res.status(200).send()
+				return res.status(200).send(result)
 			} else {
+				result.code = "PRODUCTS_FOUND";
+				result.success = true
 				for (const key in products.docs) {
 					const productData = products.docs[key].data()
 					result.data.products.push(productData);
 				}
+				return res.status(200).send(result)
 			}
 		} catch (error) {
-			return 
+			console.log(error);
+			result.code = "ERROR_IN_FETCHING";
+			result.message = "Something went wrong."
+			result.success = false
+			return res.status(200).send(result)
 		} 
-
-		// })
 	},
-
-	getProductObject: (product) => {
-		return {
-			
-		}
- 	},
-
-
-
 }
 
 export default Products;
