@@ -42,6 +42,45 @@ let Products = {
 		return res.status(200).send({ success: true, variants : variants });
 	},
 
+	fetchProducts: async (req:Request, res:Response) => {
+		const db = admin.firestore();
+		const result = {
+			code:"",
+			message:"",
+			success:false,
+			data: {
+				products:[]
+			}
+		}
+		// return new Promise(async (resolve,reject) => {
+		try {
+			const products = await db.collection('products').get();	
+			if(products.empty) {
+				result.code = "NO_PRODUCT_FOUND";
+				result.message = "Sold out"
+				result.success = false
+				res.status(200).send()
+			} else {
+				for (const key in products.docs) {
+					const productData = products.docs[key].data()
+					result.data.products.push(productData);
+				}
+			}
+		} catch (error) {
+			return 
+		} 
+
+		// })
+	},
+
+	getProductObject: (product) => {
+		return {
+			
+		}
+ 	},
+
+
+
 }
 
 export default Products;
