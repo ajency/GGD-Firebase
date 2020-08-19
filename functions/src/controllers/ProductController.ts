@@ -53,7 +53,7 @@ let Products = {
 			}
 		}
 		try {
-			const products = await db.collection('products').where("active", "==",true).where("title", ">","").get();	
+			const products = await db.collection('products').where("title", ">","").get();	
 			if(products.empty) {
 				result.code = "NO_PRODUCT_FOUND";
 				result.message = "Sold out"
