@@ -488,7 +488,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			}
 			if (order_data.summary.cart_discount) {
 				const coupons_redeemed = {
-					user_id: payment_data.user_id,
+					user_id: paymentData.user_id,
 					user_phone: order_data.shipping_address.phone,
 					coupon_id: order_data.applied_coupon.id,
 					coupon_code: order_data.applied_coupon.code,
@@ -503,7 +503,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 	
 				firestore.collection("coupon_rules_log")
 					.where("operation", "==", "validate_cart")
-					.where("user_id", "==", payment_data.user_id)
+					.where("user_id", "==", paymentData.user_id)
 					.where("coupon_code", "==", order_data.applied_coupon.code)
 					.orderBy('timestamp').get().then(res => {
 						if (!res.empty) {
