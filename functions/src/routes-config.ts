@@ -8,6 +8,7 @@ import Products from "./controllers/ProductController";
 import { isAuthenticated } from "./auth/authenticated";
 import Payment from './controllers/PaymentController';
 import Admin from "./controllers/AdminController";
+import Cart from "./controllers/CartController";
 
 export function routesConfig(app: Application) {
 	app.post('/rest/v1/user/add-address',
@@ -87,4 +88,16 @@ export function routesConfig(app: Application) {
 	app.get('/rest/v1/admin/get-all-products',
 		Products.fetchProducts
 	)
+	app.post('/rest/v1/cart/recalculate', 
+		isAuthenticated,
+		Cart.reCalculate
+	);
+
+	app.get("/rest/v1/admin/add-new-coupons", 
+		Admin.addNewCoupons
+	);
+
+	app.get("/rest/v1/admin/update-coupons", 
+		Admin.updateCoupons
+	);
 }

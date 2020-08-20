@@ -202,7 +202,25 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				}
 			}
 			let del_fee_block = ''
+			let discount_block = ''
+			let coupon_code = ''
 			if (order_data.order_mode == "online") {
+				if (order_data.summary.cart_discount) {
+					const labelDiscount = order_data.applied_coupon.coupon_category_label || "Cart Discount"
+					const code = order_data.applied_coupon.code;
+					coupon_code = `<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 0; padding-bottom: 10px;">
+							<div class="w-50" style="width: 50%;float:left;">
+								<label class="font-weight-light"><b>Coupon Code</b></label>
+							</div>
+							<div class="font-weight-light w-50 text-right" style="width:50%;text-align:right;">${code}</div>
+						</div>`
+					discount_block = `<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 0; padding-bottom: 10px;">
+							<div class="w-50" style="width: 50%;float:left;">
+								<label class="font-weight-light">${labelDiscount}</label>
+							</div>
+							<div class="font-weight-light w-50 text-right" style="width:50%;float:left;text-align:right;">-₹${order_data.summary.cart_discount}</div>
+						</div>`
+				}
 				del_fee_block = `<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 0; padding-bottom: 10px;">
 							<div class="w-50" style="width: 50%;float:left;">
 								<label class="font-weight-light">Delivery fee</label>
@@ -212,12 +230,15 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 			}
 
 			email_content.summary = `
+					${coupon_code}
 					<div class="summary-item pt-0" style="display: flex; justify-content: space-between; padding-top: 10px; padding-bottom: 0;">
+
 						<div class="w-50" style="width: 50%;float:left;">
 							<label class="font-weight-light">Total Item Price</label>
 						</div>
 					<div class="font-weight-light w-50 text-right" style="width:50%;float:left;text-align:right;">₹${order_data.summary.sale_price_total} </div>
 					</div>
+					${discount_block}
 					${del_fee_block}
 					<div class="summary-item" style="display: flex; justify-content: space-between; padding-top: 10px; padding-bottom: 10px;">
 						<div class="w-50" style="width: 50%;float:left;">
@@ -322,7 +343,7 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 
 			let airtableArray = []
 			let airtableRecOrders = {
-				order_mode:order_data.order_mode,
+				order_mode: order_data.order_mode,
 				name: order_data.shipping_address.name,
 				contact: order_data.shipping_address.phone,
 				email: order_data.shipping_address.email,
@@ -337,11 +358,13 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				delivery_area: "",
 				delivery_address: '',
 				open_map: '',
-				datetime: order_data.timestamp.toDate().toISOString()
+				datetime: order_data.timestamp.toDate().toISOString(),
+				discount:0,
+				coupon_code:'',
 			}
 
 			let airtableRec = {
-				order_mode:order_data.order_mode,
+				order_mode: order_data.order_mode,
 				name: order_data.shipping_address.name,
 				contact_no: order_data.shipping_address.phone,
 				address: "",
@@ -427,6 +450,10 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 				})
 			})
 			airtableRecOrders.items = airtableRecOrdersItems
+			if(order_data.summary.cart_discount) {
+				airtableRecOrders.discount = order_data.summary.cart_discount
+				airtableRecOrders.coupon_code = order_data.applied_coupon.code
+			}
 			console.log(airtableArray, "hereeeeeeeeeeeeeeeeeeeee");
 
 
@@ -437,21 +464,21 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					"fields": airtableRecOrders
 				}
 			]);
-			Promise.all([orderAirtable,orderbyBowlsAirtable]).then(results => {
+			Promise.all([orderAirtable, orderbyBowlsAirtable]).then(results => {
 				console.log("entry made in airtable");
-				
+
 			}).catch(error => {
-				console.log(error);				
+				console.log(error);
 			})
 
-			if(order_data.order_mode == "manual" && !order_data.airtableUpdated) {
-				if(order_data.airtableIds.length) {
+			if (order_data.order_mode == "manual" && !order_data.airtableUpdated) {
+				if (order_data.airtableIds.length) {
 					const fieldsToUpdate = []
 					for (const key in order_data.airtableIds) {
-						fieldsToUpdate.push({id: order_data.airtableIds[key], fields:{ "processed": true, "firebase_id": snap.after.id}})
+						fieldsToUpdate.push({ id: order_data.airtableIds[key], fields: { "processed": true, "firebase_id": snap.after.id } })
 					}
 					console.log(fieldsToUpdate);
-					
+
 					base('external_orders').update(fieldsToUpdate).then(() => {
 						console.log("external_order updated");
 					}).catch(error => {
@@ -459,25 +486,86 @@ exports.dataBaseTriggers = functions.region('asia-east2').firestore.document("us
 					})
 				}
 			}
-		}
-		if ((!order_data.airtableUpdated || !order_data.userNotified) && order_data.status != "draft" ) {
-			snap.after.ref.update({
-				airtableUpdated: true,
-				userNotified: true
-			}).then((res) => {
-				console.log("user notified");
-			}).catch(e => {
-				console.log(e)
-			})
+			if (order_data.summary.cart_discount) {
+				const coupons_redeemed = {
+					user_id: payment_data.user_id,
+					user_phone: order_data.shipping_address.phone,
+					coupon_id: order_data.applied_coupon.id,
+					coupon_code: order_data.applied_coupon.code,
+					order_id: snap.after.id,
+					timestamp: order_data.timestamp
+				}
+				firestore.collection("coupons_redeemed").doc().set(coupons_redeemed).then(() => {
+					console.log("made entry in coupons_redeemed");
+				}).catch((e) => {
+					console.log(e)
+				})
+	
+				firestore.collection("coupon_rules_log")
+					.where("operation", "==", "validate_cart")
+					.where("user_id", "==", payment_data.user_id)
+					.where("coupon_code", "==", order_data.applied_coupon.code)
+					.orderBy('timestamp').get().then(res => {
+						if (!res.empty) {
+							res.docs[0].ref.update({ order_id: snap.after.id }).then(result => {
+								console.log("logged order id");
+	
+							}).catch((e) => {
+								console.log("loggin error");
+	
+							})
+						}
+					}).catch(e => {
+						console.log(e)
+					})
+			}
 		}
 
-	} catch (e) {
-		console.log(e)
-
-	} finally {
-		console.log("here")
+		if ((!order_data.airtableUpdated || !order_data.userNotified) && order_data.status != "draft") {
+		snap.after.ref.update({
+			airtableUpdated: true,
+			userNotified: true
+		}).then((res) => {
+			console.log("user notified");
+		}).catch(e => {
+			console.log(e)
+		})
 	}
-	return null
+} catch (e) {
+	console.log(e)
+
+} finally {
+	console.log("here")
+}
+return null
 
 })
 
+exports.couponsTriggers = functions.region('asia-east2').firestore.document("coupons/{couponId}").onWrite(async (snap, context) => {
+	console.log("-----------------------------------------------");
+
+	const id = snap.after.id
+	const couponData = snap.after.data()
+	console.log(couponData, id);
+	snap.after.ref.update({ id: id }).then((res) => {
+		console.log(res)
+	}).catch(e => {
+		console.log(e);
+
+	})
+	const airtableRecordId = couponData.airtable_id
+	base('coupons').update([
+		{
+			"id": airtableRecordId,
+			"fields": {
+				"firebase_id": id
+			}
+		}
+	]).then((res) => {
+		console.log(res);
+
+	}).catch((e) => {
+		console.log(e);
+
+	})
+});
