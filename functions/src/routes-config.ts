@@ -83,4 +83,8 @@ export function routesConfig(app: Application) {
 	app.get('/rest/v1/admin/create-orders',
 		Admin.createOrders
 	);
+
+	app.get('/rest/v1/admin/get-all-products',
+		Products.fetchProducts
+	)
 }

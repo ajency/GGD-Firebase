@@ -55,26 +55,26 @@ const Admin = {
                 const productsArrayToConvert = [];
                 if (productDocs.length) {
                     const variants = productDocs.map((doc) => {
-                        const pdata = doc.data()
-                        let product_id = doc.id
-                        if (pdata.variants) {
-
-                            return pdata.variants.map((v) => {
-                                for (const key in v) {
-                                    if (!VariantDataStructure[key]) {
-                                        let dataType = typeof v[key]
-                                        VariantDataStructure[key] = dataType;
+                            const pdata = doc.data()
+                            let product_id = doc.id
+                            if (pdata.variants) {
+    
+                                return pdata.variants.map((v) => {
+                                    for (const key in v) {
+                                        if (!VariantDataStructure[key]) {
+                                            let dataType = typeof v[key]
+                                            VariantDataStructure[key] = dataType;
+                                        }
                                     }
-                                }
-                                if (ignoreList.length) {
-                                    ignoreList.forEach(element => {
-                                        delete v[element];
-                                    });
-                                }
-
-                                productsArrayToConvert.push({ product_id: product_id, title: pdata.title, ...v })
-                            })
-                        }
+                                    if (ignoreList.length) {
+                                        ignoreList.forEach(element => {
+                                            delete v[element];
+                                        });
+                                    }
+    
+                                    productsArrayToConvert.push({ product_id: product_id, title: pdata.title, ...v })
+                                })
+                            }
 
                     })
                     setTimeout(async () => {
@@ -144,7 +144,7 @@ const Admin = {
             base(airtable_name).select({
                 // Selecting the first 3 records in Grid view:
                 // view: "Grid view"
-                pageSize: 10
+                pageSize: 100
             }).eachPage(function page(records, fetchNextPage) {
                 // This function (`page`) will get called for each page of records.
                 records.forEach(async function (record) {
