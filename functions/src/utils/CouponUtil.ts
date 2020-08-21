@@ -313,7 +313,7 @@ let couponUtil = {
 		switch (operation) {
 			case "add":
 				if (msgType == "success")
-					msg = `<div class="msg-success"><p>Nicely done! You've saved ₹ <span>${cartObj.summary.cart_discount}</span> on your order.</p></div>`
+					msg = `<div class="msg-success"><p>Nicely done! You've saved ₹<span>${cartObj.summary.cart_discount}</span> on your order.</p></div>`
 				else
 					msg = `<div class="msg-error"><p>${message}</p></div>`
 				break;
