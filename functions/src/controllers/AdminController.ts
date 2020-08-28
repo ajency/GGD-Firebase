@@ -98,8 +98,14 @@ const Admin = {
                                         delete v[element];
                                     });
                                 }
-
-                                productsArrayToConvert.push({ product_id: product_id, title: pdata.title, ...v })
+                                let tags = "";
+                                let group_name ="";
+                                if(pdata.tags)
+                                    tags = pdata.tags.toString();
+                                
+                                if(pdata.group_name)
+                                    group_name = pdata.group_name.trim();
+                                productsArrayToConvert.push({ product_id: product_id, title: pdata.title, ...v, tags, group_name })
                             })
                         }
 
